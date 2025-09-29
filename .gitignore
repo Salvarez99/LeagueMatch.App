@@ -13,7 +13,7 @@ firebase-debug.*.log*
 .firebase/
 firebaseServiceKey.json
 .vscode/*
-./Server/vscode/*
+/Server/.vscode/*
 
 # Firebase config
 
