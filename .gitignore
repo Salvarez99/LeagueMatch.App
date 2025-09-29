@@ -1,3 +1,5 @@
+Server/functions/node_modules/
+Server/functions/*.local
 # Logs
 logs
 *.log
