@@ -13,6 +13,8 @@ firebase-debug.*.log*
 .firebase/
 firebaseServiceKey.json
 .vscode/*
+./Server/vscode/*
+
 # Firebase config
 
 # Uncomment this if you'd like others to create their own Firebase project.
