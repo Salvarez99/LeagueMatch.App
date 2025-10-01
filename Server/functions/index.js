@@ -1,5 +1,4 @@
-const functions = require("firebase-functions");
-// const admin = require("firebase-admin");
+// const functions = require("firebase-functions");
 require('dotenv').config()
 require("./firebaseConfig");
 
@@ -8,6 +7,7 @@ if (process.env.FIRESTORE_EMULATOR_HOST) {
   process.env.FIRESTORE_EMULATOR_HOST = "localhost:4020";
 }
 
-const { addUserEndpoint } = require("./routes/userRoute");
+const { addUserEndpoint, updateUserEndpoint } = require("./routes/userRoute");
 
 exports.addUser = addUserEndpoint;
+exports.updateUser = updateUserEndpoint;
