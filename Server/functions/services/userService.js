@@ -4,8 +4,26 @@ const { getAccountByRiotId, getRankByPuuid } = require("./riotService");
 
 async function addUser(userData) {
   const user = new UserDTO(userData);
-  await db.collection("users").add({ ...user });
-  return user;
+
+  // Require username + email
+  if (!user.username || !user.email || !user.uid) {
+    throw new Error("uid, username and email are required");
+  }
+
+  // Use uid if provided, otherwise auto-generate
+  const userId = user.uid;
+
+  await db.collection("users").doc(userId).set({
+    ...user,
+    uid: userId, // ensure Firestore doc ID matches uid field
+  });
+
+  return { id: userId, ...user };
+}
+
+async function getUserById(uid){
+    const userRef = db.collection("users").doc(uid);
+    return await userRef.get();
 }
 
 async function updateUser({ uid, username, riotId }) {
@@ -41,4 +59,4 @@ async function updateUser({ uid, username, riotId }) {
   return { uid: userRef.id, riotId, puuid, rank };
 }
 
-module.exports = { addUser, updateUser };
+module.exports = { addUser, getUserById, updateUser };

@@ -17,6 +17,7 @@ exports.addUserEndpoint = functions.https.onRequest(async (req, res) => {
   }
 });
 
+
 // Update User
 exports.updateUserEndpoint = functions.https.onRequest(async (req, res) => {
   try {

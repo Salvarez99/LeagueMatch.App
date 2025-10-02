@@ -8,6 +8,9 @@ if (process.env.FIRESTORE_EMULATOR_HOST) {
 }
 
 const { addUserEndpoint, updateUserEndpoint } = require("./routes/userRoute");
+const { createLobbyEndpoint} = require("./routes/lobbyRoute");
+
 
 exports.addUser = addUserEndpoint;
 exports.updateUser = updateUserEndpoint;
+exports.createLobbyEndpoint = createLobbyEndpoint;

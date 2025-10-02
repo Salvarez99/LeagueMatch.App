@@ -1,5 +1,6 @@
 class UserDTO {
   constructor({
+    uid,
     username,
     email,
     puuid = null,
@@ -7,6 +8,7 @@ class UserDTO {
     preferredRoles = [],
     rank = null,
   }) {
+    this.uid = uid;
     this.puuid = puuid; // Riot Games PUUID
     this.riotId = riotId; // Summoner’s Riot ID (ex: "gameName#Tagline")
     this.preferredRoles = preferredRoles; // Array of roles, e.g. ["Top", "Jungle"]
@@ -17,6 +19,7 @@ class UserDTO {
 
   toJSON() {
     return {
+        uid: this.uid,
         username: this.username,
         email: this.email,
         riotId: this.riotId,
