@@ -1,17 +1,16 @@
-// const functions = require("firebase-functions");
-require('dotenv').config()
+require("dotenv").config();
 require("./firebaseConfig");
 
 if (process.env.FIRESTORE_EMULATOR_HOST) {
-  console.log("Using Firestore emulator");
+  console.log("🔥 Using Firestore emulator at localhost:4020");
   process.env.FIRESTORE_EMULATOR_HOST = "localhost:4020";
 }
 
-const { addUserEndpoint, updateUserEndpoint } = require("./routes/userRoute");
-const { createLobbyEndpoint, getAvailableLobbiesEndpoint} = require("./routes/lobbyRoute");
+const lobbyController = require("./controllers/lobbyController");
+const userController = require("./controllers/userController");
+const exportController = require("./utils/exportFunctions");
 
-
-exports.addUser = addUserEndpoint;
-exports.updateUser = updateUserEndpoint;
-exports.createLobby = createLobbyEndpoint;
-exports.availableLobbies = getAvailableLobbiesEndpoint;
+module.exports = {
+  ...exportController(lobbyController, ""),
+  ...exportController(userController, ""),
+};

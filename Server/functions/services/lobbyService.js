@@ -1,61 +1,56 @@
 const db = require("../firebaseConfig").db;
-const {getUserById} = require("./userService");
+const userService = require("./userService");
 
-
-async function createLobby(lobbyData) {
-  const { hostId, game, maxPlayers, filters } = lobbyData;
-
-  if (!hostId || !game || !maxPlayers) {
-    throw new Error("hostId, game, and maxPlayers are required");
+class LobbyService {
+  constructor() {
+    this.lobbiesRef = db.collection("lobbies");
   }
 
-  // Check if host exists
-  const hostSnap = await getUserById(hostId);
-  if (!hostSnap.exists) {
-    throw new Error("Host user not found");
+  async createLobby(lobbyData) {
+    const { hostId, game, maxPlayers, filters } = lobbyData;
+
+    if (!hostId || !game || !maxPlayers) {
+      throw new Error("hostId, game, and maxPlayers are required");
+    }
+
+    // Check if host exists
+    const host = await userService.getUserById(hostId);
+    if (!host) {
+      throw new Error("Host user not found");
+    }
+
+    const lobby = {
+      hostId,
+      game,
+      maxPlayers,
+      players: [hostId],
+      filters: filters || {},
+      createdAt: new Date().toISOString(),
+      isActive: true,
+    };
+
+    const docRef = await this.lobbiesRef.add(lobby);
+    return { id: docRef.id, ...lobby };
   }
 
-  const lobby = {
-    hostId,
-    game,
-    maxPlayers,
-    players: [hostId],
-    filters: filters || {},
-    createdAt: new Date().toISOString(),
-    isActive: true,
-  };
+  async getAvailableLobbies() {
+    const snapshot = await this.lobbiesRef.where("isActive", "==", true).get();
 
-  const docRef = await db.collection("lobbies").add(lobby);
+    if (snapshot.empty) return [];
 
-  return { lobbyId: docRef.id, ...lobby };
+    return snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+  }
+
+  async getLobbyById(lobbyId) {
+    const doc = await this.lobbiesRef.doc(lobbyId).get();
+
+    if (!doc.exists) return null;
+
+    return { id: doc.id, ...doc.data() };
+  }
 }
 
-async function getAvailableLobbies(){
-  const lobbiesRef = await db.collection("lobbies");
-  const snapshot = await lobbiesRef.where("isActive", "==", true).get();
-
-  if (snapshot.empty){
-    return [];
-  }
-  return snapshot.docs.map( doc => ({
-    id: doc.id, 
-    ...doc.data(),
-  }));
-}
-
-async function getLobbyById(lobbyId){
-  const lobbiesRef = await db.collection("lobbies");
-  const snapshot = await lobbiesRef.doc(lobbyId);
-
-  if (snapshot.empty){
-    return [];
-  }
-  return snapshot.docs.map( doc => ({
-    id: doc.id, 
-    ...doc.data(),
-  }));
-}
-
-
-
-module.exports = { createLobby, getAvailableLobbies };
+module.exports = new LobbyService();
