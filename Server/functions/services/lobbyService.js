@@ -30,4 +30,32 @@ async function createLobby(lobbyData) {
   return { lobbyId: docRef.id, ...lobby };
 }
 
-module.exports = { createLobby };
+async function getAvailableLobbies(){
+  const lobbiesRef = await db.collection("lobbies");
+  const snapshot = await lobbiesRef.where("isActive", "==", true).get();
+
+  if (snapshot.empty){
+    return [];
+  }
+  return snapshot.docs.map( doc => ({
+    id: doc.id, 
+    ...doc.data(),
+  }));
+}
+
+async function getLobbyById(lobbyId){
+  const lobbiesRef = await db.collection("lobbies");
+  const snapshot = await lobbiesRef.doc(lobbyId);
+
+  if (snapshot.empty){
+    return [];
+  }
+  return snapshot.docs.map( doc => ({
+    id: doc.id, 
+    ...doc.data(),
+  }));
+}
+
+
+
+module.exports = { createLobby, getAvailableLobbies };

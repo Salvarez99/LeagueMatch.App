@@ -1,5 +1,5 @@
 const functions = require("firebase-functions");
-const { createLobby } = require("../services/lobbyService");
+const { createLobby, getAvailableLobbies } = require("../services/lobbyService");
 
 exports.createLobbyEndpoint = functions.https.onRequest(async (req, res) => {
   try {
@@ -15,4 +15,17 @@ exports.createLobbyEndpoint = functions.https.onRequest(async (req, res) => {
     console.error("Error creating lobby:", err);
     res.status(500).json({ error: err.message });
   }
+});
+
+exports.getAvailableLobbiesEndpoint = functions.https.onRequest(async (req, res) => {
+	try{
+		lobbies = await getAvailableLobbies();
+		res.status(200).json({
+			message: "Available lobbies fetched",
+			...lobbies,
+		})
+	}catch (err){
+		console.error("Error getting available lobbies:", err);
+		res.status(500).json({ error : err.message })
+	}
 });
