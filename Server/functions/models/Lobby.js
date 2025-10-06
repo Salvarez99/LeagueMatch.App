@@ -31,3 +31,5 @@ class Lobby {
     return { ...this };
   }
 }
+
+module.exports = Lobby;

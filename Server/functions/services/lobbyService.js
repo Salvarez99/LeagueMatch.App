@@ -25,10 +25,10 @@ class LobbyService {
       hostRole,
       gameMode,
       maxPlayers,
-      filters || {}
+      filters
     );
 
-    const docRef = await this.lobbiesRef.add(lobby);
+    const docRef = await this.lobbiesRef.add(lobby.toFirestore());
     return { id: docRef.id, ...lobby };
   }
 

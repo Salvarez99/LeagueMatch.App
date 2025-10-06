@@ -1,5 +1,5 @@
 const db = require("../firebaseConfig").db;
-const UserDTO = require("../models/UserDTO");
+const User = require("../models/User");
 const riotService = require("./riotService");
 
 class UserService {
@@ -9,7 +9,7 @@ class UserService {
 
   // Add a new user
   async addUser(userData) {
-    const user = new UserDTO(userData);
+    const user = new User(userData);
 
     if (!user.uid || !user.username || !user.email) {
       throw new Error("uid, username, and email are required");

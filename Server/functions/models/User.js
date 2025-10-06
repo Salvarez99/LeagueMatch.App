@@ -1,4 +1,4 @@
-class UserDTO {
+class User {
   constructor({
     uid,
     username,
@@ -30,4 +30,4 @@ class UserDTO {
   }
 }
 
-module.exports = UserDTO;
+module.exports = User;
