@@ -17,8 +17,22 @@ class Lobby {
   }
 
   addPlayer(uid, role) {
+    // prevent duplicates
+    if (this.players.some(p => p.uid === uid)) {
+      throw new Error('Player already in lobby');
+    }
+
+    if (this.currentPlayers >= this.maxPlayers) {
+      throw new Error('Lobby is full');
+    }
+
     this.players.push({ uid, role });
     this.currentPlayers++;
+
+    // update status if now full
+    if (this.currentPlayers === this.maxPlayers) {
+      this.isActive = false;
+    }
   }
 
   removePlayer(uid) {
