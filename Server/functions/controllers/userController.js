@@ -1,4 +1,3 @@
-const functions = require("firebase-functions");
 const userService = require("../services/userService");
 
 class UserController {

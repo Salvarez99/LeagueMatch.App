@@ -1,12 +1,11 @@
 // controllers/lobbyController.js
-const functions = require("firebase-functions");
 const lobbyService = require("../services/lobbyService");
 
 class LobbyController {
   async createLobby(req, res) {
     try {
-      const { hostId, game, maxPlayers, filters } = req.body;
-      const newLobby = await lobbyService.createLobby({ hostId, game, maxPlayers, filters });
+      const { hostId, hostRole, gameMode, maxPlayers, filters } = req.body;
+      const newLobby = await lobbyService.createLobby({ hostId, hostRole, gameMode, maxPlayers, filters });
 
       res.status(201).json({
         message: "Lobby created successfully",
