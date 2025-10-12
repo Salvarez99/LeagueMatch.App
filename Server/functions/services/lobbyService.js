@@ -1,6 +1,6 @@
 const db = require("../firebaseConfig").db;
 const userService = require("./userService");
-const Lobby = require("../models/Lobby")
+const Lobby = require("../models/Lobby");
 
 class LobbyService {
   constructor() {
@@ -11,7 +11,9 @@ class LobbyService {
     const { hostId, hostRole, gameMode, maxPlayers, filters } = lobbyData;
 
     if (!hostId || !hostRole || !gameMode || !maxPlayers) {
-      throw new Error("hostId, hostRole, gameMode, and maxPlayers are required");
+      throw new Error(
+        "hostId, hostRole, gameMode, and maxPlayers are required"
+      );
     }
 
     // Check if host exists
@@ -20,13 +22,7 @@ class LobbyService {
       throw new Error("Host user not found");
     }
 
-    const lobby = new Lobby(
-      hostId,
-      hostRole,
-      gameMode,
-      maxPlayers,
-      filters
-    );
+    const lobby = new Lobby(hostId, hostRole, gameMode, maxPlayers, filters);
 
     const docRef = await this.lobbiesRef.add(lobby.toFirestore());
     return { id: docRef.id, ...lobby };
@@ -42,22 +38,29 @@ class LobbyService {
       const lobbySnap = await transaction.get(lobbyRef);
 
       if (!lobbySnap.exists) {
-        throw new Error('Lobby not found');
+        throw new Error("Lobby not found");
       }
 
       const lobby = lobbySnap.data();
 
-      if (!lobby.isActive) throw new Error('Lobby is inactive');
+      if (!lobby.isActive) throw new Error("Lobby is inactive");
       if (lobby.players.some((p) => p.uid === uid))
-        throw new Error('Player already in lobby');
+        throw new Error("Player already in lobby");
       if (lobby.players.length >= lobby.maxPlayers)
-        throw new Error('Lobby is full');
+        throw new Error("Lobby is full");
 
       const updatedPlayers = [...lobby.players, { uid, role }];
+      const updatedRolesNeeded = lobby.filters?.rolesNeeded
+        ? lobby.filters.rolesNeeded.filter((r) => r !== role)
+        : [];
       const updatedLobby = {
         ...lobby,
         players: updatedPlayers,
         currentPlayers: updatedPlayers.length,
+        filters: {
+          ...lobby.filters,
+          rolesNeeded: updatedRolesNeeded,
+        },
         isActive: updatedPlayers.length >= lobby.maxPlayers ? false : true,
       };
 
@@ -69,7 +72,6 @@ class LobbyService {
 
     return resultLobby;
   }
-
 
   async getAvailableLobbies() {
     const snapshot = await this.lobbiesRef.where("isActive", "==", true).get();
