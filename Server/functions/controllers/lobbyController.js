@@ -24,8 +24,10 @@ class LobbyController {
   }
 
   async getAvailableLobbies(req, res) {
+
+    const {desiredRole} = req.body;
     try {
-      const lobbies = await lobbyService.getAvailableLobbies();
+      const lobbies = await lobbyService.getAvailableLobbies( desiredRole );
       res.status(200).json({
         message: "Available lobbies fetched",
         lobbies,
@@ -75,6 +77,37 @@ class LobbyController {
       }
 
       const updatedLobby = await lobbyService.joinLobby(lobbyId, { uid, role });
+
+      return res.status(200).json({
+        success: true,
+        data: updatedLobby,
+      });
+    } catch (error) {
+      console.error("Error joining lobby:", error);
+      return res.status(500).json({
+        success: false,
+        message: error.message,
+      });
+    }
+  }
+
+    async leaveLobbyById(req, res) {
+    try {
+      if (req.method !== "DELETE") {
+        return res
+          .status(405)
+          .json({ success: false, message: "Method not allowed" });
+      }
+
+      const { lobbyId, uid }  = req.query;
+
+      if (!lobbyId || !uid) {
+        return res
+          .status(400)
+          .json({ success: false, message: "Missing required fields" });
+      }
+
+      const updatedLobby = await lobbyService.leaveLobby(lobbyId,uid);
 
       return res.status(200).json({
         success: true,

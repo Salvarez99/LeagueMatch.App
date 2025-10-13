@@ -73,8 +73,11 @@ class LobbyService {
     return resultLobby;
   }
 
-  async getAvailableLobbies() {
-    const snapshot = await this.lobbiesRef.where("isActive", "==", true).get();
+  async getAvailableLobbies(desiredRole) {
+    const snapshot = await this.lobbiesRef
+      .where("isActive", "==", true)
+      .where("filters.rolesNeeded", "array-contains", desiredRole)
+      .get();
 
     if (snapshot.empty) return [];
 
@@ -90,6 +93,47 @@ class LobbyService {
     if (!doc.exists) return null;
 
     return { id: doc.id, ...doc.data() };
+  }
+
+  async leaveLobby(lobbyId, uid) {
+    const lobbyRef = this.lobbiesRef.doc(lobbyId);
+    let resultLobby = null;
+
+    await db.runTransaction(async (transaction) => {
+      const lobbySnap = await transaction.get(lobbyRef);
+      if (!lobbySnap.exists) throw new Error("Lobby not found");
+
+      const lobby = lobbySnap.data();
+
+      // Find the leaving player
+      const leavingPlayer = lobby.players.find((p) => p.uid === uid);
+      if (!leavingPlayer) throw new Error("Player not in lobby");
+
+      // Remove player from array
+      const updatedPlayers = lobby.players.filter((p) => p.uid !== uid);
+
+      // Add their role back to rolesNeeded (if not already there)
+      const updatedRolesNeeded = Array.isArray(lobby.filters?.rolesNeeded)
+        ? [...new Set([...lobby.filters.rolesNeeded, leavingPlayer.role])]
+        : [leavingPlayer.role];
+
+      const updatedLobby = {
+        ...lobby,
+        players: updatedPlayers,
+        currentPlayers: updatedPlayers.length,
+        isActive: true, // always reopen the lobby if someone leaves
+        filters: {
+          ...lobby.filters,
+          rolesNeeded: updatedRolesNeeded,
+        },
+      };
+
+      // Write back to Firestore
+      transaction.update(lobbyRef, updatedLobby);
+
+      resultLobby = { id: lobbyId, ...updatedLobby };
+    });
+    return resultLobby;
   }
 }
 
