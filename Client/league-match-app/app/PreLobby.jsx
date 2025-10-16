@@ -70,12 +70,10 @@ const styles = StyleSheet.create({
   },
   lobbyFilterContainerStyle: {
     flex: 2,
-    display: "flex",
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    padding: 8,
-    paddingVertical: 0,
+    padding: 6,
     // backgroundColor: "blue",
   },
 });
