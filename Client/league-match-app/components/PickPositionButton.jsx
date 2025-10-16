@@ -1,10 +1,10 @@
 import { View, Text, TouchableOpacity } from "react-native";
 import Screen from "../utils/dimensions";
 
-export default function PickPositionButton() {
+export default function PickPositionButton({style,buttonStyle}) {
   return (
     <TouchableOpacity
-      style={{
+      style={[{
         flex:1,
         backgroundColor: "#D9D9D9",
         height: Screen.height * 0.07,
@@ -13,14 +13,14 @@ export default function PickPositionButton() {
         elevation: 5,
         justifyContent: "center",
         alignItems: "center",
-        paddingHorizontal: 10,
-      }}
+        // paddingHorizontal: 10,
+      },style]}
     >
       <Text
-        style={{
+        style={[{
           fontSize: 14,
           color: "#000",
-        }}
+        }, buttonStyle]}
       >
         Position
       </Text>

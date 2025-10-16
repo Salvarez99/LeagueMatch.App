@@ -1,20 +1,17 @@
 import { View, Text } from "react-native";
 import Screen from "../utils/dimensions";
 
-export default function GameModeHeader() {
+export default function GameModeHeader({style, textStyle}) {
   return (
     <View
-      style={{
+      style={[{
         flex:1,
         display: "flex",
         flexDirection: "row",
-        width: Screen.width,
         alignItems: "center",
         justifyContent: "space-between",
-        paddingHorizontal: 10,
-        paddingTop: 8,
         // backgroundColor: "red",
-      }}
+      },style]}
     >
       <View
         style={{
@@ -53,7 +50,6 @@ export default function GameModeHeader() {
           elevation: 5,
           justifyContent: "center",
           alignItems: "center",
-          paddingHorizontal: 10,
         }}
       ></View>
     </View>
