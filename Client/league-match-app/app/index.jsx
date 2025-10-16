@@ -15,13 +15,13 @@ export default function Index() {
       }}
     >
       <TouchableOpacity
-        onPress={() => router.push("/hostLobby")}
+        onPress={() => router.push("/HostLobby")}
         style={styles.buttonStyle}
       >
         <Text>Host Lobby</Text>
       </TouchableOpacity>
       <TouchableOpacity
-        onPress={() => router.push("/searchLobby")}
+        onPress={() => router.push("/SearchLobby")}
         style={styles.buttonStyle}
       >
         <Text>Search for Lobby</Text>
