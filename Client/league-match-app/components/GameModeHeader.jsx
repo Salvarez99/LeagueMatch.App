@@ -15,9 +15,7 @@ export default function GameModeHeader({style, textStyle}) {
     >
       <View
         style={{
-          // backgroundColor: "#D9D9D9",
-          height: Screen.height * 0.05,
-          width: Screen.width * 0.8,
+          flex:1,
           justifyContent: "center",
           alignItems: "flex-start",
           paddingHorizontal: 10,

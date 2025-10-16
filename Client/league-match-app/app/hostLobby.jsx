@@ -18,53 +18,43 @@ export default function HostLobby() {
     <SafeAreaView
       style={{
         flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-        // backgroundColor: "yellow",
+        // backgroundColor: "brown",
       }}
       edges={["left", "right", "bottom"]}
     >
       <GameModeHeader
         style={{
-          flex: 1.2,
-          display: "flex",
-          margin: 10,
-          paddingRight: 10,
+          flex: 1.3,
+          padding: 8,
+          paddingBottom:0,
           // backgroundColor: "red",
+
         }}
       />
 
       <HostCard
         style={{
           flex: 3,
-          display: "flex",
-          width: Screen.width,
-          alignItems: "center",
-          justifyContent: "center",
+          // backgroundColor: "green",
         }}
       />
 
       <GameModeCarousel
         style={{
           flex: 10,
-          display: "flex",
-          width: Screen.width,
-          alignItems: "center",
-          justifyContent: "center",
-          // backgroundColor: "green",
+          padding: 8,
+          paddingHorizontal: 0,
+          // backgroundColor: "purple",
+        }}
+        itemStyle={{
+          height: Screen.height * 0.46,
         }}
       />
 
       <View
         style={{
-          flex: 1.5,
-          display: "flex",
+          flex: 2,
           flexDirection: "row",
-          width: Screen.width,
-          alignItems: "center",
-          justifyContent: "space-between",
-          paddingHorizontal: 8,
-          paddingVertical: 0,
           // backgroundColor: "orange",
         }}
       >
@@ -76,14 +66,14 @@ export default function HostLobby() {
           flex: 2,
           display: "flex",
           flexDirection: "row",
-          width: Screen.width,
           alignItems: "center",
           justifyContent: "space-between",
-          paddingHorizontal: 8,
-          // backgroundColor: "purple",
+          padding: 8,
+          paddingVertical: 0,
+          // backgroundColor: "blue",
         }}
       >
-        <LobbySearchButton />
+        <LobbySearchButton style={{padding: 5}}/>
         <FilterButton />
       </View>
     </SafeAreaView>

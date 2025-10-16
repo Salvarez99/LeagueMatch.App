@@ -18,14 +18,12 @@ export default function HostCard({ style, buttonStyle, textStyle }) {
         style={[
           {
             backgroundColor: "#D9D9D9",
-            height: Screen.height * 0.14,
-            width: Screen.width * 0.93,
+            height: Screen.height * 0.12,
+            width: Screen.width * 0.94,
             borderRadius: 15,
             elevation: 5,
             justifyContent: "center",
             alignItems: "center",
-            paddingHorizontal: 10,
-            backgroundColor: "red",
           },
           buttonStyle,
         ]}
