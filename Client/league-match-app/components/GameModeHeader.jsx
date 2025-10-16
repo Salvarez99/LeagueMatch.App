@@ -1,7 +1,61 @@
+import { View, Text } from "react-native";
+import Screen from "../utils/dimensions";
 
-
-export default function GameModeHeader(){
-    return (
-        
-    )
+export default function GameModeHeader() {
+  return (
+    <View
+      style={{
+        flex:1,
+        display: "flex",
+        flexDirection: "row",
+        width: Screen.width,
+        alignItems: "center",
+        justifyContent: "space-between",
+        paddingHorizontal: 10,
+        paddingTop: 8,
+        // backgroundColor: "red",
+      }}
+    >
+      <View
+        style={{
+          // backgroundColor: "#D9D9D9",
+          height: Screen.height * 0.05,
+          width: Screen.width * 0.8,
+          justifyContent: "center",
+          alignItems: "flex-start",
+          paddingHorizontal: 10,
+        }}
+      >
+        <Text
+          style={{
+            fontSize: 18,
+            fontWeight: "bold",
+            color: "#000",
+          }}
+        >
+          Summoner's Rift 5v5
+        </Text>
+        <Text
+          style={{
+            fontSize: 16,
+            color: "#000",
+          }}
+        >
+          Normal
+        </Text>
+      </View>
+      <View
+        style={{
+          backgroundColor: "#D9D9D9",
+          height: Screen.height * 0.05,
+          width: Screen.height * 0.05,
+          borderRadius: 15,
+          elevation: 5,
+          justifyContent: "center",
+          alignItems: "center",
+          paddingHorizontal: 10,
+        }}
+      ></View>
+    </View>
+  );
 }
