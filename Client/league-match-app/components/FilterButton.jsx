@@ -1,16 +1,16 @@
 import { useState } from "react";
 import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
   Modal,
-  TouchableWithoutFeedback,
   ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View,
 } from "react-native";
 import Screen from "../utils/dimensions";
 
-export default function FilterButton( {style, buttonStyle, textStyle} ) {
+export default function FilterButton({ style, buttonStyle, textStyle }) {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedOptions, setSelectedOptions] = useState([]);
 
@@ -36,15 +36,23 @@ export default function FilterButton( {style, buttonStyle, textStyle} ) {
   };
 
   return (
-    <View style= {[{}, style]}>
+    <View
+      style={[
+        {
+          flex: 1,
+          alignItems: "center",
+          justifyContent: "center",
+          // backgroundColor: "red",
+        },
+        style,
+      ]}
+    >
       {/* Main Filter Button */}
       <TouchableOpacity
         style={[styles.container, buttonStyle]}
         onPress={() => setIsOpen(true)}
       >
-        <Text style={[styles.text, textStyle]}>
-          Filter
-        </Text>
+        <Text style={[styles.text, textStyle]}>Filter</Text>
       </TouchableOpacity>
 
       {/* Fullscreen Modal Overlay */}
@@ -91,7 +99,6 @@ const styles = StyleSheet.create({
     elevation: 5,
     justifyContent: "center",
     alignItems: "center",
-    // paddingHorizontal: 10,
   },
   text: {
     fontSize: 14,
@@ -100,16 +107,18 @@ const styles = StyleSheet.create({
   overlay: {
     flex: 1,
     backgroundColor: "rgba(0,0,0,0.2)", // dimmed background
-    justifyContent: "center",
-    alignItems: "center",
   },
   dropdown: {
     backgroundColor: "#fff",
     borderRadius: 8,
     elevation: 5,
-    width: Screen.height * 0.25,
-    maxHeight: Screen.height * 0.4,
+    width: Screen.width * 0.53,
+    maxHeight: Screen.height * 0.34,
     paddingVertical: 5,
+    position: "absolute",
+    top: Screen.height * 0.47,
+    left: Screen.width * .45
+    // bottom:0
   },
   optionButton: {
     padding: 10,
