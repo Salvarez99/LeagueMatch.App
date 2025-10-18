@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
+  BackHandler,
   Modal,
   ScrollView,
   StyleSheet,
@@ -35,8 +36,28 @@ export default function FilterModal({ visible, onClose, buttonLayout }) {
     );
   };
 
+  useEffect(() => {
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      () => {
+        if (visible) {
+          onClose(); // tell parent to close modal
+          return true; // prevent default
+        }
+        return false;
+      }
+    );
+
+    return () => backHandler.remove();
+  }, [visible, onClose]);
+
   return (
-    <Modal transparent visible={visible} animationType="fade">
+    <Modal
+      transparent
+      visible={visible}
+      animationType="fade"
+      onRequestClose={onClose}
+    >
       <TouchableWithoutFeedback onPress={onClose}>
         <View style={styles.overlay}>
           {/* Dropdown */}
