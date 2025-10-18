@@ -10,29 +10,21 @@ import {
 } from "react-native";
 import Screen from "../utils/dimensions";
 
-export default function FilterModel({ visible, onClose, buttonLayout }) {
+export default function FilterModal({
+  visible,
+  onClose,
+  setSelectedOption,
+  buttonLayout,
+  selectedOption
+}) {
   if (!buttonLayout) return null;
-  const [selectedOptions, setSelectedOptions] = useState([]);
-
-  const options = [
-    "Challenger",
-    "Grandmaster",
-    "Master",
-    "Diamond",
-    "Emerald",
-    "Platinum",
-    "Gold",
-    "Silver",
-    "Bronze",
-    "Iron",
-  ];
+  const options = ["Top", "Jungle", "Middle", "Adc", "Support"];
 
   const toggleOption = (option) => {
-    setSelectedOptions((prev) =>
-      prev.includes(option)
-        ? prev.filter((o) => o !== option)
-        : [...prev, option]
-    );
+    const newSelection = selectedOption === option ? null : option;
+    setSelectedOption(newSelection);
+    onClose();
+    console.log(newSelection);
   };
 
   return (
@@ -46,7 +38,7 @@ export default function FilterModel({ visible, onClose, buttonLayout }) {
                 styles.dropdown,
                 {
                   position: "absolute",
-                  top: buttonLayout.y - Screen.height * 0.38,
+                  top: buttonLayout.y - 205,
                   left:
                     buttonLayout.x + buttonLayout.width - Screen.width * 0.53,
                 },
@@ -54,7 +46,7 @@ export default function FilterModel({ visible, onClose, buttonLayout }) {
             >
               <ScrollView>
                 {options.map((option) => {
-                  const isSelected = selectedOptions.includes(option);
+                  const isSelected = selectedOption === option;
                   return (
                     <TouchableOpacity
                       key={option}
@@ -82,7 +74,7 @@ export default function FilterModel({ visible, onClose, buttonLayout }) {
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.2)", // dimmed background
+    backgroundColor: "rgba(0,0,0,0.2)",
   },
   dropdown: {
     backgroundColor: "#fff",
@@ -91,10 +83,6 @@ const styles = StyleSheet.create({
     width: Screen.width * 0.53,
     maxHeight: Screen.height * 0.34,
     paddingVertical: 5,
-    position: "absolute",
-    // top: Screen.height * 0.47,
-    // left: Screen.width * 0.45,
-    // bottom:0
   },
   optionButton: {
     padding: 10,

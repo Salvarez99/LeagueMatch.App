@@ -64,7 +64,7 @@ const styles = StyleSheet.create({
     height: Screen.height * 0.445,
   },
   champPosContainerStyle: {
-    flex: 2,
+    flex: 1.4,
     flexDirection: "row",
     // backgroundColor: "orange",
   },

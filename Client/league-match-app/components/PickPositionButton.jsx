@@ -1,29 +1,13 @@
 import { useRef, useState } from "react";
-import {
-  Modal,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-  View,
-} from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Screen from "../utils/dimensions";
+import PickPositionModal from "./PickPositionModal";
 
 export default function PickPositionButton({ style, buttonStyle, textStyle }) {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState(null);
   const [buttonLayout, setButtonLayout] = useState(null); // store position
   const buttonRef = useRef(null);
-
-  const options = ["Top", "Jungle", "Middle", "Adc", "Support"];
-
-  const toggleOption = (option) => {
-    const newSelection = selectedOption === option ? null : option;
-    setSelectedOption(newSelection);
-    setIsOpen(false);
-    console.log(newSelection);
-  };
 
   return (
     <View style={[styles.defaultContainerStyle, style]}>
@@ -42,47 +26,13 @@ export default function PickPositionButton({ style, buttonStyle, textStyle }) {
           {selectedOption || "Position"}
         </Text>
       </TouchableOpacity>
-
-      {/* Fullscreen Modal Overlay */}
-      <Modal transparent visible={isOpen} animationType="fade">
-        <TouchableWithoutFeedback onPress={() => setIsOpen(false)}>
-          <View style={styles.overlay}>
-            <TouchableWithoutFeedback>
-              <View
-                style={[
-                  styles.dropdown,
-                  buttonLayout && {
-                    position: "absolute",
-                    top: buttonLayout.y - Screen.height * 0.15, // position above button
-                    left:
-                      buttonLayout.x + buttonLayout.width - Screen.width * 0.53, // align right edge
-                  },
-                ]}
-              >
-                <ScrollView>
-                  {options.map((option) => {
-                    const isSelected = selectedOption === option;
-                    return (
-                      <TouchableOpacity
-                        key={option}
-                        style={[
-                          styles.optionButton,
-                          isSelected && styles.optionSelected,
-                        ]}
-                        onPress={() => toggleOption(option)}
-                      >
-                        <Text style={isSelected && { fontWeight: "bold" }}>
-                          {option}
-                        </Text>
-                      </TouchableOpacity>
-                    );
-                  })}
-                </ScrollView>
-              </View>
-            </TouchableWithoutFeedback>
-          </View>
-        </TouchableWithoutFeedback>
-      </Modal>
+      <PickPositionModal
+        visible={isOpen}
+        onClose={() => setIsOpen(false)}
+        buttonLayout={buttonLayout}
+        setSelectedOption={setSelectedOption}
+        selectedOption={selectedOption}
+      />
     </View>
   );
 }
@@ -105,23 +55,5 @@ const styles = StyleSheet.create({
   defaultTextStyle: {
     fontSize: 14,
     color: "#000",
-  },
-  overlay: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.2)",
-  },
-  dropdown: {
-    backgroundColor: "#fff",
-    borderRadius: 8,
-    elevation: 5,
-    width: Screen.width * 0.53,
-    maxHeight: Screen.height * 0.34,
-    paddingVertical: 5,
-  },
-  optionButton: {
-    padding: 10,
-  },
-  optionSelected: {
-    backgroundColor: "#D0F0C0",
   },
 });

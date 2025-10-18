@@ -1,34 +1,13 @@
 import { useRef, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Screen from "../utils/dimensions";
-import FilterModel from "./FilterModel";
+import FilterModel from "./FilterModal";
 
 export default function FilterButton({ style, buttonStyle, textStyle }) {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedOptions, setSelectedOptions] = useState([]);
   const [buttonLayout, setButtonLayout] = useState(null);
   const buttonRef = useRef(null);
-
-  const options = [
-    "Challenger",
-    "Grandmaster",
-    "Master",
-    "Diamond",
-    "Emerald",
-    "Platinum",
-    "Gold",
-    "Silver",
-    "Bronze",
-    "Iron",
-  ];
-
-  const toggleOption = (option) => {
-    setSelectedOptions((prev) =>
-      prev.includes(option)
-        ? prev.filter((o) => o !== option)
-        : [...prev, option]
-    );
-  };
 
   return (
     <View
