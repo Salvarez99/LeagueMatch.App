@@ -12,10 +12,10 @@ export default function Lobby() {
       style={styles.containerStyle}
       edges={["left", "right", "bottom"]}
     >
-      <GameModeHeader style={{ flex: 1.3 }} />
-      <HostCard style={{ flex: 3 }} />
-      <PlayerCards style={{ flex: 9 }} />
-      <DiscordButton style={{ flex: 1.5 }} />
+      <GameModeHeader style={{ flex: 1.3, backgroundColor:"red" }} />
+      <HostCard style={{ flex: 3, backgroundColor:"green" }} />
+      <PlayerCards style={{ flex: 9, backgroundColor:"pink" }} />
+      <DiscordButton style={{ flex: 1.5, backgroundColor:"orange" }} />
       <LobbyButtons style={{ flex: 1.3 }} />
     </SafeAreaView>
   );
