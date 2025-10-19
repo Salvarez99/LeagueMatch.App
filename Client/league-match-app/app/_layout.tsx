@@ -8,6 +8,7 @@ export default function RootLayout() {
         <Stack.Screen name="index" />
         <Stack.Screen name="HostLobby" />
         <Stack.Screen name="SearchLobby" />
+        <Stack.Screen name="Lobby"/>
       </Stack>
     </SafeAreaProvider>
   );

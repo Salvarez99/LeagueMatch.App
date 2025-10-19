@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import Screen from "../utils/dimensions";
+import Screen from "../../utils/dimensions";
 import PickPositionModal from "./PickPositionModal";
 
 export default function PickPositionButton({ style, buttonStyle, textStyle }) {

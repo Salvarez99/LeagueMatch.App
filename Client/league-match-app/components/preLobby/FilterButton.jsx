@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import Screen from "../utils/dimensions";
+import Screen from "../../utils/dimensions";
 import FilterModel from "./FilterModal";
 
 export default function FilterButton({ style, buttonStyle, textStyle }) {
@@ -56,5 +56,5 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 14,
     color: "#000",
-  }
+  },
 });

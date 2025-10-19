@@ -1,5 +1,5 @@
 import { FlatList, Text, TouchableOpacity, View } from "react-native";
-import Screen from "../utils/dimensions";
+import Screen from "../../utils/dimensions";
 
 export default function GameModeCarousel({ style, itemStyle, itemTextStyle }) {
   const DATA = [

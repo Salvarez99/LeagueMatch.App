@@ -1,21 +1,24 @@
-import { View, Text } from "react-native";
-import Screen from "../utils/dimensions";
+import { Text, View } from "react-native";
+import Screen from "../../utils/dimensions";
 
-export default function GameModeHeader({style, textStyle}) {
+export default function GameModeHeader({ style, textStyle }) {
   return (
     <View
-      style={[{
-        flex:1,
-        display: "flex",
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "space-between",
-        // backgroundColor: "red",
-      },style]}
+      style={[
+        {
+          flex: 1,
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "space-between",
+          // backgroundColor: "red",
+        },
+        style,
+      ]}
     >
       <View
         style={{
-          flex:1,
+          flex: 1,
           justifyContent: "center",
           alignItems: "flex-start",
           paddingHorizontal: 10,

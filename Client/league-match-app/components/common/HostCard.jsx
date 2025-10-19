@@ -1,5 +1,5 @@
 import { Text, TouchableOpacity, View } from "react-native";
-import Screen from "../utils/dimensions";
+import Screen from "../../utils/dimensions";
 
 export default function HostCard({ style, buttonStyle, textStyle }) {
   return (

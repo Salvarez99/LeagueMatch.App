@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
+  BackHandler,
   FlatList,
   Image,
   Modal,
@@ -9,9 +10,8 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
   View,
-  BackHandler
 } from "react-native";
-import Screen from "../utils/dimensions";
+import Screen from "../../utils/dimensions";
 
 export default function PickChampionModal({ visible, onClose }) {
   const [query, setQuery] = useState("");
