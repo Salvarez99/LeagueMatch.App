@@ -8,20 +8,26 @@ import LobbySearchButton from "../components/preLobby/LobbySearchButton";
 import PickChampionButton from "../components/preLobby/PickChampionButton";
 import PickPositionButton from "../components/preLobby/PickPositionButton";
 import Screen from "../utils/dimensions";
+import { useState } from "react";
 
 export default function PreLobby() {
+  const [gameMap, setGameMap] = useState("");
+  const [gameMode, setGameMode] = useState("");
+
   return (
     <SafeAreaView
       style={styles.containerStyle}
       edges={["left", "right", "bottom"]}
     >
-      <GameModeHeader style={styles.gameModeHeaderContainerStyle} />
+      <GameModeHeader style={styles.gameModeHeaderContainerStyle} gameMap={gameMap} gameMode={gameMode}/>
 
       <HostCard style={styles.hostCardContainerStyle} />
 
       <GameModeCarousel
         style={styles.carouselContainerStyle}
         itemStyle={styles.carouselItemStyle}
+        setGameMap={setGameMap}
+        setGameMode={setGameMode}
       />
 
       <View style={styles.champPosContainerStyle}>

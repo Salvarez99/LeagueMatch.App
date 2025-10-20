@@ -1,7 +1,12 @@
 import { Text, View } from "react-native";
 import Screen from "../../utils/dimensions";
 
-export default function GameModeHeader({ style, textStyle }) {
+export default function GameModeHeader({
+  style,
+  textStyle,
+  gameMap,
+  gameMode,
+}) {
   return (
     <View
       style={[
@@ -31,7 +36,7 @@ export default function GameModeHeader({ style, textStyle }) {
             color: "#000",
           }}
         >
-          Summoner's Rift 5v5
+          {gameMap === "" ? "Summoner's Rift" : gameMap}
         </Text>
         <Text
           style={{
@@ -39,7 +44,7 @@ export default function GameModeHeader({ style, textStyle }) {
             color: "#000",
           }}
         >
-          Normal
+          {gameMap === "Aram" ? "Howling Abyss" : gameMode}
         </Text>
       </View>
       <View
