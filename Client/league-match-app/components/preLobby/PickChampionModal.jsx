@@ -15,6 +15,7 @@ import Screen from "../../utils/dimensions";
 
 export default function PickChampionModal({ visible, onClose }) {
   const [query, setQuery] = useState("");
+  const [selectedChamp, setSelectedChamp] = useState("");
   const getChampionIconUrl = (name) =>
     `https://ddragon.leagueoflegends.com/cdn/15.20.1/img/champion/${name}.png`;
 
@@ -194,7 +195,14 @@ export default function PickChampionModal({ visible, onClose }) {
 
   const roles = ["Top", "Jg", "Mid", "Adc", "Sup"];
   const ChampIcon = ({ id, name }) => (
-    <TouchableOpacity style={styles.champButton}>
+    <TouchableOpacity
+      style={styles.champButton}
+      onPress={() => {
+        console.log(id);
+        setSelectedChamp(id);
+        onClose();
+      }}
+    >
       <Image
         source={{ uri: getChampionIconUrl(id) }}
         style={styles.champIcon}
