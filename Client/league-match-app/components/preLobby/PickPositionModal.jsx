@@ -17,6 +17,7 @@ export default function FilterModal({
   setSelectedOption,
   buttonLayout,
   selectedOption,
+  setPosition
 }) {
   if (!buttonLayout) return null;
   const options = ["Top", "Jungle", "Middle", "Adc", "Support"];
@@ -24,8 +25,9 @@ export default function FilterModal({
   const toggleOption = (option) => {
     const newSelection = selectedOption === option ? null : option;
     setSelectedOption(newSelection);
+    setPosition(newSelection);
     onClose();
-    console.log(newSelection);
+    // console.log(newSelection);
   };
 
   useEffect(() => {

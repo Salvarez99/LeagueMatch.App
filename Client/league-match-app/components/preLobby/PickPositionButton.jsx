@@ -3,7 +3,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Screen from "../../utils/dimensions";
 import PickPositionModal from "./PickPositionModal";
 
-export default function PickPositionButton({ style, buttonStyle, textStyle }) {
+export default function PickPositionButton({ style, buttonStyle, textStyle, setPosition }) {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState(null);
   const [buttonLayout, setButtonLayout] = useState(null); // store position
@@ -32,6 +32,7 @@ export default function PickPositionButton({ style, buttonStyle, textStyle }) {
         buttonLayout={buttonLayout}
         setSelectedOption={setSelectedOption}
         selectedOption={selectedOption}
+        setPosition={setPosition}
       />
     </View>
   );
