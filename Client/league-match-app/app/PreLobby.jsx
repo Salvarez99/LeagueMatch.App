@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import GameModeHeader from "../components/common/GameModeHeader";
@@ -8,7 +9,6 @@ import LobbySearchButton from "../components/preLobby/LobbySearchButton";
 import PickChampionButton from "../components/preLobby/PickChampionButton";
 import PickPositionButton from "../components/preLobby/PickPositionButton";
 import Screen from "../utils/dimensions";
-import { useState } from "react";
 
 export default function PreLobby() {
   const [gameMap, setGameMap] = useState("");
@@ -19,7 +19,11 @@ export default function PreLobby() {
       style={styles.containerStyle}
       edges={["left", "right", "bottom"]}
     >
-      <GameModeHeader style={styles.gameModeHeaderContainerStyle} gameMap={gameMap} gameMode={gameMode}/>
+      <GameModeHeader
+        style={styles.gameModeHeaderContainerStyle}
+        gameMap={gameMap}
+        gameMode={gameMode}
+      />
 
       <HostCard style={styles.hostCardContainerStyle} />
 
@@ -35,7 +39,7 @@ export default function PreLobby() {
         <PickPositionButton />
       </View>
       <View style={styles.lobbyFilterContainerStyle}>
-        <LobbySearchButton />
+        <LobbySearchButton gameMap={gameMap} gameMode={gameMode} />
         <FilterButton />
       </View>
     </SafeAreaView>
