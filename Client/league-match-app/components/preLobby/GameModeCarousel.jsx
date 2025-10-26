@@ -1,6 +1,9 @@
 import { useState } from "react";
-import { FlatList, View } from "react-native";
+import { View } from "react-native";
+import Carousel from "react-native-reanimated-carousel";
+import { useSharedValue } from "react-native-reanimated";
 import GameModeCard from "./GameModeCard";
+import Screen from "../../utils/dimensions";
 
 export default function GameModeCarousel({
   style,
@@ -11,10 +14,11 @@ export default function GameModeCarousel({
 }) {
   const [focusedIndex, setFocusedIndex] = useState(0);
   const [selectedModes, setSelectedModes] = useState({});
+  const progress = useSharedValue(0);
 
   const handleModeSelect = (mapId, mode) => {
-    setSelectedModes({ [mapId]: mode }); // clears previous
-    setGameMode(mode);
+    setSelectedModes({ [mapId]: mode });
+    if (setGameMode) setGameMode(mode);
   };
 
   const DATA = [
@@ -36,36 +40,68 @@ export default function GameModeCarousel({
       style={[
         {
           flex: 1,
-          alignItems: "center",
           justifyContent: "center",
+          alignItems: "center",
+          backgroundColor: "transparent", // keep background clean
+          padding: 0,
+          margin: 0,
         },
         style,
       ]}
     >
-      <FlatList
+      <Carousel
         data={DATA}
-        renderItem={({ item, index }) => (
-          <GameModeCard
-            gameMap={item}
-            isFocused={index === focusedIndex}
-            selectedMode={selectedModes[item.id]}
-            onModeSelect={handleModeSelect}
-          />
-        )}
-        keyExtractor={(item) => item.id}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        snapToAlignment="center"
+        width={Screen.width} // 👈 take full screen width
+        height={"100%"}
+        loop
         pagingEnabled
-        onMomentumScrollEnd={(e) => {
-          const newIndex = Math.round(
-            e.nativeEvent.contentOffset.x /
-              e.nativeEvent.layoutMeasurement.width
+        snapEnabled
+        autoPlay={false}
+        mode="parallax"
+        modeConfig={{
+          parallaxScrollingScale: 0.88,
+          parallaxScrollingOffset: (Screen.width - Screen.width * 0.5) / 2, // centers focused card peek in
+        }}
+        style={{
+          flex: 1,
+          alignSelf: "center", // 👈 keeps it centered
+          // backgroundColor: "green",
+        }}
+        onProgressChange={progress}
+        onSnapToItem={(index) => {
+          const realIndex = index % DATA.length;
+          setFocusedIndex(realIndex);
+          setSelectedModes({});
+          if (setGameMap) setGameMap(DATA[realIndex].title);
+        }}
+        renderItem={({ item, index }) => {
+          return (
+            <View
+              style={{
+                flex: 1,
+                width: Screen.width * 0.85, // wrapper width
+                alignSelf: "center",
+                backgroundColor: "rgba(255, 255, 255, 0)", // or your app background color
+              }}
+            >
+              <GameModeCard
+                gameMap={item}
+                gameMode={item.modes}
+                isFocused={index === focusedIndex}
+                selectedMode={selectedModes[item.id]}
+                onModeSelect={handleModeSelect}
+                itemStyle={[
+                  itemStyle,
+                  {
+                    width: "100%",
+                    borderRadius: 15,
+                    // overflow: "hidden",
+                  },
+                ]}
+                itemTextStyle={itemTextStyle}
+              />
+            </View>
           );
-          setFocusedIndex(newIndex);
-          setSelectedModes({}); // ✅ clears previous mode on scroll
-          setGameMap(DATA[newIndex].title); // ✅ update parent’s map state
-          setGameMode(""); // ✅ clear mode when switching maps
         }}
       />
     </View>

@@ -20,20 +20,17 @@ export default function GameModeCard({
       style={[
         {
           backgroundColor: "#D9D9D9",
-          height: Screen.height * 0.48,
-          width: Screen.width * 0.8,
+          width: "100%", // now matches wrapper
+          marginHorizontal: 0, // remove extra spacing
           borderRadius: 15,
-          elevation: 5,
           justifyContent: "center",
           alignItems: "center",
-          marginHorizontal: 10,
+          height: Screen.height * 0.48,
         },
         isFocused && styles.focused,
       ]}
     >
-      <Text style={styles.title}>
-        {gameMap.title}
-      </Text>
+      <Text style={styles.title}>{gameMap.title}</Text>
       <Text style={styles.subTitle}>
         {selectedMode ? `${selectedMode}` : ""}
       </Text>
@@ -74,7 +71,7 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 18,
   },
-    subTitle: {
+  subTitle: {
     color: "#fff",
     fontSize: 14,
   },

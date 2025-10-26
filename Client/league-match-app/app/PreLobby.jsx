@@ -55,19 +55,19 @@ const styles = StyleSheet.create({
   },
   hostCardContainerStyle: {
     flex: 3,
-    // backgroundColor: "green",
+    // backgroundColor: "pink",
   },
   carouselContainerStyle: {
     flex: 10,
-    padding: 8,
-    paddingHorizontal: 0,
+    padding: 0,
+    margin: 0,
     // backgroundColor: "purple",
   },
   carouselItemStyle: {
     height: Screen.height * 0.445,
   },
   champPosContainerStyle: {
-    flex: 1.4,
+    flex: 1.8,
     flexDirection: "row",
     // backgroundColor: "orange",
   },
