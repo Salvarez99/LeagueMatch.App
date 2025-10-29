@@ -3,7 +3,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Screen from "../../utils/dimensions";
 import FilterModel from "./FilterModal";
 
-export default function FilterButton({ style, buttonStyle, textStyle }) {
+export default function FilterButton({ style, buttonStyle, textStyle, setRankFilter }) {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedOptions, setSelectedOptions] = useState([]);
   const [buttonLayout, setButtonLayout] = useState(null);
@@ -38,6 +38,7 @@ export default function FilterButton({ style, buttonStyle, textStyle }) {
         visible={isOpen}
         onClose={() => setIsOpen(false)}
         buttonLayout={buttonLayout}
+        setRankFilter={setRankFilter}
       />
     </View>
   );

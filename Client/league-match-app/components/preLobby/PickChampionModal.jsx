@@ -13,7 +13,7 @@ import {
 } from "react-native";
 import Screen from "../../utils/dimensions";
 
-export default function PickChampionModal({ visible, onClose }) {
+export default function PickChampionModal({ visible, onClose, setChampionId }) {
   const [query, setQuery] = useState("");
   const [selectedChamp, setSelectedChamp] = useState("");
   const getChampionIconUrl = (name) =>
@@ -198,8 +198,9 @@ export default function PickChampionModal({ visible, onClose }) {
     <TouchableOpacity
       style={styles.champButton}
       onPress={() => {
-        console.log(id);
+        // console.log(id);
         setSelectedChamp(id);
+        setChampionId(id);
         onClose();
       }}
     >

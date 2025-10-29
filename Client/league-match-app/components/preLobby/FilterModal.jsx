@@ -11,7 +11,12 @@ import {
 } from "react-native";
 import Screen from "../../utils/dimensions";
 
-export default function FilterModal({ visible, onClose, buttonLayout }) {
+export default function FilterModal({
+  visible,
+  onClose,
+  buttonLayout,
+  setRankFilter,
+}) {
   if (!buttonLayout) return null;
   const [selectedOptions, setSelectedOptions] = useState([]);
 
@@ -29,11 +34,13 @@ export default function FilterModal({ visible, onClose, buttonLayout }) {
   ];
 
   const toggleOption = (option) => {
-    setSelectedOptions((prev) =>
-      prev.includes(option)
+    setSelectedOptions((prev) => {
+      const updated = prev.includes(option)
         ? prev.filter((o) => o !== option)
-        : [...prev, option]
-    );
+        : [...prev, option];
+      setRankFilter(updated);
+      return updated;
+    });
   };
 
   useEffect(() => {

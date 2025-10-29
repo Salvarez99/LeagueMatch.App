@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import GameModeHeader from "../components/common/GameModeHeader";
@@ -8,18 +9,33 @@ import LobbySearchButton from "../components/preLobby/LobbySearchButton";
 import PickChampionButton from "../components/preLobby/PickChampionButton";
 import PickPositionButton from "../components/preLobby/PickPositionButton";
 import Screen from "../utils/dimensions";
-import { useState } from "react";
 
 export default function PreLobby() {
   const [gameMap, setGameMap] = useState("");
   const [gameMode, setGameMode] = useState("");
+  const [position, setPosition] = useState("");
+  const [championId, setChampionId] = useState("");
+  const [rankFilter, setRankFilter] = useState([]);
 
+  useEffect(() => {
+    console.log(championId);
+  }, [championId]);
+  useEffect(() => {
+    console.log(position);
+  }, [position]);
+  useEffect(() => {
+    console.log(rankFilter);
+  }, [rankFilter]);
   return (
     <SafeAreaView
       style={styles.containerStyle}
       edges={["left", "right", "bottom"]}
     >
-      <GameModeHeader style={styles.gameModeHeaderContainerStyle} gameMap={gameMap} gameMode={gameMode}/>
+      <GameModeHeader
+        style={styles.gameModeHeaderContainerStyle}
+        gameMap={gameMap}
+        gameMode={gameMode}
+      />
 
       <HostCard style={styles.hostCardContainerStyle} />
 
@@ -31,12 +47,12 @@ export default function PreLobby() {
       />
 
       <View style={styles.champPosContainerStyle}>
-        <PickChampionButton />
-        <PickPositionButton />
+        <PickChampionButton setChampionId={setChampionId} />
+        <PickPositionButton setPosition={setPosition} />
       </View>
       <View style={styles.lobbyFilterContainerStyle}>
-        <LobbySearchButton />
-        <FilterButton />
+        <LobbySearchButton gameMap={gameMap} gameMode={gameMode} />
+        <FilterButton setRankFilter={setRankFilter}/>
       </View>
     </SafeAreaView>
   );

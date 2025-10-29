@@ -3,7 +3,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Screen from "../../utils/dimensions";
 import PickChampionModal from "./PickChampionModal";
 
-export default function PickChampionButton({ style, buttonStyle, textStyle }) {
+export default function PickChampionButton({ style, buttonStyle, textStyle, setChampionId }) {
   const [buttonLayout, setButtonLayout] = useState(null); // store position
   const buttonRef = useRef(null);
   const [isOpen, setIsOpen] = useState(false);
@@ -26,7 +26,7 @@ export default function PickChampionButton({ style, buttonStyle, textStyle }) {
       >
         <Text style={[styles.defaultTextStyle, textStyle]}>Pick Champion</Text>
       </TouchableOpacity>
-      <PickChampionModal visible={isOpen} onClose={() => setIsOpen(false)} />
+      <PickChampionModal visible={isOpen} onClose={() => setIsOpen(false)} setChampionId={setChampionId} />
     </View>
   );
 }
