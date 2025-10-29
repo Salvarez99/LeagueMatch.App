@@ -1,10 +1,10 @@
 import { StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import GameModeHeader from "../components/common/GameModeHeader";
-import HostCard from "../components/common/HostCard";
-import DiscordButton from "../components/lobby/DiscordButton";
-import LobbyButtons from "../components/lobby/LobbyButtons";
-import PlayerCards from "../components/lobby/PlayerCards";
+import GameModeHeader from "../../components/common/GameModeHeader";
+import HostCard from "../../components/common/HostCard";
+import DiscordButton from "../../components/lobby/DiscordButton";
+import LobbyButtons from "../../components/lobby/LobbyButtons";
+import PlayerCards from "../../components/lobby/PlayerCards";
 import { useLocalSearchParams } from "expo-router";
 
 export default function Lobby() {
