@@ -15,7 +15,7 @@ export default function LobbySearchButton({
         style={[styles.button, buttonStyle]}
         onPress={() =>
           router.push({
-            pathname: "/Lobby",
+            pathname: "/lobby/1",
             params: {
               gameMap,
               gameMode,

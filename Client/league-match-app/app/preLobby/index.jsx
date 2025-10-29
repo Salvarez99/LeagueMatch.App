@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import GameModeHeader from "../components/common/GameModeHeader";
-import HostCard from "../components/common/HostCard";
-import FilterButton from "../components/preLobby/FilterButton";
-import GameModeCarousel from "../components/preLobby/GameModeCarousel";
-import LobbySearchButton from "../components/preLobby/LobbySearchButton";
-import PickChampionButton from "../components/preLobby/PickChampionButton";
-import PickPositionButton from "../components/preLobby/PickPositionButton";
-import Screen from "../utils/dimensions";
+import GameModeHeader from "../../components/common/GameModeHeader";
+import HostCard from "../../components/common/HostCard";
+import FilterButton from "../../components/preLobby/FilterButton";
+import GameModeCarousel from "../../components/preLobby/GameModeCarousel";
+import LobbySearchButton from "../../components/preLobby/LobbySearchButton";
+import PickChampionButton from "../../components/preLobby/PickChampionButton";
+import PickPositionButton from "../../components/preLobby/PickPositionButton";
+import Screen from "../../utils/dimensions";
 
 export default function PreLobby() {
   const [gameMap, setGameMap] = useState("");
