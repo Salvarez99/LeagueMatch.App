@@ -1,32 +1,37 @@
-import { Text, TouchableOpacity, View, StyleSheet, Dimensions } from "react-native";
 import { router } from "expo-router";
+import { Dimensions, StyleSheet, Text, TouchableOpacity } from "react-native";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 
-const {width, height} = Dimensions.get("window")
+const { width, height } = Dimensions.get("window");
 
 export default function Index() {
-
+  const insets = useSafeAreaInsets();
   return (
-    <View
+    <SafeAreaView
       style={{
         display: "flex",
         flex: 1,
         justifyContent: "center",
         alignItems: "center",
       }}
+      edges={["left", "right", "bottom"]}
     >
       <TouchableOpacity
-        onPress={() => router.push("/hostLobby")}
+        onPress={() => router.push("/PreLobby")}
         style={styles.buttonStyle}
       >
-        <Text>Host Lobby</Text>
+        <Text>PreLobby</Text>
       </TouchableOpacity>
       <TouchableOpacity
-        onPress={() => router.push("/searchLobby")}
+        onPress={() => router.push("/SearchLobby")}
         style={styles.buttonStyle}
       >
         <Text>Search for Lobby</Text>
       </TouchableOpacity>
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -38,7 +43,7 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     width: width * 0.9, // 90% of screen width
     height: height * 0.4, // 20% of screen height
-    marginVertical: 10,
+    marginVertical: height * 0.01,
     elevation: 5,
   },
 });
