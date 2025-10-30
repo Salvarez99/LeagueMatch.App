@@ -17,14 +17,16 @@
       "port": 9099
     },
     "functions": {
+      "host": "0.0.0.0",
       "port": 5001
     },
     "firestore": {
+      "host": "0.0.0.0",
       "port": 8080
     },
     "ui": {
       "enabled": true,
-      "port": 4020
+      "port": 4000
     },
     "singleProjectMode": true
   }

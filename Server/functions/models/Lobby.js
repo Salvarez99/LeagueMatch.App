@@ -1,6 +1,6 @@
 class Lobby {
   static roles = {
-    "Summoner's Rift": ["Top", "Jungle", "Mid", "Adc", "Support"],
+    "Summoner's Rift": ["Top", "Jungle", "Middle", "Adc", "Support"],
     ARAM: [], // ARAM doesn’t have specific roles
     "Ranked Solo/Duo": [], // just 2 players, no roles
   };
@@ -8,7 +8,7 @@ class Lobby {
   constructor(hostId, hostRole, gameMode, maxPlayers, filters = {}) {
     const defaults = {
       "Summoner's Rift": 5,
-      ARAM: 5,
+      "ARAM": 5,
       "Ranked Solo/Duo": 2,
     };
 

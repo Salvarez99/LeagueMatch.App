@@ -8,14 +8,59 @@ import GameModeCarousel from "../../components/preLobby/GameModeCarousel";
 import LobbySearchButton from "../../components/preLobby/LobbySearchButton";
 import PickChampionButton from "../../components/preLobby/PickChampionButton";
 import PickPositionButton from "../../components/preLobby/PickPositionButton";
+import { lobbyApi } from "../../utils/api/lobbyApi";
 import Screen from "../../utils/dimensions";
+import {useRouter} from 'expo-router';
 
 export default function PreLobby() {
-  const [gameMap, setGameMap] = useState("");
+  const [gameMap, setGameMap] = useState("Summoner's Rift");
   const [gameMode, setGameMode] = useState("");
   const [position, setPosition] = useState("");
   const [championId, setChampionId] = useState("");
   const [rankFilter, setRankFilter] = useState([]);
+  const router = useRouter();
+
+  const handleCreateLobby = async () => {
+    try {
+      console.log(position);
+      console.log(gameMode);
+      console.log(gameMap);
+
+      const res = await lobbyApi.createLobby({
+        hostId: "1",
+        hostRole: position,
+        gameMode: gameMap,
+        maxPlayers: 5,
+        filters: {},
+      });
+
+      const lobbyData = res.data;
+      console.log(lobbyData);
+      const id = lobbyData.lobby.id;
+      router.push({
+        pathname: `/lobby/${id}`,
+        params: {
+          gameMap,
+          gameMode,
+        },
+      });
+      console.log("Creating lobby");
+    } catch (err) {
+      if (err.response) {
+        // ✅ Backend responded but returned an error (e.g., 500)
+        console.error("Error creating lobby (backend responded):", {
+          status: err.response.status,
+          data: err.response.data,
+        });
+      } else if (err.request) {
+        // ⚠️ Request was made but no response received
+        console.error("Error creating lobby (no response):", err.request);
+      } else {
+        // ❌ Something else went wrong in setting up the request
+        console.error("Error creating lobby (setup):", err.message);
+      }
+    }
+  };
 
   useEffect(() => {
     console.log(championId);
@@ -51,8 +96,12 @@ export default function PreLobby() {
         <PickPositionButton setPosition={setPosition} />
       </View>
       <View style={styles.lobbyFilterContainerStyle}>
-        <LobbySearchButton gameMap={gameMap} gameMode={gameMode} />
-        <FilterButton setRankFilter={setRankFilter}/>
+        <LobbySearchButton
+          gameMap={gameMap}
+          gameMode={gameMode}
+          handleCreateLobby={handleCreateLobby}
+        />
+        <FilterButton setRankFilter={setRankFilter} />
       </View>
     </SafeAreaView>
   );

@@ -11,6 +11,6 @@ const userController = require("./controllers/userController");
 const exportController = require("./utils/exportFunctions");
 
 module.exports = {
-  ...exportController(lobbyController, ""),
-  ...exportController(userController, ""),
+  ...exportController(lobbyController, "lobby"),
+  ...exportController(userController, "user"),
 };
