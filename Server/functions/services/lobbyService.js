@@ -7,25 +7,44 @@ class LobbyService {
     this.lobbiesRef = db.collection("lobbies");
   }
 
-  async createLobby(lobbyData) {
-    const { hostId, hostRole, gameMode, maxPlayers, filters } = lobbyData;
+  async create(lobbyData) {
+    const {
+      hostId,
+      gameMap,
+      gameMode = null,
+      hostPosition = null,
+      championId = null,
+      rankFilter = [],
+    } = lobbyData;
 
-    if (!hostId || !hostRole || !gameMode || !maxPlayers) {
-      throw new Error(
-        "hostId, hostRole, gameMode, and maxPlayers are required"
-      );
+    // Validation
+    if (!hostId || !gameMap) {
+      throw new Error("hostId and gameMap are required");
     }
 
-    // Check if host exists
+    // Ensure host exists
     const host = await userService.getUserById(hostId);
     if (!host) {
       throw new Error("Host user not found");
     }
 
-    const lobby = new Lobby(hostId, hostRole, gameMode, maxPlayers, filters);
+    // Create lobby instance from model
+    const lobby = new Lobby(
+      hostId,
+      gameMap,
+      gameMode,
+      hostPosition,
+      championId,
+      rankFilter
+    );
 
+    // Save to Firestore
     const docRef = await this.lobbiesRef.add(lobby.toFirestore());
-    return { id: docRef.id, ...lobby };
+
+    return {
+      id: docRef.id,
+      ...lobby.toFirestore(),
+    };
   }
 
   async joinLobby(lobbyId, playerData) {

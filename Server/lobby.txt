@@ -39,19 +39,25 @@ POST /lobby_create
                     - hostRole
                     - championId
                     - rankFilter
+                - Needed
+                    -gameMode
             - Elif GameMap is Featured:
                 - Not needed
                     - hostRole
                     - rankFilter
+                - Needed
+                    - gameMode
+                    - championId
             - Else GameMap is Summoner's Rift:
                 - All needed
         - Use GameMode to set maxPlayers
-        - Append host to players
-        - Set currentPlayers to 1
         - Generate rolesNeeded excluding the hostRole
+
+        - Set currentPlayers to 1
         - Set createdAt to current DateTime
         - Set lobby to active state
         - Generate players as empty []
+        - Append host to players
         - Generate kickedPlayers as empty []
 
 GET  /lobby_getAvailable

@@ -2,20 +2,29 @@
 const lobbyService = require("../services/lobbyService");
 
 class LobbyController {
-  async createLobby(req, res) {
+  async create(req, res) {
     try {
-      const { hostId, hostRole, gameMode, maxPlayers, filters } = req.body;
-      const newLobby = await lobbyService.createLobby({
+      const {
         hostId,
-        hostRole,
+        gameMap,
+        gameMode = null,
+        hostPosition = null,
+        championId = null,
+        rankFilter = [],
+      } = req.body;
+
+      const newLobby = await lobbyService.create({
+        hostId,
+        gameMap,
         gameMode,
-        maxPlayers,
-        filters,
+        hostPosition,
+        championId,
+        rankFilter,
       });
 
       res.status(201).json({
         message: "Lobby created successfully",
-        lobby: newLobby,
+        id: newLobby.id,
       });
     } catch (err) {
       console.error("Error creating lobby:", err);
@@ -24,10 +33,9 @@ class LobbyController {
   }
 
   async getAvailableLobbies(req, res) {
-
-    const {desiredRole} = req.body;
+    const { desiredRole } = req.body;
     try {
-      const lobbies = await lobbyService.getAvailableLobbies( desiredRole );
+      const lobbies = await lobbyService.getAvailableLobbies(desiredRole);
       res.status(200).json({
         message: "Available lobbies fetched",
         lobbies,
@@ -91,7 +99,7 @@ class LobbyController {
     }
   }
 
-    async leaveLobbyById(req, res) {
+  async leaveLobbyById(req, res) {
     try {
       if (req.method !== "DELETE") {
         return res
@@ -99,7 +107,7 @@ class LobbyController {
           .json({ success: false, message: "Method not allowed" });
       }
 
-      const { lobbyId, uid }  = req.query;
+      const { lobbyId, uid } = req.query;
 
       if (!lobbyId || !uid) {
         return res
@@ -107,7 +115,7 @@ class LobbyController {
           .json({ success: false, message: "Missing required fields" });
       }
 
-      const updatedLobby = await lobbyService.leaveLobby(lobbyId,uid);
+      const updatedLobby = await lobbyService.leaveLobby(lobbyId, uid);
 
       return res.status(200).json({
         success: true,
