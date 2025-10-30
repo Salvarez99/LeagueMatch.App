@@ -9,6 +9,8 @@ import { useLocalSearchParams } from "expo-router";
 
 export default function Lobby() {
   const {gameMap, gameMode} = useLocalSearchParams();
+
+  
   return (
     <SafeAreaView
       style={styles.containerStyle}

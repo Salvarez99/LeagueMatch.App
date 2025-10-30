@@ -1,0 +1,60 @@
+Lobby = {
+    hostId : str,  // OnCreate attained from host uid, host may only have 1 active lobby at any given time.
+    gameMap : str, // i.e. Summoner's Rift, Aram, Featured Modes
+    gameMode : str, // Modes based on Map
+    championId? : str, // Optional based on gameMode i.e. Aram does not require champion to be selected
+    filter : {
+        ranks? : [str], // Ranks are optional, if empty search for all players
+        rolesNeeded : [str], // Auto-generated based on gameMode i.e (Draft, Flex); Some gamemodes may not require roles
+    },
+    maxPlayers : int, // Auto-generated based on gameMode (i.e. Ranked Solo/Duo = 2, Draft = 5)
+    players : [ // OnJoin player objects are added into lobby
+        {
+            uid : str,
+            role : str,
+            championId? : str // Optional based on gameMode
+        },
+    ],
+    currentPlayers : int, // Amount of players currently in lobby
+    createdAt : Date, // Time lobby was opened
+    isActive : boolean, // Status of lobby, set to True if # of players < maxPlayers otherwise False
+    kickedPlayers : [ // List of players that were removed from lobby, prevents being queued into same lobbies
+        uid : str,
+    ],
+}
+
+POST /lobby_create
+    - Body {
+        hostId,
+        gameMap,
+        gameMode?,
+        hostRole?,
+        championId?,
+        rankFilter?,
+    }
+    - Create a lobby for the host
+        - Check GameMap & Mode to determine if hostRole / championId / rankFilter is necessary?
+            - If GameMap is Aram:
+                - Not needed
+                    - hostRole
+                    - championId
+                    - rankFilter
+            - Elif GameMap is Featured:
+                - Not needed
+                    - hostRole
+                    - rankFilter
+            - Else GameMap is Summoner's Rift:
+                - All needed
+        - Use GameMode to set maxPlayers
+        - Append host to players
+        - Set currentPlayers to 1
+        - Generate rolesNeeded excluding the hostRole
+        - Set createdAt to current DateTime
+        - Set lobby to active state
+        - Generate players as empty []
+        - Generate kickedPlayers as empty []
+
+GET  /lobby_getAvailable
+GET  /lobby_getById
+POSt /lobby_join
+POST /lobby_leave

@@ -1,4 +1,3 @@
-import { router } from "expo-router";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Screen from "../../utils/dimensions";
 
@@ -8,20 +7,13 @@ export default function LobbySearchButton({
   textStyle,
   gameMap,
   gameMode,
+  handleCreateLobby,
 }) {
   return (
     <View style={[{}, style]}>
       <TouchableOpacity
         style={[styles.button, buttonStyle]}
-        onPress={() =>
-          router.push({
-            pathname: "/lobby/1",
-            params: {
-              gameMap,
-              gameMode,
-            },
-          })
-        }
+        onPress={() => handleCreateLobby()}
       >
         <Text style={[styles.text, textStyle]}>Create Lobby</Text>
       </TouchableOpacity>
