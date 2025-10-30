@@ -28,6 +28,19 @@ class LobbyService {
       throw new Error("Host user not found");
     }
 
+    const lobbiesRef = db.collection("lobbies");
+    const snapshot = await lobbiesRef.where("hostId", "==", hostId).get();
+
+    if (!snapshot.empty) {
+      console.log("LOOKING")
+      snapshot.forEach((doc) => {
+        if (doc.data().isActive)
+          throw new Error(`hostId ${hostId} active lobby already exists`);
+        else
+          console.log("NOT FOUND")
+      });
+    }
+
     // Create lobby instance from model
     const lobby = new Lobby(
       hostId,
