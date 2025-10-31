@@ -28,8 +28,8 @@ class LobbyService {
       throw new Error("Host user not found");
     }
 
-    const lobbiesRef = db.collection("lobbies");
-    const snapshot = await lobbiesRef.where("hostId", "==", hostId).get();
+    // const lobbiesRef = db.collection("lobbies");
+    const snapshot = await this.lobbiesRef.where("hostId", "==", hostId).get();
 
     if (!snapshot.empty) {
       snapshot.forEach((doc) => {
@@ -58,45 +58,28 @@ class LobbyService {
   }
 
   async joinLobby(lobbyId, playerData) {
-    const { uid, role } = playerData;
+    const { uid, position = null, championId = null } = playerData;
     const lobbyRef = this.lobbiesRef.doc(lobbyId);
 
-    let resultLobby = null; // will store the updated lobby to return later
+    let resultLobby = null;
 
     await db.runTransaction(async (transaction) => {
       const lobbySnap = await transaction.get(lobbyRef);
+      if (!lobbySnap.exists) throw new Error("Lobby not found");
 
-      if (!lobbySnap.exists) {
-        throw new Error("Lobby not found");
-      }
+      // Rebuild lobby instance from Firestore
+      const lobby = Lobby.fromFireStore(lobbySnap.data());
 
-      const lobby = lobbySnap.data();
-
+      // Check state before join
       if (!lobby.isActive) throw new Error("Lobby is inactive");
-      if (lobby.players.some((p) => p.uid === uid))
-        throw new Error("Player already in lobby");
-      if (lobby.players.length >= lobby.maxPlayers)
-        throw new Error("Lobby is full");
 
-      const updatedPlayers = [...lobby.players, { uid, role }];
-      const updatedRolesNeeded = lobby.filters?.rolesNeeded
-        ? lobby.filters.rolesNeeded.filter((r) => r !== role)
-        : [];
-      const updatedLobby = {
-        ...lobby,
-        players: updatedPlayers,
-        currentPlayers: updatedPlayers.length,
-        filters: {
-          ...lobby.filters,
-          rolesNeeded: updatedRolesNeeded,
-        },
-        isActive: updatedPlayers.length >= lobby.maxPlayers ? false : true,
-      };
+      // Add the player using model logic
+      lobby.addPlayer(uid, position, championId);
 
-      transaction.update(lobbyRef, updatedLobby);
+      // Write back to Firestore
+      transaction.update(lobbyRef, lobby.toFirestore());
 
-      // store for returning after transaction
-      resultLobby = { id: lobbyId, ...updatedLobby };
+      resultLobby = { id: lobbyId, ...lobby.toFirestore() };
     });
 
     return resultLobby;

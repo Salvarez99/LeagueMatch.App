@@ -94,28 +94,34 @@ class LobbyController {
         return res.status(405).json({
           success: false,
           message: "Method not allowed",
-          error: "use POST",
+          error: "Use POST",
         });
       }
 
-      const { lobbyId, uid, position } = req.body;
+      const { lobbyId } = req.query;
+      const { uid, position = null, championId = null } = req.body;
 
-      if (!lobbyId || !uid || !position) {
+      if (!lobbyId || !uid) {
         return res.status(400).json({
           success: false,
           message: "Missing required fields",
-          error: "Missing lobbyId and/or uid and/or position",
+          error: "Missing lobbyId and/or uid",
         });
       }
 
-      const updatedLobby = await lobbyService.joinLobby(lobbyId, { uid, position });
+      const updatedLobby = await lobbyService.joinLobby(lobbyId, {
+        uid,
+        position,
+        championId,
+      });
 
       return res.status(200).json({
         success: true,
-        message: "Joined lobby",
-        data: { updatedLobby },
+        message: "Player successfully joined lobby",
+        data: updatedLobby,
       });
     } catch (error) {
+      console.error("Error joining lobby:", error);
       return res.status(500).json({
         success: false,
         message: "Error joining lobby",

@@ -74,7 +74,7 @@ Lobby = {
 ✅ GET  /lobby_getById?lobbyId={lobbyId}
     - Get details of specified lobby
 
-🔲 POST /lobby_join
+✅ POST /lobby_join
 
 ✅ POST //lobby_leave?lobbyId={lobbyId}&uid={uid}
     - Leave specified lobby. If host is leaving then close the lobby and remove all players.

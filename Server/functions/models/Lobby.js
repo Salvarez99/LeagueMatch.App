@@ -73,7 +73,7 @@ class Lobby {
   }
 
   addPlayer(uid, position = null, championId = null) {
-    // prevent duplicates
+    // Prevent duplicates
     if (this.players.some((p) => p.uid === uid)) {
       throw new Error("Player already in lobby");
     }
@@ -82,12 +82,57 @@ class Lobby {
       throw new Error("Lobby is full");
     }
 
-    this.players.push({ uid, position, championId });
-    this.currentPlayers++;
+    // Behavior depends on the hosted map and mode
+    switch (this.gameMap) {
+      case "Summoner's Rift": {
+        if (!position)
+          throw new Error("position is required for Summoner's Rift");
+        if (!championId)
+          throw new Error("championId is required for Summoner's Rift");
 
-    // update status if now full
-    if (this.currentPlayers === this.maxPlayers) {
+        // Ensure the position is still available
+        if (!this.filter.positionsNeeded.includes(position)) {
+          throw new Error(`Position ${position} is no longer available`);
+        }
+
+        // Add the player
+        this.players.push({ uid, position, championId });
+        this.currentPlayers++;
+
+        // Remove position from needed list
+        this.filter.positionsNeeded = this.filter.positionsNeeded.filter(
+          (pos) => pos !== position
+        );
+
+        break;
+      }
+
+      case "Aram": {
+        // ARAM: No roles or champion selection needed
+        this.players.push({ uid });
+        this.currentPlayers++;
+        break;
+      }
+
+      case "Featured Mode": {
+        // Featured Mode (like Arena): Only champion required
+        if (!championId)
+          throw new Error("championId is required for Featured Mode");
+
+        this.players.push({ uid, championId });
+        this.currentPlayers++;
+        break;
+      }
+
+      default:
+        throw new Error("Unsupported game map");
+    }
+
+    // Update lobby status
+    if (this.currentPlayers >= this.maxPlayers) {
       this.isActive = false;
+    } else {
+      this.isActive = true;
     }
   }
 
