@@ -55,7 +55,7 @@ class LobbyController {
     }
   }
 
-  async getLobbyById(req, res) {
+  async get(req, res) {
     try {
       const lobbyId = req.query.lobbyId; // get from query param
       if (!lobbyId) {
@@ -88,7 +88,7 @@ class LobbyController {
     }
   }
 
-  async joinLobbyById(req, res) {
+  async join(req, res) {
     try {
       if (req.method !== "POST") {
         return res.status(405).json({
@@ -98,17 +98,17 @@ class LobbyController {
         });
       }
 
-      const { lobbyId, uid, role } = req.body;
+      const { lobbyId, uid, position } = req.body;
 
-      if (!lobbyId || !uid || !role) {
+      if (!lobbyId || !uid || !position) {
         return res.status(400).json({
           success: false,
           message: "Missing required fields",
-          error: "Missing lobbyId and/or uid and/or role",
+          error: "Missing lobbyId and/or uid and/or position",
         });
       }
 
-      const updatedLobby = await lobbyService.joinLobby(lobbyId, { uid, role });
+      const updatedLobby = await lobbyService.joinLobby(lobbyId, { uid, position });
 
       return res.status(200).json({
         success: true,
@@ -124,7 +124,7 @@ class LobbyController {
     }
   }
 
-  async leaveById(req, res) {
+  async leave(req, res) {
     try {
       if (req.method !== "DELETE") {
         return res.status(405).json({
@@ -144,12 +144,11 @@ class LobbyController {
         });
       }
 
-      const result = await lobbyService.leaveById(lobbyId, uid);
+      await lobbyService.leaveById(lobbyId, uid);
 
       return res.status(200).json({
         success: true,
         message: `Left lobby successsfully`,
-        data: result,
       });
     } catch (error) {
       return res.status(500).json({

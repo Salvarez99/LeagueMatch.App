@@ -92,28 +92,42 @@ class Lobby {
   }
 
   removePlayer(uid) {
+    if (this.hostId === uid) {
+      this.isActive = false;
+      this.players = [];
+      this.currentPlayers = 0;
+      this.filter.positionsNeeded = [];
+      this.kickedPlayers = this.kickedPlayers || [];
+      this.kickedPlayers.push(uid);
+      return;
+    }
+
     const playerIndex = this.players.findIndex((p) => p.uid === uid);
     if (playerIndex === -1) {
       throw new Error("Player not found in lobby");
     }
 
     const [removedPlayer] = this.players.splice(playerIndex, 1);
-    this.currentPlayers--;
+    this.currentPlayers = Math.max(this.currentPlayers - 1, 0);
+
+    // Ensure filter arrays exist
+    this.filter = this.filter || {};
+    this.filter.positionsNeeded = this.filter.positionsNeeded || [];
+    this.kickedPlayers = this.kickedPlayers || [];
 
     // Reopen the role/position slot if applicable
     if (
       removedPlayer.position &&
       this.gameMap === "Summoner's Rift" &&
-      !this.positionsNeeded.includes(removedPlayer.position)
+      !this.filter.positionsNeeded.includes(removedPlayer.position)
     ) {
-      this.positionsNeeded.push(removedPlayer.position);
-      // Also update filter for consistency
-      this.filter.positionsNeeded = [...this.positionsNeeded];
+      this.filter.positionsNeeded.push(removedPlayer.position);
     }
 
     //Appended to kickedPlayers
+    this.kickedPlayers = this.kickedPlayers || [];
     this.kickedPlayers.push(removedPlayer.uid);
-    
+
     // Mark lobby active again if not full
     if (!this.isActive && this.currentPlayers < this.maxPlayers) {
       this.isActive = true;
@@ -124,8 +138,8 @@ class Lobby {
     return { ...this };
   }
 
-  static fromFireStore( data ){
-    const lobby = new Lobby();
+  static fromFireStore(data) {
+    const lobby = Object.create(Lobby.prototype);
     Object.assign(lobby, data);
     return lobby;
   }

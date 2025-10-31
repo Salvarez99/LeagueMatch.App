@@ -32,11 +32,9 @@ class LobbyService {
     const snapshot = await lobbiesRef.where("hostId", "==", hostId).get();
 
     if (!snapshot.empty) {
-      console.log("LOOKING");
       snapshot.forEach((doc) => {
         if (doc.data().isActive)
           throw new Error(`hostId ${hostId} active lobby already exists`);
-        else console.log("NOT FOUND");
       });
     }
 
@@ -139,10 +137,7 @@ class LobbyService {
 
       // Write back to Firestore
       transaction.update(lobbyRef, lobby.toFirestore());
-
-      result = { id: lobbyId };
     });
-    return result;
   }
 }
 
