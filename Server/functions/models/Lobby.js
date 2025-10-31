@@ -123,6 +123,12 @@ class Lobby {
   toFirestore() {
     return { ...this };
   }
+
+  static fromFireStore( data ){
+    const lobby = new Lobby();
+    Object.assign(lobby, data);
+    return lobby;
+  }
 }
 
 module.exports = Lobby;

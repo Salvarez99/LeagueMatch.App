@@ -32,12 +32,11 @@ class LobbyService {
     const snapshot = await lobbiesRef.where("hostId", "==", hostId).get();
 
     if (!snapshot.empty) {
-      console.log("LOOKING")
+      console.log("LOOKING");
       snapshot.forEach((doc) => {
         if (doc.data().isActive)
           throw new Error(`hostId ${hostId} active lobby already exists`);
-        else
-          console.log("NOT FOUND")
+        else console.log("NOT FOUND");
       });
     }
 
@@ -127,45 +126,23 @@ class LobbyService {
     return { id: doc.id, ...doc.data() };
   }
 
-  async leaveLobby(lobbyId, uid) {
+  async leaveById(lobbyId, uid) {
     const lobbyRef = this.lobbiesRef.doc(lobbyId);
-    let resultLobby = null;
 
     await db.runTransaction(async (transaction) => {
       const lobbySnap = await transaction.get(lobbyRef);
       if (!lobbySnap.exists) throw new Error("Lobby not found");
 
-      const lobby = lobbySnap.data();
+      const lobby = Lobby.fromFireStore(lobbySnap.data());
 
-      // Find the leaving player
-      const leavingPlayer = lobby.players.find((p) => p.uid === uid);
-      if (!leavingPlayer) throw new Error("Player not in lobby");
-
-      // Remove player from array
-      const updatedPlayers = lobby.players.filter((p) => p.uid !== uid);
-
-      // Add their role back to rolesNeeded (if not already there)
-      const updatedRolesNeeded = Array.isArray(lobby.filters?.rolesNeeded)
-        ? [...new Set([...lobby.filters.rolesNeeded, leavingPlayer.role])]
-        : [leavingPlayer.role];
-
-      const updatedLobby = {
-        ...lobby,
-        players: updatedPlayers,
-        currentPlayers: updatedPlayers.length,
-        isActive: true, // always reopen the lobby if someone leaves
-        filters: {
-          ...lobby.filters,
-          rolesNeeded: updatedRolesNeeded,
-        },
-      };
+      lobby.removePlayer(uid);
 
       // Write back to Firestore
-      transaction.update(lobbyRef, updatedLobby);
+      transaction.update(lobbyRef, lobby.toFirestore());
 
-      resultLobby = { id: lobbyId, ...updatedLobby };
+      result = { id: lobbyId };
     });
-    return resultLobby;
+    return result;
   }
 }
 

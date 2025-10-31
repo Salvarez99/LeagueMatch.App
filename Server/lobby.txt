@@ -60,7 +60,16 @@ POST /lobby_create
         - Append host to players
         - Generate kickedPlayers as empty []
 
-GET  /lobby_getAvailable
+GET  /lobby_getAvailable -? /lobby_queryInstance
+    - Body {
+        gameMap,
+        gameMode?,
+        filter? = {
+            role : str,
+            ranks : [str]
+        },
+    }
+    - Look for an instance of a lobby that meets body criteria
 GET  /lobby_getById
 POSt /lobby_join
 POST /lobby_leave
