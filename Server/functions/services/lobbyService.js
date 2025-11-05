@@ -80,15 +80,18 @@ class LobbyService {
   }
 
   async findLobby(data) {
-    const { gameMap, gameMode, desiredPostion, ranks } = data;
+    const { gameMap, gameMode, desiredPosition, ranks } = data;
 
-    switch (gameMap){
-      case "Summoner\'s Rift":
-        break;
+    switch (gameMap) {
+      case "Summoner's Rift":
+        return this.searchForRift(gameMap, gameMode, desiredPosition, ranks);
+
       case "Aram":
-        break;
+        return this.searchForAram(gameMap, gameMode);
+
       case "Featured Mode":
-        break;
+        return this.searchForFeatured(gameMap, gameMode);
+
       default:
         throw new Error("Unsupported GameMap");
     }
@@ -136,6 +139,58 @@ class LobbyService {
       // Write back to Firestore
       transaction.update(lobbyRef, lobby.toFirestore());
     });
+  }
+
+  //Helpers
+  async findBase(gameMap, gameMode) {
+    return this.lobbiesRef
+      .where("gameMap", "==", gameMap)
+      .where("gameMode", "==", gameMode)
+      .where("isActive", "==", true);
+  }
+
+  async searchForRift(gameMap, gameMode, desiredPosition, ranks) {
+    let query = await this.findBase(gameMap, gameMode);
+
+    // Filter by role needed
+    query = query.where(
+      "filter.positionsNeeded",
+      "array-contains",
+      desiredPosition
+    );
+
+    // Filter by rank list (if provided)
+    if (ranks && ranks.length > 0) {
+      query = query.where("filter.ranksFilter", "array-contains-any", ranks);
+    }
+
+    // Execute and limit to 1
+    const querySnap = await query.limit(1).get();
+
+    if (querySnap.empty) return null;
+
+    const doc = querySnap.docs[0];
+    return { id: doc.id, ...doc.data() };
+  }
+
+  async searchForAram(gameMap, gameMode) {
+    const query = await this.findBase(gameMap, gameMode);
+
+    const querySnap = await query.limit(1).get();
+
+    if (querySnap.empty) return null;
+
+    const doc = querySnap.docs[0];
+    return { id: doc.id, ...doc.data() };
+  }
+
+  async searchForFeatured(gameMap, gameMode) {
+    const query = await this.findBase(gameMap, gameMode); // get the Query
+    const querySnap = await query.limit(1).get(); // then run it
+
+    if (querySnap.empty) return null;
+    const doc = querySnap.docs[0];
+    return { id: doc.id, ...doc.data() };
   }
 }
 

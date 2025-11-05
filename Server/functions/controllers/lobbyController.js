@@ -90,22 +90,29 @@ class LobbyController {
 
   async find(req, res) {
     try {
-      const { gameMap, gameMode, desiredPostion = null, ranks = [] } = req.body;
+      const { gameMap, gameMode, desiredPosition = null, ranks = [] } = req.body;
 
       if (!gameMap || !gameMode){
         throw new Error("gameMap and gameMode are required");
       }
 
-      const lobby = await findLobby({
+      const lobby = await lobbyService.findLobby({
         gameMap,
         gameMode,
-        desiredPostion,
+        desiredPosition,
         ranks,
       });
 
+      if(!lobby){
+        res.status(404).json({
+        success: false,
+        message: "No lobbies found",
+      });
+      }
+
       res.status(201).json({
         success: true,
-        message: "Lobby created successfully",
+        message: "Lobby found",
         data: { id: lobby.id },
       });
     } catch (err) {
