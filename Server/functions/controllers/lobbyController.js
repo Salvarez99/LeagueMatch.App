@@ -1,123 +1,202 @@
 // controllers/lobbyController.js
+const { error } = require("firebase-functions/logger");
 const lobbyService = require("../services/lobbyService");
 
 class LobbyController {
-  async createLobby(req, res) {
+  async create(req, res) {
     try {
-      const { hostId, hostRole, gameMode, maxPlayers, filters } = req.body;
-      const newLobby = await lobbyService.createLobby({
+      const {
         hostId,
-        hostRole,
+        gameMap,
+        gameMode = null,
+        hostPosition = null,
+        championId = null,
+        rankFilter = [],
+      } = req.body;
+
+      const newLobby = await lobbyService.create({
+        hostId,
+        gameMap,
         gameMode,
-        maxPlayers,
-        filters,
+        hostPosition,
+        championId,
+        rankFilter,
       });
 
       res.status(201).json({
+        success: true,
         message: "Lobby created successfully",
-        lobby: newLobby,
+        data: { id: newLobby.id },
       });
     } catch (err) {
-      console.error("Error creating lobby:", err);
-      res.status(500).json({ error: err.message });
+      res.status(500).json({
+        success: false,
+        message: "Error creating lobby",
+        error: err.message,
+      });
     }
   }
 
   async getAvailableLobbies(req, res) {
-
-    const {desiredRole} = req.body;
+    const { desiredRole } = req.body;
     try {
-      const lobbies = await lobbyService.getAvailableLobbies( desiredRole );
+      const lobbies = await lobbyService.getAvailableLobbies(desiredRole);
       res.status(200).json({
+        success: true,
         message: "Available lobbies fetched",
-        lobbies,
+        data: { lobbies },
       });
     } catch (err) {
-      console.error("Error getting available lobbies:", err);
-      res.status(500).json({ error: err.message });
+      res.status(500).json({
+        success: false,
+        message: "Error getting available lobbies",
+        error: err.message,
+      });
     }
   }
 
-  async getLobbyById(req, res) {
+  async get(req, res) {
     try {
       const lobbyId = req.query.lobbyId; // get from query param
       if (!lobbyId) {
-        return res
-          .status(400)
-          .json({ error: "lobbyId query parameter is required" });
+        return res.status(400).json({
+          success: false,
+          message: "Missing required fields",
+          error: "lobbyId query parameter is required",
+        });
       }
 
       const lobby = await lobbyService.getLobbyById(lobbyId);
 
       if (!lobby) {
-        return res.status(404).json({ error: "Lobby not found" });
+        return res.status(404).json({
+          success: false,
+          message: "Error getting lobby",
+          error: "Lobby id not found",
+        });
       }
 
-      res.status(200).json(lobby);
+      res
+        .status(200)
+        .json({ success: true, message: "lobby found", data: { lobby } });
     } catch (err) {
-      console.error("getLobbyById error:", err);
-      res.status(500).json({ error: err.message });
+      res.status(500).json({
+        success: false,
+        message: "Error retrieving lobby",
+        error: err.message,
+      });
     }
   }
 
-  async joinLobbyById(req, res) {
+  async find(req, res) {
+    try {
+      const { gameMap, gameMode, desiredPosition = null, ranks = [] } = req.body;
+
+      if (!gameMap || !gameMode){
+        throw new Error("gameMap and gameMode are required");
+      }
+
+      const lobby = await lobbyService.findLobby({
+        gameMap,
+        gameMode,
+        desiredPosition,
+        ranks,
+      });
+
+      if(!lobby){
+        res.status(404).json({
+        success: false,
+        message: "No lobbies found",
+      });
+      }
+
+      res.status(201).json({
+        success: true,
+        message: "Lobby found",
+        data: { id: lobby.id },
+      });
+    } catch (err) {
+      res.status(500).json({
+        success: false,
+        message: "Error finding lobby",
+        error: err.message,
+      });
+    }
+  }
+
+  async join(req, res) {
     try {
       if (req.method !== "POST") {
-        return res
-          .status(405)
-          .json({ success: false, message: "Method not allowed" });
+        return res.status(405).json({
+          success: false,
+          message: "Method not allowed",
+          error: "Use POST",
+        });
       }
 
-      const { lobbyId, uid, role } = req.body;
+      const { lobbyId } = req.query;
+      const { uid, position = null, championId = null } = req.body;
 
-      if (!lobbyId || !uid || !role) {
-        return res
-          .status(400)
-          .json({ success: false, message: "Missing required fields" });
+      if (!lobbyId || !uid) {
+        return res.status(400).json({
+          success: false,
+          message: "Missing required fields",
+          error: "Missing lobbyId and/or uid",
+        });
       }
 
-      const updatedLobby = await lobbyService.joinLobby(lobbyId, { uid, role });
+      const updatedLobby = await lobbyService.joinLobby(lobbyId, {
+        uid,
+        position,
+        championId,
+      });
 
       return res.status(200).json({
         success: true,
+        message: "Player successfully joined lobby",
         data: updatedLobby,
       });
     } catch (error) {
       console.error("Error joining lobby:", error);
       return res.status(500).json({
         success: false,
-        message: error.message,
+        message: "Error joining lobby",
+        error: error.message,
       });
     }
   }
 
-    async leaveLobbyById(req, res) {
+  async leave(req, res) {
     try {
       if (req.method !== "DELETE") {
-        return res
-          .status(405)
-          .json({ success: false, message: "Method not allowed" });
+        return res.status(405).json({
+          success: false,
+          message: "Method not allowed",
+          error: "Use DELETE",
+        });
       }
 
-      const { lobbyId, uid }  = req.query;
+      const { lobbyId, uid } = req.query;
 
       if (!lobbyId || !uid) {
-        return res
-          .status(400)
-          .json({ success: false, message: "Missing required fields" });
+        return res.status(400).json({
+          success: false,
+          message: "Missing required fields",
+          error: "lobbyId and/or uid",
+        });
       }
 
-      const updatedLobby = await lobbyService.leaveLobby(lobbyId,uid);
+      await lobbyService.leaveById(lobbyId, uid);
 
       return res.status(200).json({
         success: true,
-        data: updatedLobby,
+        message: `Left lobby successsfully`,
       });
     } catch (error) {
-      console.error("Error joining lobby:", error);
       return res.status(500).json({
         success: false,
-        message: error.message,
+        message: "Error leaving lobby.",
+        error: error.message,
       });
     }
   }

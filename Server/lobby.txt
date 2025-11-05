@@ -23,7 +23,7 @@ Lobby = {
     ],
 }
 
-POST /lobby_create
+✅ POST /lobby_create
     - Body {
         hostId,
         gameMap,
@@ -39,22 +39,42 @@ POST /lobby_create
                     - hostRole
                     - championId
                     - rankFilter
+                - Needed
+                    -gameMode
             - Elif GameMap is Featured:
                 - Not needed
                     - hostRole
                     - rankFilter
+                - Needed
+                    - gameMode
+                    - championId
             - Else GameMap is Summoner's Rift:
                 - All needed
         - Use GameMode to set maxPlayers
-        - Append host to players
-        - Set currentPlayers to 1
         - Generate rolesNeeded excluding the hostRole
+
+        - Set currentPlayers to 1
         - Set createdAt to current DateTime
         - Set lobby to active state
         - Generate players as empty []
+        - Append host to players
         - Generate kickedPlayers as empty []
 
-GET  /lobby_getAvailable
-GET  /lobby_getById
-POSt /lobby_join
-POST /lobby_leave
+🔲 GET  /lobby_getAvailable -? /lobby_queryInstance
+    - Body {
+        gameMap,
+        gameMode?,
+        filter? = {
+            role : str,
+            ranks : [str]
+        },
+    }
+    - Look for an instance of a lobby that meets body criteria
+
+✅ GET  /lobby_getById?lobbyId={lobbyId}
+    - Get details of specified lobby
+
+✅ POST /lobby_join
+
+✅ POST //lobby_leave?lobbyId={lobbyId}&uid={uid}
+    - Leave specified lobby. If host is leaving then close the lobby and remove all players.
