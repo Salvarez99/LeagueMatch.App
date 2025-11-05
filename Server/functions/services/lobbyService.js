@@ -84,6 +84,8 @@ class LobbyService {
 
     switch (gameMap) {
       case "Summoner's Rift":
+        if(!desiredPosition)
+          throw new Error("desiredPosition is required for Summoner's Rift Modes");
         return this.searchForRift(gameMap, gameMode, desiredPosition, ranks);
 
       case "Aram":
