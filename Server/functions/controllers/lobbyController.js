@@ -88,6 +88,35 @@ class LobbyController {
     }
   }
 
+  async find(req, res) {
+    try {
+      const { gameMap, gameMode, desiredPostion = null, ranks = [] } = req.body;
+
+      if (!gameMap || !gameMode){
+        throw new Error("gameMap and gameMode are required");
+      }
+
+      const lobby = await findLobby({
+        gameMap,
+        gameMode,
+        desiredPostion,
+        ranks,
+      });
+
+      res.status(201).json({
+        success: true,
+        message: "Lobby created successfully",
+        data: { id: lobby.id },
+      });
+    } catch (err) {
+      res.status(500).json({
+        success: false,
+        message: "Error finding lobby",
+        error: err.message,
+      });
+    }
+  }
+
   async join(req, res) {
     try {
       if (req.method !== "POST") {

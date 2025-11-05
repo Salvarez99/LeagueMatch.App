@@ -57,6 +57,43 @@ class LobbyService {
     };
   }
 
+  async getAvailableLobbies(desiredRole) {
+    const snapshot = await this.lobbiesRef
+      .where("isActive", "==", true)
+      .where("filters.rolesNeeded", "array-contains", desiredRole)
+      .get();
+
+    if (snapshot.empty) return [];
+
+    return snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+  }
+
+  async getLobbyById(lobbyId) {
+    const doc = await this.lobbiesRef.doc(lobbyId).get();
+
+    if (!doc.exists) return null;
+
+    return { id: doc.id, ...doc.data() };
+  }
+
+  async findLobby(data) {
+    const { gameMap, gameMode, desiredPostion, ranks } = data;
+
+    switch (gameMap){
+      case "Summoner\'s Rift":
+        break;
+      case "Aram":
+        break;
+      case "Featured Mode":
+        break;
+      default:
+        throw new Error("Unsupported GameMap");
+    }
+  }
+
   async joinLobby(lobbyId, playerData) {
     const { uid, position = null, championId = null } = playerData;
     const lobbyRef = this.lobbiesRef.doc(lobbyId);
@@ -83,28 +120,6 @@ class LobbyService {
     });
 
     return resultLobby;
-  }
-
-  async getAvailableLobbies(desiredRole) {
-    const snapshot = await this.lobbiesRef
-      .where("isActive", "==", true)
-      .where("filters.rolesNeeded", "array-contains", desiredRole)
-      .get();
-
-    if (snapshot.empty) return [];
-
-    return snapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
-  }
-
-  async getLobbyById(lobbyId) {
-    const doc = await this.lobbiesRef.doc(lobbyId).get();
-
-    if (!doc.exists) return null;
-
-    return { id: doc.id, ...doc.data() };
   }
 
   async leaveById(lobbyId, uid) {
