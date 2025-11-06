@@ -60,7 +60,7 @@ class LobbyService {
   async getAvailableLobbies(desiredRole) {
     const snapshot = await this.lobbiesRef
       .where("isActive", "==", true)
-      .where("filters.rolesNeeded", "array-contains", desiredRole)
+      // .where("filters.rolesNeeded", "array-contains", desiredRole)
       .get();
 
     if (snapshot.empty) return [];

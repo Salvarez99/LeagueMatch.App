@@ -48,7 +48,7 @@ class Lobby {
         break;
       }
 
-      case "Featured Mode": {
+      case "Featured Modes": {
         if (!gameMode)
           throw new Error("gameMode is required for Featured Mode");
         if (!championId)

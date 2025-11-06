@@ -1,7 +1,7 @@
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import {router} from "expo-router"; 
 
-export default function LobbyButtons({ style }) {
+export default function LobbyButtons({ style, onLeave }) {
   return (
     <View style={[styles.bottomButtonRow, style]}>
       {/* Ready Button */}
@@ -14,7 +14,7 @@ export default function LobbyButtons({ style }) {
       {/* Leave Button */}
       <TouchableOpacity
         style={[styles.bottomButton, { backgroundColor: "#D9D9D9" }]}
-        onPress={() => router.back()}
+        onPress={onLeave}
       >
         <Text style={styles.defaultTextStyle}>Leave</Text>
       </TouchableOpacity>

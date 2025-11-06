@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useRouter } from "expo-router";
+import { useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import GameModeHeader from "../../components/common/GameModeHeader";
@@ -10,7 +11,6 @@ import PickChampionButton from "../../components/preLobby/PickChampionButton";
 import PickPositionButton from "../../components/preLobby/PickPositionButton";
 import { lobbyApi } from "../../utils/api/lobbyApi";
 import Screen from "../../utils/dimensions";
-import {useRouter} from 'expo-router';
 
 export default function PreLobby() {
   const [gameMap, setGameMap] = useState("Summoner's Rift");
@@ -21,22 +21,27 @@ export default function PreLobby() {
   const router = useRouter();
 
   const handleCreateLobby = async () => {
+    const hostId = "1";
     try {
-      console.log(position);
-      console.log(gameMode);
-      console.log(gameMap);
-
       const res = await lobbyApi.createLobby({
-        hostId: "1",
-        hostRole: position,
-        gameMode: gameMap,
-        maxPlayers: 5,
-        filters: {},
+        hostId: hostId,
+        hostPosition: position,
+        gameMap: gameMap,
+        gameMode: gameMode,
+        championId: championId,
+        rankFilter: rankFilter,
       });
 
-      const lobbyData = res.data;
-      console.log(lobbyData);
-      const id = lobbyData.lobby.id;
+      console.log(`ATTEMPTING TO CREATE LOBBY WITH FOLLOWING DETAILS:`);
+      console.log(`hostId: ${hostId}`);
+      console.log(`gameMap: ${gameMap}`);
+      console.log(`gameMode: ${gameMode}`);
+      console.log(`position: ${position}`);
+      console.log(`championId: ${championId}`);
+      console.log(`rankFilter: ${rankFilter}`);
+
+      const id = res.data.id;
+
       router.push({
         pathname: `/lobby/${id}`,
         params: {
@@ -44,7 +49,8 @@ export default function PreLobby() {
           gameMode,
         },
       });
-      console.log("Creating lobby");
+
+      console.log(`LOBBY CREATED SUCCESSFULLY. ID: ${id}`);
     } catch (err) {
       if (err.response) {
         // ✅ Backend responded but returned an error (e.g., 500)
@@ -62,15 +68,6 @@ export default function PreLobby() {
     }
   };
 
-  useEffect(() => {
-    console.log(championId);
-  }, [championId]);
-  useEffect(() => {
-    console.log(position);
-  }, [position]);
-  useEffect(() => {
-    console.log(rankFilter);
-  }, [rankFilter]);
   return (
     <SafeAreaView
       style={styles.containerStyle}
