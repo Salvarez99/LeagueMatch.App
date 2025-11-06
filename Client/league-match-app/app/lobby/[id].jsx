@@ -31,16 +31,34 @@ export default function Lobby() {
   };
 
   useEffect(() => {
-    if (!id) {
-      const lobbyRef = doc(db, "lobbies", id);
+    console.log(`Trying to listen to doc ${id}`);
+    if (id) {
+      console.log(`HI I GOT IN THE IF STATEMENT`);
+      const lobbyId = Array.isArray(id) ? id[0] : id;
 
-      const unsub = onSnapshot(lobbyRef, (snapshot) => {
-        if (snapshot.exists()) {
-          console.log(`Lobby updated: ${snapshot.data()}`);
-        } else {
-          console.log(`Lobby doc no longer exists.`);
+      const unsub = onSnapshot(
+        doc(db, "lobbies", lobbyId),
+        (snapshot) => {
+          console.log("Snapshot received:", {
+            exists: snapshot.exists(),
+            metadata: snapshot.metadata,
+            data: snapshot.data(),
+          });
+
+          if (snapshot.exists()) {
+            const data = snapshot.data();
+            console.log(`Lobby updated:`, data);
+            console.log(`Players:`, data.players);
+            console.log(`Host:`, data.hostId);
+          } else {
+            console.log(`Lobby doc no longer exists.`);
+          }
+        },
+        (error) => {
+          console.error("Error listening to lobby:", error);
         }
-      });
+      );
+
       return () => unsub();
     }
   }, [id]);
