@@ -84,8 +84,10 @@ class LobbyService {
 
     switch (gameMap) {
       case "Summoner's Rift":
-        if(!desiredPosition)
-          throw new Error("desiredPosition is required for Summoner's Rift Modes");
+        if (!desiredPosition)
+          throw new Error(
+            "desiredPosition is required for Summoner's Rift Modes"
+          );
         return this.searchForRift(gameMap, gameMode, desiredPosition, ranks);
 
       case "Aram":
@@ -152,26 +154,35 @@ class LobbyService {
   }
 
   async searchForRift(gameMap, gameMode, desiredPosition, ranks) {
-    let query = await this.findBase(gameMap, gameMode);
+    // First query: Find lobbies that need the desired position
+    const positionQuery = await this.findBase(gameMap, gameMode);
+    const positionSnap = await positionQuery
+      .where("filter.positionsNeeded", "array-contains", desiredPosition)
+      .get();
 
-    // Filter by role needed
-    query = query.where(
-      "filter.positionsNeeded",
-      "array-contains",
-      desiredPosition
-    );
+    // Second query: Find lobbies that match any of the specified ranks (if ranks provided)
+    const rankQuery = await this.findBase(gameMap, gameMode);
+    const rankSnap = ranks?.length
+      ? await rankQuery
+          .where("filter.ranksFilter", "array-contains-any", ranks)
+          .get()
+      : null;
 
-    // Filter by rank list (if provided)
-    if (ranks && ranks.length > 0) {
-      query = query.where("filter.ranksFilter", "array-contains-any", ranks);
-    }
+    // Merge results: Rank filtering uses client-side intersection
+    // - Create a Set of lobby IDs from position results for O(1) lookup
+    const positionLobbies = new Set(positionSnap.docs.map((d) => d.id));
 
-    // Execute and limit to 1
-    const querySnap = await query.limit(1).get();
+    // - If ranks were queried, filter rank results to only include lobbies
+    //   that also matched the position requirement (intersection of both queries)
+    // - If no ranks provided, use all position-matched lobbies
+    const finalDocs = rankSnap
+      ? rankSnap.docs.filter((d) => positionLobbies.has(d.id))
+      : positionSnap.docs;
 
-    if (querySnap.empty) return null;
+    if (finalDocs.length === 0) return null;
 
-    const doc = querySnap.docs[0];
+    // Return the first lobby that matches both position AND rank criteria
+    const doc = finalDocs[0];
     return { id: doc.id, ...doc.data() };
   }
 
