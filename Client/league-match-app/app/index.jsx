@@ -20,13 +20,27 @@ export default function Index() {
       edges={["left", "right", "bottom"]}
     >
       <TouchableOpacity
-        onPress={() => router.push("/preLobby")}
+        onPress={() =>
+          router.push({
+            pathname: "/preLobby",
+            params: {
+              mode: "host",
+            },
+          })
+        }
         style={styles.buttonStyle}
       >
         <Text>PreLobby</Text>
       </TouchableOpacity>
       <TouchableOpacity
-        onPress={() => router.push("/searchLobby")}
+        onPress={() =>
+          router.push({
+            pathname: "/preLobby",
+            params: {
+              mode: "join",
+            },
+          })
+        }
         style={styles.buttonStyle}
       >
         <Text>Search for Lobby</Text>

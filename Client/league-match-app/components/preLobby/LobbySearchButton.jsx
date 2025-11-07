@@ -5,8 +5,7 @@ export default function LobbySearchButton({
   style,
   buttonStyle,
   textStyle,
-  gameMap,
-  gameMode,
+  mode,
   handleCreateLobby,
 }) {
   return (
@@ -15,7 +14,9 @@ export default function LobbySearchButton({
         style={[styles.button, buttonStyle]}
         onPress={() => handleCreateLobby()}
       >
-        <Text style={[styles.text, textStyle]}>Create Lobby</Text>
+        <Text style={[styles.text, textStyle]}>
+          {mode === "host" ? "Create Lobby" : "Join"}
+        </Text>
       </TouchableOpacity>
     </View>
   );

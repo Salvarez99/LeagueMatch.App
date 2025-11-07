@@ -1,5 +1,5 @@
-import { useRouter } from "expo-router";
-import { useState } from "react";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import GameModeHeader from "../../components/common/GameModeHeader";
@@ -19,6 +19,18 @@ export default function PreLobby() {
   const [championId, setChampionId] = useState("");
   const [rankFilter, setRankFilter] = useState([]);
   const router = useRouter();
+  const { mode } = useLocalSearchParams();
+
+  const handleSubmit = async () => {
+    switch (mode){
+      case "host":
+        handleCreateLobby();
+        break;
+      case "join":
+        handleJoinLobby();
+        break;
+    }
+  }
 
   const handleCreateLobby = async () => {
     const hostId = "1";
@@ -68,6 +80,43 @@ export default function PreLobby() {
     }
   };
 
+  const handleJoinLobby = async () => {
+    const uid = "1";
+    console.log(`uid:${uid}`);
+    try {
+      const findRes = await lobbyApi.findLobby({
+        gameMap: gameMap,
+        gameMode: gameMode,
+        desiredPosition: position,
+        ranks: rankFilter,
+      });
+
+      const lobbyId = findRes.data.id;
+
+      const joinRes = await lobbyApi.joinLobby(lobbyId, {
+        uid: uid,
+        position: position,
+        championId: championId,
+      });
+
+      router.push({
+        pathname: `/lobby/${lobbyId}`,
+        params: {
+          gameMap,
+          gameMode,
+        },
+      });
+    } catch (err) {
+      console.error("Error finding lobby:", {
+        data: err.response.data,
+      });
+    }
+  };
+
+  useEffect(() => {
+    console.log(`Mode: ${mode}`);
+  }, []);
+
   return (
     <SafeAreaView
       style={styles.containerStyle}
@@ -93,11 +142,7 @@ export default function PreLobby() {
         <PickPositionButton setPosition={setPosition} />
       </View>
       <View style={styles.lobbyFilterContainerStyle}>
-        <LobbySearchButton
-          gameMap={gameMap}
-          gameMode={gameMode}
-          handleCreateLobby={handleCreateLobby}
-        />
+        <LobbySearchButton mode={mode} handleCreateLobby={handleSubmit} />
         <FilterButton setRankFilter={setRankFilter} />
       </View>
     </SafeAreaView>
