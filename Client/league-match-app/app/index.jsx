@@ -1,5 +1,9 @@
 // app/auth.js (or your desired file name)
 import { useRouter } from "expo-router";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
 import { useState } from "react";
 import {
   KeyboardAvoidingView,
@@ -11,6 +15,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { auth } from "./../firebaseConfig";
 
 export default function Index() {
   const [isLogin, setIsLogin] = useState(true);
@@ -22,6 +27,31 @@ export default function Index() {
 
   const handleAuth = () => {
     // Navigate to your desired route when login is pressed
+
+    if (!isLogin) {
+      createUserWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          // Signed up
+          const user = userCredential.user;
+        })
+        .catch((err) => {
+          console.log(
+            JSON.stringify({ errorCode: err.code, errorMessage: err.message })
+          );
+        });
+    } else {
+      signInWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          // Signed in
+          const user = userCredential.user;
+        })
+        .catch((err) => {
+          console.log(
+            JSON.stringify({ errorCode: err.code, errorMessage: err.message })
+          );
+        });
+    }
+
     router.push("/menu"); // Change '/home' to your desired route
   };
 
