@@ -26,7 +26,7 @@ class LobbyController {
       res.status(201).json({
         success: true,
         message: "Lobby created successfully",
-        data: { id: newLobby.id },
+        id: newLobby.id,
       });
     } catch (err) {
       res.status(500).json({
@@ -44,7 +44,7 @@ class LobbyController {
       res.status(200).json({
         success: true,
         message: "Available lobbies fetched",
-        data: { lobbies },
+        lobbies,
       });
     } catch (err) {
       res.status(500).json({
@@ -78,7 +78,7 @@ class LobbyController {
 
       res
         .status(200)
-        .json({ success: true, message: "lobby found", data: { lobby } });
+        .json({ success: true, message: "lobby found", lobby});
     } catch (err) {
       res.status(500).json({
         success: false,
@@ -113,7 +113,7 @@ class LobbyController {
       res.status(201).json({
         success: true,
         message: "Lobby found",
-        data: { id: lobby.id },
+        id: lobby.id,
       });
     } catch (err) {
       res.status(500).json({
@@ -154,7 +154,7 @@ class LobbyController {
       return res.status(200).json({
         success: true,
         message: "Player successfully joined lobby",
-        data: updatedLobby,
+        updatedLobby,
       });
     } catch (error) {
       console.error("Error joining lobby:", error);
