@@ -31,25 +31,21 @@ export default function Lobby() {
   };
 
   useEffect(() => {
-    console.log(`Trying to listen to doc ${id}`);
+    console.log(`ATTEMPTING TO LISTEN TO DOC ID: ${id}`);
     if (id) {
-      console.log(`HI I GOT IN THE IF STATEMENT`);
       const lobbyId = Array.isArray(id) ? id[0] : id;
 
       const unsub = onSnapshot(
         doc(db, "lobbies", lobbyId),
         (snapshot) => {
-          console.log("Snapshot received:", {
-            exists: snapshot.exists(),
-            metadata: snapshot.metadata,
-            data: snapshot.data(),
-          });
+          console.log("SNAPSHOT RECEIVED");
 
           if (snapshot.exists()) {
             const data = snapshot.data();
-            console.log(`Lobby updated:`, data);
-            console.log(`Players:`, data.players);
-            console.log(`Host:`, data.hostId);
+            data.players.forEach((player, index) => {
+              console.log(`Player ${index}: ${JSON.stringify(player)}`);
+            });
+            console.log(`isActive:`, data.isActive);
           } else {
             console.log(`Lobby doc no longer exists.`);
           }
