@@ -14,7 +14,7 @@ import Screen from "../../utils/dimensions";
 import { useAuth } from "./../../context/authContext";
 
 export default function PreLobby() {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
   const uid = user?.uid;
   const [gameMap, setGameMap] = useState("Summoner's Rift");
   const [gameMode, setGameMode] = useState("");
@@ -25,7 +25,7 @@ export default function PreLobby() {
   const { mode } = useLocalSearchParams();
 
   const handleSubmit = async () => {
-    switch (mode){
+    switch (mode) {
       case "host":
         handleCreateLobby();
         break;
@@ -33,7 +33,7 @@ export default function PreLobby() {
         handleJoinLobby();
         break;
     }
-  }
+  };
 
   const handleCreateLobby = async () => {
     const hostId = uid;
@@ -117,7 +117,10 @@ export default function PreLobby() {
 
   useEffect(() => {
     console.log(`Mode: ${mode}`);
-  }, []);
+    console.log(`User: ${user.uid}`);
+
+    console.log("Loading:", loading);
+  }, [user, loading]);
 
   return (
     <SafeAreaView

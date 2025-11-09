@@ -6,6 +6,7 @@ import {
 } from "firebase/auth";
 import { useState } from "react";
 import {
+  Alert,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -14,9 +15,10 @@ import {
   TextInput,
   TouchableOpacity,
   View,
-  Alert
 } from "react-native";
+import { useAuth } from "./../context/authContext";
 import { auth } from "./../firebaseConfig";
+import { userApi } from "./../utils/api/userApi";
 
 export default function Index() {
   const [isLogin, setIsLogin] = useState(true);
@@ -24,48 +26,59 @@ export default function Index() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const { user, loading: authLoading } = useAuth();
 
   const router = useRouter();
 
-  const handleAuth = () => {
-    // Navigate to your desired route when login is pressed
+  const handleAuth = async () => {
+    // Validate inputs
     if (!email || !password) {
       Alert.alert("Error", "Please fill in all fields");
       return;
     }
     setLoading(true);
-    try{
-
+    try {
       if (!isLogin) {
-        createUserWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => {
-          // Signed up
-          const user = userCredential.user;
-        })
-        .catch((err) => {
-          console.log(
-            JSON.stringify({ errorCode: err.code, errorMessage: err.message })
-          );
-        });
-    } else {
-      signInWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        // Signed in
-        const user = userCredential.user;
-      })
-      .catch((err) => {
-        console.log(
-          JSON.stringify({ errorCode: err.code, errorMessage: err.message })
+        // Sign up flow
+        const userCredential = await createUserWithEmailAndPassword(
+          auth,
+          email,
+          password
         );
-      });
-    }
-    router.push("/menu"); // Change '/home' to your desired route
-  }catch(err){
-    Alert.alert('Error', err.message);
-  }finally{
-    setLoading(false);
-  }
+        const user = userCredential.user;
+        console.log("✅ User created in Firebase:", user.uid);
 
+        // Create user in your database
+        await userApi.createUser({
+          uid: user.uid,
+          email: email,
+          username: "Generic Username",
+        });
+        console.log("✅ User profile created in database");
+
+        // Wait for auth state to propagate
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+
+        router.push("/menu");
+      } else {
+        // Login flow
+        await signInWithEmailAndPassword(auth, email, password);
+        console.log("✅ User signed in");
+
+        // Wait for auth state to propagate
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+
+        router.push("/menu");
+      }
+    } catch (err) {
+      console.log("❌ Auth error:", {
+        errorCode: err.code,
+        errorMessage: err.message,
+      });
+      Alert.alert("Error", err.message || "Authentication failed");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
