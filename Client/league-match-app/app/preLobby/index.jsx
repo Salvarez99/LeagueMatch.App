@@ -11,8 +11,11 @@ import PickChampionButton from "../../components/preLobby/PickChampionButton";
 import PickPositionButton from "../../components/preLobby/PickPositionButton";
 import { lobbyApi } from "../../utils/api/lobbyApi";
 import Screen from "../../utils/dimensions";
+import { useAuth } from "./../../context/authContext";
 
 export default function PreLobby() {
+  const { user } = useAuth();
+  const uid = user?.uid;
   const [gameMap, setGameMap] = useState("Summoner's Rift");
   const [gameMode, setGameMode] = useState("");
   const [position, setPosition] = useState("");
@@ -33,7 +36,7 @@ export default function PreLobby() {
   }
 
   const handleCreateLobby = async () => {
-    const hostId = "1";
+    const hostId = uid;
     try {
       const res = await lobbyApi.createLobby({
         hostId: hostId,
@@ -81,7 +84,6 @@ export default function PreLobby() {
   };
 
   const handleJoinLobby = async () => {
-    const uid = "1";
     console.log(`uid:${uid}`);
     try {
       const findRes = await lobbyApi.findLobby({

@@ -1,10 +1,12 @@
 import { Stack } from "expo-router";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-
+import { AuthProvider } from "./../context/AuthContext";
 export default function RootLayout() {
   return (
-    <SafeAreaProvider>
-      <Stack />
-    </SafeAreaProvider>
+    <AuthProvider>
+      <SafeAreaProvider>
+        <Stack />
+      </SafeAreaProvider>
+    </AuthProvider>
   );
 }

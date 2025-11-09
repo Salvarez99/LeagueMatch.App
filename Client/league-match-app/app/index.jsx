@@ -14,6 +14,7 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  Alert
 } from "react-native";
 import { auth } from "./../firebaseConfig";
 
@@ -22,14 +23,21 @@ export default function Index() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const router = useRouter();
 
   const handleAuth = () => {
     // Navigate to your desired route when login is pressed
+    if (!email || !password) {
+      Alert.alert("Error", "Please fill in all fields");
+      return;
+    }
+    setLoading(true);
+    try{
 
-    if (!isLogin) {
-      createUserWithEmailAndPassword(auth, email, password)
+      if (!isLogin) {
+        createUserWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
           // Signed up
           const user = userCredential.user;
@@ -41,18 +49,23 @@ export default function Index() {
         });
     } else {
       signInWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => {
-          // Signed in
-          const user = userCredential.user;
-        })
-        .catch((err) => {
-          console.log(
-            JSON.stringify({ errorCode: err.code, errorMessage: err.message })
-          );
-        });
+      .then((userCredential) => {
+        // Signed in
+        const user = userCredential.user;
+      })
+      .catch((err) => {
+        console.log(
+          JSON.stringify({ errorCode: err.code, errorMessage: err.message })
+        );
+      });
     }
-
     router.push("/menu"); // Change '/home' to your desired route
+  }catch(err){
+    Alert.alert('Error', err.message);
+  }finally{
+    setLoading(false);
+  }
+
   };
 
   return (
