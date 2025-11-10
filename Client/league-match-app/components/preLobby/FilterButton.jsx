@@ -1,26 +1,20 @@
 import { useRef, useState } from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import Screen from "../../utils/dimensions";
+import { Text, TouchableOpacity, View } from "react-native";
 import FilterModel from "./FilterModal";
-
-export default function FilterButton({ style, buttonStyle, textStyle, setRankFilter }) {
+import { styles } from "./styles/FilterButtonStyle";
+export default function FilterButton({
+  style,
+  buttonStyle,
+  textStyle,
+  setRankFilter,
+}) {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedOptions, setSelectedOptions] = useState([]);
   const [buttonLayout, setButtonLayout] = useState(null);
   const buttonRef = useRef(null);
 
   return (
-    <View
-      style={[
-        {
-          flex: 1,
-          alignItems: "center",
-          justifyContent: "center",
-          // backgroundColor: "red",
-        },
-        style,
-      ]}
-    >
+    <View style={[styles.containerStyle, style]}>
       {/* Main Filter Button */}
       <TouchableOpacity
         ref={buttonRef}
@@ -43,19 +37,3 @@ export default function FilterButton({ style, buttonStyle, textStyle, setRankFil
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  defaultButtonStyle: {
-    backgroundColor: "#D9D9D9",
-    height: Screen.height * 0.07,
-    width: Screen.height * 0.07,
-    borderRadius: 15,
-    elevation: 5,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  text: {
-    fontSize: 14,
-    color: "#000",
-  },
-});

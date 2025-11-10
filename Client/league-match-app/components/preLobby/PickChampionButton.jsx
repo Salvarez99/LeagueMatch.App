@@ -1,48 +1,31 @@
 import { useRef, useState } from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import Screen from "../../utils/dimensions";
+import { Text, TouchableOpacity, View } from "react-native";
 import PickChampionModal from "./PickChampionModal";
+import { styles } from "./styles/PickChampionButtonStyle";
 
-export default function PickChampionButton({ style, buttonStyle, textStyle, setChampionId }) {
+export default function PickChampionButton({
+  style,
+  buttonStyle,
+  textStyle,
+  setChampionId,
+}) {
   const [buttonLayout, setButtonLayout] = useState(null); // store position
   const buttonRef = useRef(null);
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <View
-      style={[
-        {
-          flex: 1,
-          alignItems: "center",
-          justifyContent: "center",
-          // backgroundColor: "red",
-        },
-        style,
-      ]}
-    >
+    <View style={[styles.containerStyle, style]}>
       <TouchableOpacity
         style={[styles.defaultButtonStyle, buttonStyle]}
         onPress={() => setIsOpen(true)}
       >
         <Text style={[styles.defaultTextStyle, textStyle]}>Pick Champion</Text>
       </TouchableOpacity>
-      <PickChampionModal visible={isOpen} onClose={() => setIsOpen(false)} setChampionId={setChampionId} />
+      <PickChampionModal
+        visible={isOpen}
+        onClose={() => setIsOpen(false)}
+        setChampionId={setChampionId}
+      />
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  defaultButtonStyle: {
-    backgroundColor: "#D9D9D9",
-    height: Screen.height * 0.07,
-    width: Screen.width * 0.46,
-    borderRadius: 15,
-    elevation: 5,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  defaultTextStyle: {
-    fontSize: 14,
-    color: "#000",
-  },
-});

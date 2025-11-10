@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { View } from "react-native";
-import Carousel from "react-native-reanimated-carousel";
 import { useSharedValue } from "react-native-reanimated";
-import GameModeCard from "./GameModeCard";
+import Carousel from "react-native-reanimated-carousel";
 import Screen from "../../utils/dimensions";
+import GameModeCard from "./GameModeCard";
+import { styles } from "./styles/GameModeCarouselStyle";
 
 export default function GameModeCarousel({
   style,
@@ -36,19 +37,7 @@ export default function GameModeCarousel({
   ];
 
   return (
-    <View
-      style={[
-        {
-          flex: 1,
-          justifyContent: "center",
-          alignItems: "center",
-          backgroundColor: "transparent", // keep background clean
-          padding: 0,
-          margin: 0,
-        },
-        style,
-      ]}
-    >
+    <View style={[styles.containerStyle, style]}>
       <Carousel
         data={DATA}
         width={Screen.width} // 👈 take full screen width
@@ -62,11 +51,7 @@ export default function GameModeCarousel({
           parallaxScrollingScale: 0.88,
           parallaxScrollingOffset: (Screen.width - Screen.width * 0.5) / 2, // centers focused card peek in
         }}
-        style={{
-          flex: 1,
-          alignSelf: "center", // 👈 keeps it centered
-          // backgroundColor: "green",
-        }}
+        style={styles.carouselStyle}
         onProgressChange={progress}
         onSnapToItem={(index) => {
           const realIndex = index % DATA.length;
@@ -76,28 +61,14 @@ export default function GameModeCarousel({
         }}
         renderItem={({ item, index }) => {
           return (
-            <View
-              style={{
-                flex: 1,
-                width: Screen.width * 0.85, // wrapper width
-                alignSelf: "center",
-                backgroundColor: "rgba(255, 255, 255, 0)", // or your app background color
-              }}
-            >
+            <View style={styles.itemContainerStyle}>
               <GameModeCard
                 gameMap={item}
                 gameMode={item.modes}
                 isFocused={index === focusedIndex}
                 selectedMode={selectedModes[item.id]}
                 onModeSelect={handleModeSelect}
-                itemStyle={[
-                  itemStyle,
-                  {
-                    width: "100%",
-                    borderRadius: 15,
-                    // overflow: "hidden",
-                  },
-                ]}
+                itemStyle={[itemStyle, styles.cardStyle]}
                 itemTextStyle={itemTextStyle}
               />
             </View>
