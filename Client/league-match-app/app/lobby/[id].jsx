@@ -10,12 +10,13 @@ import LobbyButtons from "../../components/lobby/LobbyButtons";
 import PlayerCards from "../../components/lobby/PlayerCards";
 import { db } from "../../firebaseConfig";
 import { lobbyApi } from "../../utils/api/lobbyApi";
+import { useAuth } from "./../../context/authContext";
 
 export default function Lobby() {
   const { id, gameMap, gameMode } = useLocalSearchParams();
-
+  const { user, loading } = useAuth();
+  const uid = user?.uid;
   const onLeave = async () => {
-    const uid = "1";
     try {
       console.log(`USER ${uid} IS ATTEMPTING TO LEAVE LOBBY ${id}`);
       const res = await lobbyApi.leaveLobby(id, uid);
