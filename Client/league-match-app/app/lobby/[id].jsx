@@ -1,7 +1,6 @@
 import { router, useLocalSearchParams } from "expo-router";
 import { doc, onSnapshot } from "firebase/firestore";
 import { useEffect } from "react";
-import { StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import GameModeHeader from "../../components/common/GameModeHeader";
 import HostCard from "../../components/common/HostCard";
@@ -11,6 +10,7 @@ import PlayerCards from "../../components/lobby/PlayerCards";
 import { db } from "../../firebaseConfig";
 import { lobbyApi } from "../../utils/api/lobbyApi";
 import { useAuth } from "./../../context/authContext";
+import { styles } from "./lobbyStyle";
 
 export default function Lobby() {
   const { id, gameMap, gameMode } = useLocalSearchParams();
@@ -80,24 +80,3 @@ export default function Lobby() {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  containerStyle: {
-    flex: 1,
-  },
-  gameModeHeaderContainerStyle: {
-    flex: 1.3,
-  },
-  hostCardContainerStyle: {
-    flex: 3,
-  },
-  playerCardsContainerStyle: {
-    flex: 9,
-  },
-  discordButtonContainerStyle: {
-    flex: 1.5,
-  },
-  lobbyButtonsContainerStyle: {
-    flex: 1.3,
-  },
-});

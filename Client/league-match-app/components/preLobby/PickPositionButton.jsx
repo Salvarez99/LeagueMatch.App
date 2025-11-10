@@ -1,9 +1,14 @@
 import { useRef, useState } from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import Screen from "../../utils/dimensions";
+import { Text, TouchableOpacity, View } from "react-native";
 import PickPositionModal from "./PickPositionModal";
+import { styles } from "./styles/PickPositionButtonStyle";
 
-export default function PickPositionButton({ style, buttonStyle, textStyle, setPosition }) {
+export default function PickPositionButton({
+  style,
+  buttonStyle,
+  textStyle,
+  setPosition,
+}) {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState(null);
   const [buttonLayout, setButtonLayout] = useState(null); // store position
@@ -37,24 +42,3 @@ export default function PickPositionButton({ style, buttonStyle, textStyle, setP
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  defaultContainerStyle: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  defaultButtonStyle: {
-    backgroundColor: "#D9D9D9",
-    height: Screen.height * 0.07,
-    width: Screen.width * 0.46,
-    borderRadius: 15,
-    elevation: 5,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  defaultTextStyle: {
-    fontSize: 14,
-    color: "#000",
-  },
-});
