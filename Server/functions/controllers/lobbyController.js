@@ -37,6 +37,18 @@ class LobbyController {
     }
   }
 
+  // POST /lobby_updateDiscord
+  // body: { lobbyId, hostId, discordLink }
+  async updateDiscord(req, res) {
+    const { lobbyId, hostId, discordLink } = req.body;
+    try {
+      await lobbyService.updateDiscord(lobbyId, hostId, discordLink);
+      res.json({ success: true });
+    } catch (err) {
+      res.status(400).json({ error: err.message });
+    }
+  }
+
   async getAvailableLobbies(req, res) {
     const { desiredRole } = req.body;
     try {
@@ -76,9 +88,7 @@ class LobbyController {
         });
       }
 
-      res
-        .status(200)
-        .json({ success: true, message: "lobby found", lobby});
+      res.status(200).json({ success: true, message: "lobby found", lobby });
     } catch (err) {
       res.status(500).json({
         success: false,
@@ -90,9 +100,14 @@ class LobbyController {
 
   async find(req, res) {
     try {
-      const { gameMap, gameMode, desiredPosition = null, ranks = [] } = req.body;
+      const {
+        gameMap,
+        gameMode,
+        desiredPosition = null,
+        ranks = [],
+      } = req.body;
 
-      if (!gameMap || !gameMode){
+      if (!gameMap || !gameMode) {
         throw new Error("gameMap and gameMode are required");
       }
 
@@ -103,11 +118,11 @@ class LobbyController {
         ranks,
       });
 
-      if(!lobby){
+      if (!lobby) {
         res.status(404).json({
-        success: false,
-        message: "No lobbies found",
-      });
+          success: false,
+          message: "No lobbies found",
+        });
       }
 
       res.status(201).json({
