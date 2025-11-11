@@ -57,6 +57,24 @@ class LobbyService {
     };
   }
 
+  async updateDiscord(lobbyId, hostId, discordLink) {
+    const ref = this.lobbiesRef.doc(lobbyId);
+
+    return db.runTransaction(async (tx) => {
+      const lobbyDoc = await tx.get(ref);
+
+      if (!lobbyDoc.exists) {
+        throw new Error("Lobby not found");
+      }
+
+      if (lobbyDoc.data().hostId !== hostId) {
+        throw new Error("Not authorized");
+      }
+
+      tx.update(ref, { discordLink: discordLink || null });
+    });
+  }
+
   async getAvailableLobbies(desiredRole) {
     const snapshot = await this.lobbiesRef
       .where("isActive", "==", true)

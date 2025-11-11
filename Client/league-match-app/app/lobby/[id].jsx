@@ -1,6 +1,6 @@
 import { router, useLocalSearchParams } from "expo-router";
-import { doc, onSnapshot } from "firebase/firestore";
-import { useEffect } from "react";
+import { doc, onSnapshot, updateDoc } from "firebase/firestore";
+import { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import GameModeHeader from "../../components/common/GameModeHeader";
 import HostCard from "../../components/common/HostCard";
@@ -16,6 +16,8 @@ export default function Lobby() {
   const { id, gameMap, gameMode } = useLocalSearchParams();
   const { user, loading } = useAuth();
   const uid = user?.uid;
+  const [lobby, setLobby] = useState(null);
+
   const onLeave = async () => {
     try {
       console.log(`USER ${uid} IS ATTEMPTING TO LEAVE LOBBY ${id}`);
@@ -31,6 +33,17 @@ export default function Lobby() {
     }
   };
 
+  const updateDiscordLink = async (newLink) => {
+    try {
+      const lobbyId = Array.isArray(id) ? id[0] : id;
+      const lobbyRef = doc(db, "lobbies", lobbyId);
+      await updateDoc(lobbyRef, { discordLink: newLink });
+      console.log("✅ Discord link updated:", newLink);
+    } catch (error) {
+      console.error("❌ Failed to update Discord link:", error);
+    }
+  };
+
   useEffect(() => {
     console.log(`ATTEMPTING TO LISTEN TO DOC ID: ${id}`);
     if (id) {
@@ -43,6 +56,7 @@ export default function Lobby() {
 
           if (snapshot.exists()) {
             const data = snapshot.data();
+            setLobby(data);
             data.players.forEach((player, index) => {
               console.log(`Player ${index}: ${JSON.stringify(player)}`);
             });
@@ -72,7 +86,12 @@ export default function Lobby() {
       />
       <HostCard style={styles.hostCardContainerStyle} />
       <PlayerCards style={styles.playerCardsContainerStyle} />
-      <DiscordButton style={styles.discordButtonContainerStyle} />
+      <DiscordButton
+        style={styles.discordButtonContainerStyle}
+        isHost={lobby?.hostId === uid}
+        discordLink={lobby?.discordLink}
+        onUpdateLink={updateDiscordLink}
+      />
       <LobbyButtons
         style={styles.lobbyButtonsContainerStyle}
         onLeave={onLeave}
