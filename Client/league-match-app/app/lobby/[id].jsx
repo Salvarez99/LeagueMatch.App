@@ -84,8 +84,12 @@ export default function Lobby() {
         gameMap={gameMap}
         gameMode={gameMode}
       />
-      <HostCard style={styles.hostCardContainerStyle} />
-      <PlayerCards style={styles.playerCardsContainerStyle} />
+      <HostCard style={styles.hostCardContainerStyle} host={lobby?.players?.[0]}/>
+      <PlayerCards
+        style={styles.playerCardsContainerStyle}
+        players={lobby?.players?.slice(1) || []}
+        maxPlayers={lobby?.maxPlayers}
+      />
       <DiscordButton
         style={styles.discordButtonContainerStyle}
         isHost={lobby?.hostId === uid}
