@@ -58,7 +58,7 @@ export default function Index() {
         // Wait for auth state to propagate
         await new Promise((resolve) => setTimeout(resolve, 1000));
 
-        router.push("/menu/menu");
+        router.push("/riotLink");
       } else {
         // Login flow
         await signInWithEmailAndPassword(auth, email, password);
@@ -67,7 +67,7 @@ export default function Index() {
         // Wait for auth state to propagate
         await new Promise((resolve) => setTimeout(resolve, 1000));
 
-        router.push("/menu/menu");
+        router.push("/riotLink");
       }
     } catch (err) {
       console.log("❌ Auth error:", {
