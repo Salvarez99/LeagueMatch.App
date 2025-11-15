@@ -1,5 +1,5 @@
 import { StyleSheet } from "react-native";
-import Screen from "../../utils/dimensions";
+import Screen from "./../utils/dimensions";
 
 
 export const styles = StyleSheet.create({

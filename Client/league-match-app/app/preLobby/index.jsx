@@ -9,9 +9,9 @@ import GameModeCarousel from "../../components/preLobby/GameModeCarousel";
 import LobbySearchButton from "../../components/preLobby/LobbySearchButton";
 import PickChampionButton from "../../components/preLobby/PickChampionButton";
 import PickPositionButton from "../../components/preLobby/PickPositionButton";
-import { lobbyApi } from "../../utils/api/lobbyApi";
 import { useAuth } from "./../../context/authContext";
-import { styles } from "./indexStyle";
+import { styles } from "./../../styles/preLobbyStyle";
+import { lobbyApi } from "./../../utils/api/lobbyApi";
 
 export default function PreLobby() {
   const { user, loading } = useAuth();

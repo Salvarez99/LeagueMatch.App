@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Text, TextInput, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import RiotLinkModal from "../../components/common/RiotLinkModal";
-import { styles } from "./indexStyle";
+import { styles } from "./../../styles/riotLinkStyle";
 
 export default function Index() {
   const [isOpen, setIsOpen] = useState(false);
