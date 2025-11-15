@@ -1,14 +1,13 @@
 import { router } from "expo-router";
-import {
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { useState } from "react";
+import { Text, TextInput, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import RiotLinkModal from "../../components/common/RiotLinkModal";
+import { styles } from "./indexStyle";
 
 export default function Index() {
+  const [isOpen, setIsOpen] = useState(false);
+
   const handleLinkLater = () => {
     router.push("/menu/menu");
   };
@@ -49,74 +48,14 @@ export default function Index() {
         <TouchableOpacity style={styles.riotButton} onPress={handleLink}>
           <Text>Link</Text>
         </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.riotButton}
+          onPress={() => setIsOpen(true)}
+        >
+          <Text>open modal</Text>
+        </TouchableOpacity>
+        <RiotLinkModal visible={isOpen} onClose={() => setIsOpen(false)} />
       </View>
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-    paddingTop: 120,
-    alignItems: "center",
-    backgroundColor: "#111",
-  },
-
-  title: {
-    fontSize: 22,
-    fontWeight: "700",
-    color: "white",
-    marginBottom: 20,
-  },
-
-  combinedInputContainer: {
-    flexDirection: "row",
-    borderWidth: 1,
-    borderColor: "#555",
-    borderRadius: 12,
-    padding: 12,
-    backgroundColor: "#1a1a1a",
-    height: 70,
-    marginBottom: 20,
-  },
-
-  inputGroupID: {
-    flex: 2,
-  },
-  inputGroupTag: {
-    flex: 1,
-  },
-
-  label: {
-    color: "#ccc",
-    fontSize: 10,
-    marginBottom: 4,
-  },
-
-  input: {
-    color: "white",
-    paddingVertical: 6,
-    fontSize: 16,
-  },
-
-  buttonContainer: { flexDirection: "row", gap: 10 },
-  laterButton: {
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 12,
-    backgroundColor: "#D9D9D9",
-    borderRadius: 12,
-    width: 172,
-    height: 48,
-  },
-  riotButton: {
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 12,
-    backgroundColor: "#e80000ff",
-    borderRadius: 12,
-    width: 172,
-    height: 48,
-  },
-});
