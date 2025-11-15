@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
-import FilterModel from "./FilterModal";
+import FilterModal from "./FilterModal";
 import { styles } from "./styles/FilterButtonStyle";
 export default function FilterButton({
   style,
@@ -28,7 +28,7 @@ export default function FilterButton({
       >
         <Text style={[styles.text, textStyle]}>Filter</Text>
       </TouchableOpacity>
-      <FilterModel
+      <FilterModal
         visible={isOpen}
         onClose={() => setIsOpen(false)}
         buttonLayout={buttonLayout}
