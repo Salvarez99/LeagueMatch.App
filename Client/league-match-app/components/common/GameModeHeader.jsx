@@ -1,14 +1,9 @@
 import { Text, View } from "react-native";
 import { styles } from "./Styles/GameModeHeaderStyle";
 
-export default function GameModeHeader({
-  style,
-  textStyle,
-  gameMap,
-  gameMode,
-}) {
+export default function GameModeHeader({ gameMap, gameMode }) {
   return (
-    <View style={[styles.conatinerStyle, style]}>
+    <View style={styles.conatinerStyle}>
       <View style={styles.gameDetailsContainer}>
         <Text style={styles.gameMapStyle}>
           {gameMap === "" ? "Summoner's Rift" : gameMap}

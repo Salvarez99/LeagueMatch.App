@@ -1,21 +1,19 @@
 import { StyleSheet } from "react-native";
 
-import Screen from "../../../utils/dimensions";
-
 export const styles = StyleSheet.create({
   conatinerStyle: {
-    flex: 1,
-    display: "flex",
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    // backgroundColor: "red",
+    margin: 10,
+    marginBottom: 5,
+    backgroundColor: "red",
+    height:"8%"
+
   },
   gameDetailsContainer: {
-    flex: 1,
     justifyContent: "center",
     alignItems: "flex-start",
-    paddingHorizontal: 10,
   },
   gameMapStyle: {
     fontSize: 18,
@@ -28,8 +26,8 @@ export const styles = StyleSheet.create({
   },
   gameIconStyle: {
     backgroundColor: "#D9D9D9",
-    height: Screen.height * 0.05,
-    width: Screen.height * 0.05,
+    height: 45,
+    width: 45,
     borderRadius: 15,
     elevation: 5,
     justifyContent: "center",

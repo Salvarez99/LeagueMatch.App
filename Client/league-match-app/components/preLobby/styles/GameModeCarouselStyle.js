@@ -7,8 +7,6 @@ export const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "transparent", // keep background clean
-    padding: 0,
-    margin: 0,
   },
   carouselStyle: {
     flex: 1,
