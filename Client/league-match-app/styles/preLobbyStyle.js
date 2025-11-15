@@ -5,27 +5,23 @@ export const styles = StyleSheet.create({
     flex: 1,
     margin: 0,
     padding: 0,
-    // backgroundColor: "brown",
-  },
-
-  carouselContainerStyle: {
-    // flex: 10,
-    // backgroundColor: "purple",
-  },
-  carouselItemStyle: {
-    height: "44%",
   },
   champPosContainerStyle: {
-    // flex: 1.8,
     flexDirection: "row",
-    // backgroundColor: "orange",
+    justifyContent: "space-between",
+    alignItems: "center",
+    width: "100%",
+    paddingHorizontal: 10,
+    marginBottom: 5,
+    gap: 10,
   },
   lobbyFilterContainerStyle: {
-    // flex: 2,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    padding: 6,
-    // backgroundColor: "blue",
+    width: "100%",
+    paddingHorizontal: 10,
+    marginTop: 5,
+    gap: 10, 
   },
 });

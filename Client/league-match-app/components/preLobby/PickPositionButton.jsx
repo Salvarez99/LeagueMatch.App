@@ -4,9 +4,6 @@ import PickPositionModal from "./PickPositionModal";
 import { styles } from "./styles/PickPositionButtonStyle";
 
 export default function PickPositionButton({
-  style,
-  buttonStyle,
-  textStyle,
   setPosition,
 }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -15,10 +12,10 @@ export default function PickPositionButton({
   const buttonRef = useRef(null);
 
   return (
-    <View style={[styles.defaultContainerStyle, style]}>
+    <View style={styles.containerStyle}>
       <TouchableOpacity
         ref={buttonRef}
-        style={[styles.defaultButtonStyle, buttonStyle]}
+        style={styles.defaultButtonStyle}
         onPress={() => {
           // Measure the button before opening modal
           buttonRef.current?.measureInWindow((x, y, width, height) => {
@@ -27,7 +24,7 @@ export default function PickPositionButton({
           });
         }}
       >
-        <Text style={[styles.defaultTextStyle, textStyle]}>
+        <Text style={styles.defaultTextStyle}>
           {selectedOption || "Position"}
         </Text>
       </TouchableOpacity>

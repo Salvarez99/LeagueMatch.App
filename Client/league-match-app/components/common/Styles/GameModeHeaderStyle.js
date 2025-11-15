@@ -7,9 +7,7 @@ export const styles = StyleSheet.create({
     justifyContent: "space-between",
     margin: 10,
     marginBottom: 5,
-    backgroundColor: "red",
-    height:"8%"
-
+    height: "8%",
   },
   gameDetailsContainer: {
     justifyContent: "center",

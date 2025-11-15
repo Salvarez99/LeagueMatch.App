@@ -1,8 +1,14 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
+import { View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import GameModeHeader from "../../components/common/GameModeHeader";
 import HostCard from "../../components/common/HostCard";
+import FilterButton from "../../components/preLobby/FilterButton";
+import GameModeCarousel from "../../components/preLobby/GameModeCarousel";
+import LobbySearchButton from "../../components/preLobby/LobbySearchButton";
+import PickChampionButton from "../../components/preLobby/PickChampionButton";
+import PickPositionButton from "../../components/preLobby/PickPositionButton";
 import { useAuth } from "./../../context/authContext";
 import { styles } from "./../../styles/preLobbyStyle";
 import { lobbyApi } from "./../../utils/api/lobbyApi";
@@ -119,19 +125,14 @@ export default function PreLobby() {
   return (
     <SafeAreaView
       style={styles.containerStyle}
-      edges={["left", "right", "bottom"]}
+      edges={["bottom"]}
     >
       <GameModeHeader gameMap={gameMap} gameMode={gameMode} />
 
       <HostCard host={{ uid, championId, position }} />
 
-      {/* <GameModeCarousel
-        style={styles.carouselContainerStyle}
-        itemStyle={styles.carouselItemStyle}
-        setGameMap={setGameMap}
-        setGameMode={setGameMode}
-      /> */}
-      {/*
+      <GameModeCarousel setGameMap={setGameMap} setGameMode={setGameMode} />
+
       <View style={styles.champPosContainerStyle}>
         <PickChampionButton setChampionId={setChampionId} />
         <PickPositionButton setPosition={setPosition} />
@@ -139,7 +140,7 @@ export default function PreLobby() {
       <View style={styles.lobbyFilterContainerStyle}>
         <LobbySearchButton mode={mode} handleCreateLobby={handleSubmit} />
         <FilterButton setRankFilter={setRankFilter} />
-      </View> */}
+      </View>
     </SafeAreaView>
   );
 }

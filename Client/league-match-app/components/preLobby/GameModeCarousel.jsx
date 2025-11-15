@@ -1,18 +1,10 @@
 import { useState } from "react";
-import { View } from "react-native";
 import { useSharedValue } from "react-native-reanimated";
 import Carousel from "react-native-reanimated-carousel";
 import Screen from "../../utils/dimensions";
 import GameModeCard from "./GameModeCard";
-import { styles } from "./styles/GameModeCarouselStyle";
 
-export default function GameModeCarousel({
-  style,
-  itemStyle,
-  itemTextStyle,
-  setGameMode,
-  setGameMap,
-}) {
+export default function GameModeCarousel({ setGameMode, setGameMap }) {
   const [focusedIndex, setFocusedIndex] = useState(0);
   const [selectedModes, setSelectedModes] = useState({});
   const progress = useSharedValue(0);
@@ -37,44 +29,37 @@ export default function GameModeCarousel({
   ];
 
   return (
-    <View style={[styles.containerStyle, style]}>
-      <Carousel
-        data={DATA}
-        width={Screen.width} // 👈 take full screen width
-        height={"100%"}
-        loop
-        pagingEnabled
-        snapEnabled
-        autoPlay={false}
-        mode="parallax"
-        modeConfig={{
-          parallaxScrollingScale: 0.88,
-          parallaxScrollingOffset: (Screen.width - Screen.width * 0.5) / 2, // centers focused card peek in
-        }}
-        style={styles.carouselStyle}
-        onProgressChange={progress}
-        onSnapToItem={(index) => {
-          const realIndex = index % DATA.length;
-          setFocusedIndex(realIndex);
-          setSelectedModes({});
-          if (setGameMap) setGameMap(DATA[realIndex].title);
-        }}
-        renderItem={({ item, index }) => {
-          return (
-            <View style={styles.itemContainerStyle}>
-              <GameModeCard
-                gameMap={item}
-                gameMode={item.modes}
-                isFocused={index === focusedIndex}
-                selectedMode={selectedModes[item.id]}
-                onModeSelect={handleModeSelect}
-                itemStyle={[itemStyle, styles.cardStyle]}
-                itemTextStyle={itemTextStyle}
-              />
-            </View>
-          );
-        }}
-      />
-    </View>
+    <Carousel
+      data={DATA}
+      width={Screen.width}
+      height={Screen.height * 0.48}
+      loop
+      pagingEnabled
+      snapEnabled
+      autoPlay={false}
+      mode="parallax"
+      modeConfig={{
+        parallaxScrollingScale: 0.95,
+        parallaxScrollingOffset: (Screen.width * 0.35) / 2, // centers focused card peek in
+      }}
+      onProgressChange={progress}
+      onSnapToItem={(index) => {
+        const realIndex = index % DATA.length;
+        setFocusedIndex(realIndex);
+        setSelectedModes({});
+        if (setGameMap) setGameMap(DATA[realIndex].title);
+      }}
+      renderItem={({ item, index }) => {
+        return (
+          <GameModeCard
+            gameMap={item}
+            gameMode={item.modes}
+            isFocused={index === focusedIndex}
+            selectedMode={selectedModes[item.id]}
+            onModeSelect={handleModeSelect}
+          />
+        );
+      }}
+    />
   );
 }

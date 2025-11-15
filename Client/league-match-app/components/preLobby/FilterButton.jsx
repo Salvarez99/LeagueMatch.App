@@ -2,23 +2,19 @@ import { useRef, useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import FilterModal from "./FilterModal";
 import { styles } from "./styles/FilterButtonStyle";
-export default function FilterButton({
-  style,
-  buttonStyle,
-  textStyle,
-  setRankFilter,
-}) {
+
+export default function FilterButton({ setRankFilter }) {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedOptions, setSelectedOptions] = useState([]);
   const [buttonLayout, setButtonLayout] = useState(null);
   const buttonRef = useRef(null);
 
   return (
-    <View style={[styles.containerStyle, style]}>
+    <View style={styles.containerStyle}>
       {/* Main Filter Button */}
       <TouchableOpacity
         ref={buttonRef}
-        style={[styles.defaultButtonStyle, buttonStyle]}
+        style={styles.defaultButtonStyle}
         onPress={() => {
           buttonRef.current?.measure((fx, fy, width, height, px, py) => {
             setButtonLayout({ x: px, y: py, width, height });
@@ -26,7 +22,7 @@ export default function FilterButton({
           });
         }}
       >
-        <Text style={[styles.text, textStyle]}>Filter</Text>
+        <Text style={styles.text}>Filter</Text>
       </TouchableOpacity>
       <FilterModal
         visible={isOpen}

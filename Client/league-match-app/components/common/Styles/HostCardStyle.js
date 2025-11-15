@@ -8,7 +8,7 @@ export const styles = StyleSheet.create({
     height: "15%",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor:"#259155ff"
+    // backgroundColor:"#259155ff"
   },
   hostCardButtonStyle: {
     width: "100%",
