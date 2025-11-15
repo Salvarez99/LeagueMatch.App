@@ -80,7 +80,7 @@ export default function DiscordButton({
 
       {/* Modal for host link input */}
       <Modal
-        animationType="slide"
+        animationType="fade"
         transparent={true}
         visible={modalVisible}
         onRequestClose={() => setModalVisible(false)}

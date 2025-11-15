@@ -8,9 +8,9 @@ import DiscordButton from "../../components/lobby/DiscordButton";
 import LobbyButtons from "../../components/lobby/LobbyButtons";
 import PlayerCards from "../../components/lobby/PlayerCards";
 import { db } from "../../firebaseConfig";
+import { styles } from "../../styles/lobbyStyle";
 import { lobbyApi } from "../../utils/api/lobbyApi";
 import { useAuth } from "./../../context/authContext";
-import { styles } from "./lobbyStyle";
 
 export default function Lobby() {
   const { id, gameMap, gameMode } = useLocalSearchParams();
@@ -84,8 +84,15 @@ export default function Lobby() {
         gameMap={gameMap}
         gameMode={gameMode}
       />
-      <HostCard style={styles.hostCardContainerStyle} />
-      <PlayerCards style={styles.playerCardsContainerStyle} />
+      <HostCard
+        style={styles.hostCardContainerStyle}
+        host={lobby?.players?.[0]}
+      />
+      <PlayerCards
+        style={styles.playerCardsContainerStyle}
+        players={lobby?.players?.slice(1) || []}
+        maxPlayers={lobby?.maxPlayers}
+      />
       <DiscordButton
         style={styles.discordButtonContainerStyle}
         isHost={lobby?.hostId === uid}

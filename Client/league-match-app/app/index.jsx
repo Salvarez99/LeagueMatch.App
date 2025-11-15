@@ -16,8 +16,8 @@ import {
 } from "react-native";
 import { useAuth } from "./../context/authContext";
 import { auth } from "./../firebaseConfig";
+import { styles } from "./../styles/indexStyle";
 import { userApi } from "./../utils/api/userApi";
-import { styles } from "./indexStyle";
 
 export default function Index() {
   const [isLogin, setIsLogin] = useState(true);
@@ -58,7 +58,7 @@ export default function Index() {
         // Wait for auth state to propagate
         await new Promise((resolve) => setTimeout(resolve, 1000));
 
-        router.push("/menu/menu");
+        router.push("/riotLink");
       } else {
         // Login flow
         await signInWithEmailAndPassword(auth, email, password);
@@ -67,7 +67,7 @@ export default function Index() {
         // Wait for auth state to propagate
         await new Promise((resolve) => setTimeout(resolve, 1000));
 
-        router.push("/menu/menu");
+        router.push("/riotLink");
       }
     } catch (err) {
       console.log("❌ Auth error:", {

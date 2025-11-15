@@ -11,7 +11,7 @@ import {
 import Screen from "../../utils/dimensions";
 import { styles } from "./styles/PickPositionModalStyle";
 
-export default function FilterModal({
+export default function PickPositionModal({
   visible,
   onClose,
   setSelectedOption,
