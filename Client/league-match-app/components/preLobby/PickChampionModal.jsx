@@ -13,7 +13,12 @@ import {
 import { champions, roles } from "../../utils/constants";
 import { styles } from "./styles/PickChampionModalStyle";
 
-export default function PickChampionModal({ visible, onClose, setChampionId, setChampionName }) {
+export default function PickChampionModal({
+  visible,
+  onClose,
+  setChampionId,
+  setChampionName,
+}) {
   const [query, setQuery] = useState("");
   const [selectedChamp, setSelectedChamp] = useState("");
   const getChampionIconUrl = (name) =>

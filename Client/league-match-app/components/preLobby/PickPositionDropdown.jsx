@@ -1,11 +1,11 @@
 import { useState } from "react";
 import {
-  View,
-  TouchableOpacity,
-  Text,
-  StyleSheet,
-  ScrollView,
   Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 
 export default function PickPositionDropdown({ items, value, onSelect }) {
