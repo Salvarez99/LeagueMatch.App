@@ -4,18 +4,18 @@ import { View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import GameModeHeader from "../../components/common/GameModeHeader";
 import HostCard from "../../components/common/HostCard";
+import RiotLinkModal from "../../components/common/RiotLinkModal";
 import GameModeCarousel from "../../components/preLobby/GameModeCarousel";
 import LobbySearchButton from "../../components/preLobby/LobbySearchButton";
 import PickChampionButton from "../../components/preLobby/PickChampionButton";
 import PickPositionDropdown from "../../components/preLobby/PickPositionDropdown";
 import RankFilterDropdown from "../../components/preLobby/RankFilterDropdown";
-import RiotLinkModal from "../../components/common/RiotLinkModal";
 import { useAuth } from "./../../context/authContext";
 import { styles } from "./../../styles/preLobbyStyle";
 import { lobbyApi } from "./../../utils/api/lobbyApi";
 
 export default function PreLobby() {
-  const { user, loading } = useAuth();
+  const { user, loading, appUser } = useAuth();
   const [gameMap, setGameMap] = useState("Summoner's Rift");
   const [gameMode, setGameMode] = useState("");
   const [position, setPosition] = useState("");
@@ -23,13 +23,13 @@ export default function PreLobby() {
   const [rankFilter, setRankFilter] = useState([]);
   const router = useRouter();
   const { mode } = useLocalSearchParams();
-  const  [hasRiotID, setHasRiotID]  = useState(false);
-  const  [riotModalOpen, setRiotModalOpen]  = useState(false);
+  const hasRiotId = !!appUser?.riotId;
+  const [riotModalOpen, setRiotModalOpen] = useState(false);
 
   const uid = user?.uid;
 
   const handleSubmit = async () => {
-    if(!hasRiotID){
+    if (!hasRiotId) {
       setRiotModalOpen(true);
       return;
     }
@@ -77,19 +77,17 @@ export default function PreLobby() {
 
       console.log(`LOBBY CREATED SUCCESSFULLY. ID: ${id}`);
     } catch (err) {
-      if (err.response) {
-        // ✅ Backend responded but returned an error (e.g., 500)
-        console.error("Error creating lobby (backend responded):", {
-          status: err.response.status,
-          data: err.response.data,
-        });
-      } else if (err.request) {
-        // ⚠️ Request was made but no response received
-        console.error("Error creating lobby (no response):", err.request);
-      } else {
-        // ❌ Something else went wrong in setting up the request
-        console.error("Error creating lobby (setup):", err.message);
+      if (
+        err.response?.data?.error ===
+        "Host must link Riot ID before creating a lobby"
+      ) {
+        console.log("Host must link Riot ID before creating a lobby");
+        console.log(`${err.response?.data?.error}`);
+        setRiotModalOpen(true);
+        return;
       }
+
+      console.error(err);
     }
   };
 
@@ -160,10 +158,12 @@ export default function PreLobby() {
           />
         </View>
       </View>
-      {!hasRiotID && riotModalOpen && (<RiotLinkModal
-        visible={riotModalOpen}
-        onClose={() => setRiotModalOpen(false)}
-      />)}
+      {!hasRiotId && riotModalOpen && (
+        <RiotLinkModal
+          visible={riotModalOpen}
+          onClose={() => setRiotModalOpen(false)}
+        />
+      )}
     </SafeAreaView>
   );
 }

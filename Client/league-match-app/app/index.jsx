@@ -25,7 +25,8 @@ export default function Index() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading, appUser } = useAuth();
+  const hasRiotId = !!appUser?.riotId;
 
   const router = useRouter();
 
@@ -67,7 +68,11 @@ export default function Index() {
         // Wait for auth state to propagate
         await new Promise((resolve) => setTimeout(resolve, 1000));
 
-        router.push("/riotLink");
+        if(!hasRiotId){
+          router.push("/riotLink");
+        }else{
+          router.push("/menu/menu")
+        }
       }
     } catch (err) {
       console.log("❌ Auth error:", {

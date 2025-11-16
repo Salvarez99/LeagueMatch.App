@@ -6,7 +6,6 @@ import {
   TextInput,
   TouchableOpacity,
   View,
-  KeyboardAvoidingView
 } from "react-native";
 import { useAuth } from "../../context/authContext";
 import { userApi } from "../../utils/api/userApi";
