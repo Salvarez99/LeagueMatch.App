@@ -9,13 +9,13 @@ import LobbySearchButton from "../../components/preLobby/LobbySearchButton";
 import PickChampionButton from "../../components/preLobby/PickChampionButton";
 import PickPositionDropdown from "../../components/preLobby/PickPositionDropdown";
 import RankFilterDropdown from "../../components/preLobby/RankFilterDropdown";
+import RiotLinkModal from "../../components/common/RiotLinkModal";
 import { useAuth } from "./../../context/authContext";
 import { styles } from "./../../styles/preLobbyStyle";
 import { lobbyApi } from "./../../utils/api/lobbyApi";
 
 export default function PreLobby() {
   const { user, loading } = useAuth();
-  const uid = user?.uid;
   const [gameMap, setGameMap] = useState("Summoner's Rift");
   const [gameMode, setGameMode] = useState("");
   const [position, setPosition] = useState("");
@@ -23,8 +23,17 @@ export default function PreLobby() {
   const [rankFilter, setRankFilter] = useState([]);
   const router = useRouter();
   const { mode } = useLocalSearchParams();
+  const  [hasRiotID, setHasRiotID]  = useState(false);
+  const  [riotModalOpen, setRiotModalOpen]  = useState(false);
+
+  const uid = user?.uid;
 
   const handleSubmit = async () => {
+    if(!hasRiotID){
+      setRiotModalOpen(true);
+      return;
+    }
+
     switch (mode) {
       case "host":
         handleCreateLobby();
@@ -37,6 +46,7 @@ export default function PreLobby() {
 
   const handleCreateLobby = async () => {
     const hostId = uid;
+
     try {
       const res = await lobbyApi.createLobby({
         hostId: hostId,
@@ -150,6 +160,10 @@ export default function PreLobby() {
           />
         </View>
       </View>
+      {!hasRiotID && riotModalOpen && (<RiotLinkModal
+        visible={riotModalOpen}
+        onClose={() => setRiotModalOpen(false)}
+      />)}
     </SafeAreaView>
   );
 }

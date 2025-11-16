@@ -1,14 +1,44 @@
-import { router } from "expo-router";
-import { Modal, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { useState } from "react";
+import {
+  Alert,
+  Modal,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+  KeyboardAvoidingView
+} from "react-native";
+import { useAuth } from "../../context/authContext";
+import { userApi } from "../../utils/api/userApi";
 import { styles } from "./Styles/RiotLinkModalStyle";
 
 export default function RiotLinkModal({ visible, onClose }) {
+  const { user, loading } = useAuth();
+  const [riotID, setRiotID] = useState("");
+  const [tagLine, setTagLine] = useState("");
+
   const handleCancel = () => {
     onClose(false);
   };
 
-  const handleLink = () => {
-    router.push("/menu/menu");
+  const handleLink = async () => {
+    const fullRiotID = `${riotID}#${tagLine}`;
+    const uid = user?.uid;
+    if (!riotID || !tagLine) {
+      Alert.alert("Please enter both Riot ID and Tagline.");
+      return;
+    }
+
+    try {
+      await userApi.updateUser({
+        uid: uid,
+        riotId: fullRiotID,
+      });
+      onClose(false);
+    } catch (err) {
+      console.log(err);
+    } finally {
+    }
   };
   return (
     <Modal
@@ -16,6 +46,7 @@ export default function RiotLinkModal({ visible, onClose }) {
       visible={visible}
       animationType="fade"
       onRequestClose={onClose}
+      // statusBarTranslucent={true}
     >
       <View style={styles.overlay}>
         <View style={styles.container}>
@@ -31,6 +62,8 @@ export default function RiotLinkModal({ visible, onClose }) {
                 placeholder="Riot ID"
                 style={styles.input}
                 placeholderTextColor="#888"
+                maxLength={16}
+                onChangeText={setRiotID}
               />
             </View>
 
@@ -40,6 +73,8 @@ export default function RiotLinkModal({ visible, onClose }) {
                 placeholder="#000"
                 style={styles.input}
                 placeholderTextColor="#888"
+                maxLength={5}
+                onChangeText={setTagLine}
               />
             </View>
           </View>

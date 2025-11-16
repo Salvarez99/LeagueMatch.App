@@ -76,12 +76,6 @@ export default function Index() {
         <TouchableOpacity style={styles.riotButton} onPress={handleLink}>
           <Text>Link</Text>
         </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.riotButton}
-          onPress={() => setIsOpen(true)}
-        >
-          <Text>open modal</Text>
-        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
