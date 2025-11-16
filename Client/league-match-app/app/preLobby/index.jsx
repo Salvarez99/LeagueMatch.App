@@ -8,7 +8,7 @@ import FilterButton from "../../components/preLobby/FilterButton";
 import GameModeCarousel from "../../components/preLobby/GameModeCarousel";
 import LobbySearchButton from "../../components/preLobby/LobbySearchButton";
 import PickChampionButton from "../../components/preLobby/PickChampionButton";
-import PickPositionButton from "../../components/preLobby/PickPositionButton";
+import PickPositionDropdown from "../../components/preLobby/PickPositionDropdown";
 import { useAuth } from "./../../context/authContext";
 import { styles } from "./../../styles/preLobbyStyle";
 import { lobbyApi } from "./../../utils/api/lobbyApi";
@@ -123,10 +123,7 @@ export default function PreLobby() {
   }, [user, loading]);
 
   return (
-    <SafeAreaView
-      style={styles.containerStyle}
-      edges={["bottom"]}
-    >
+    <SafeAreaView style={styles.containerStyle} edges={["bottom"]}>
       <GameModeHeader gameMap={gameMap} gameMode={gameMode} />
 
       <HostCard host={{ uid, championId, position }} />
@@ -135,7 +132,13 @@ export default function PreLobby() {
 
       <View style={styles.champPosContainerStyle}>
         <PickChampionButton setChampionId={setChampionId} />
-        <PickPositionButton setPosition={setPosition} />
+        <PickPositionDropdown
+          items={["Top", "Jungle", "Mid", "ADC", "Support"]}
+          value={position}
+          onSelect={(p) => setPosition(p)}
+        />
+
+        {/* <PickPositionButton setPosition={setPosition} /> */}
       </View>
       <View style={styles.lobbyFilterContainerStyle}>
         <LobbySearchButton mode={mode} handleCreateLobby={handleSubmit} />
