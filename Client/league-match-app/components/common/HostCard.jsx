@@ -1,18 +1,18 @@
 import { Text, TouchableOpacity, View } from "react-native";
 import { styles } from "./Styles/HostCardStyle";
 
-export default function HostCard({ style, buttonStyle, textStyle, host }) {
+export default function HostCard({ host }) {
   return (
-    <View style={[styles.containerStyle, style]}>
-      <TouchableOpacity style={[styles.hostCardButtonStyle, buttonStyle]}>
+    <View style={styles.containerStyle}>
+      <TouchableOpacity style={styles.hostCardButtonStyle}>
         {host ? (
           <>
-            <Text style={[styles.text, textStyle]}>Host: {host.uid}</Text>
-            <Text style={[styles.text, textStyle]}>Role: {host.position}</Text>
-            <Text style={[styles.text, textStyle]}>Champion: {host.championId}</Text>
+            <Text style={styles.text}>Host: {host.uid}</Text>
+            <Text style={styles.text}>Role: {host.position}</Text>
+            <Text style={styles.text}>Champion: {host.championId}</Text>
           </>
         ) : (
-          <Text style={[styles.text, textStyle]}>Loading Host...</Text>
+          <Text style={styles.text}>Loading Host...</Text>
         )}
       </TouchableOpacity>
     </View>

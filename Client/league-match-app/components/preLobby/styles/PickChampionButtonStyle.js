@@ -1,19 +1,18 @@
 import { StyleSheet } from "react-native";
-import Screen from "../../../utils/dimensions";
 
 export const styles = StyleSheet.create({
   containerStyle: {
-    flex: 1,
-    alignItems: "center",
+    flex: 1, 
     justifyContent: "center",
-    // backgroundColor: "red",
+    alignItems: "center",
   },
   defaultButtonStyle: {
-    backgroundColor: "#D9D9D9",
-    height: Screen.height * 0.07,
-    width: Screen.width * 0.46,
-    borderRadius: 15,
+    width: "100%",
+    paddingVertical: "9%",
     elevation: 5,
+
+    borderRadius: 10,
+    backgroundColor: "#D9D9D9",
     justifyContent: "center",
     alignItems: "center",
   },

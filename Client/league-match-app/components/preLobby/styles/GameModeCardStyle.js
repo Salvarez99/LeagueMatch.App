@@ -1,15 +1,14 @@
 import { StyleSheet } from "react-native";
-import Screen from "../../../utils/dimensions";
 
 export const styles = StyleSheet.create({
   card: {
     backgroundColor: "#D9D9D9",
-    width: "100%", // now matches wrapper
-    marginHorizontal: 0, // remove extra spacing
     borderRadius: 15,
+    alignSelf: "center",
     justifyContent: "center",
     alignItems: "center",
-    height: Screen.height * 0.48,
+    height: "100%",
+    width: "85%",
   },
   focused: {
     borderWidth: 2,

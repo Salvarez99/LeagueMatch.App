@@ -13,7 +13,7 @@ import {
 import { champions, roles } from "../../utils/constants";
 import { styles } from "./styles/PickChampionModalStyle";
 
-export default function PickChampionModal({ visible, onClose, setChampionId }) {
+export default function PickChampionModal({ visible, onClose, setChampionId, setChampionName }) {
   const [query, setQuery] = useState("");
   const [selectedChamp, setSelectedChamp] = useState("");
   const getChampionIconUrl = (name) =>
@@ -26,6 +26,7 @@ export default function PickChampionModal({ visible, onClose, setChampionId }) {
         // console.log(id);
         setSelectedChamp(id);
         setChampionId(id);
+        setChampionName(name);
         onClose();
       }}
     >
