@@ -5,6 +5,7 @@ import { styles } from "./styles/PickChampionButtonStyle";
 
 export default function PickChampionButton({ setChampionId }) {
   const [isOpen, setIsOpen] = useState(false);
+  const [championName, setChampionName] = useState("Pick Champion");
 
   return (
     <View style={styles.containerStyle}>
@@ -12,12 +13,13 @@ export default function PickChampionButton({ setChampionId }) {
         style={styles.defaultButtonStyle}
         onPress={() => setIsOpen(true)}
       >
-        <Text style={styles.defaultTextStyle}>Pick Champion</Text>
+        <Text style={styles.defaultTextStyle}>{championName}</Text>
       </TouchableOpacity>
       <PickChampionModal
         visible={isOpen}
         onClose={() => setIsOpen(false)}
         setChampionId={setChampionId}
+        setChampionName={setChampionName}
       />
     </View>
   );

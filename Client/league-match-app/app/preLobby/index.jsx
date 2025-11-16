@@ -4,11 +4,11 @@ import { View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import GameModeHeader from "../../components/common/GameModeHeader";
 import HostCard from "../../components/common/HostCard";
-import FilterButton from "../../components/preLobby/FilterButton";
 import GameModeCarousel from "../../components/preLobby/GameModeCarousel";
 import LobbySearchButton from "../../components/preLobby/LobbySearchButton";
 import PickChampionButton from "../../components/preLobby/PickChampionButton";
 import PickPositionDropdown from "../../components/preLobby/PickPositionDropdown";
+import RankFilterDropdown from "../../components/preLobby/RankFilterDropdown";
 import { useAuth } from "./../../context/authContext";
 import { styles } from "./../../styles/preLobbyStyle";
 import { lobbyApi } from "./../../utils/api/lobbyApi";
@@ -137,12 +137,18 @@ export default function PreLobby() {
           value={position}
           onSelect={(p) => setPosition(p)}
         />
-
-        {/* <PickPositionButton setPosition={setPosition} /> */}
       </View>
       <View style={styles.lobbyFilterContainerStyle}>
-        <LobbySearchButton mode={mode} handleCreateLobby={handleSubmit} />
-        <FilterButton setRankFilter={setRankFilter} />
+        <View style={{ flex: 1 }}>
+          <LobbySearchButton mode={mode} handleCreateLobby={handleSubmit} />
+        </View>
+
+        <View style={{ width: 55 }}>
+          <RankFilterDropdown
+            value={rankFilter}
+            onSelect={(updated) => setRankFilter(updated)}
+          />
+        </View>
       </View>
     </SafeAreaView>
   );
