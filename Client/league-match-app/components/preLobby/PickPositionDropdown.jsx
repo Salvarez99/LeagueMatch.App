@@ -24,7 +24,7 @@ export default function PickPositionDropdown({ items, value, onSelect }) {
           <Pressable style={styles.overlay} onPress={() => setOpen(false)} />
 
           <View style={styles.menu}>
-            <ScrollView style={{ maxHeight: 150 }}>
+            <ScrollView style={{ maxHeight: 180 }}>
               {items.map((pos) => (
                 <TouchableOpacity
                   key={pos}

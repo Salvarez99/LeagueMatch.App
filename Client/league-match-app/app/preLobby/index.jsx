@@ -133,7 +133,7 @@ export default function PreLobby() {
       <View style={styles.champPosContainerStyle}>
         <PickChampionButton setChampionId={setChampionId} />
         <PickPositionDropdown
-          items={["Top", "Jungle", "Mid", "ADC", "Support"]}
+          items={["Top", "Jungle", "Mid", "Adc", "Support"]}
           value={position}
           onSelect={(p) => setPosition(p)}
         />
