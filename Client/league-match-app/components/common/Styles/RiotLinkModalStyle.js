@@ -9,8 +9,8 @@ export const styles = StyleSheet.create({
     padding: 20,
   },
   container: {
-    withd: "90%",
-    height: "33%",
+    width: "100%",
+    height: 260,
     padding: 20,
     alignItems: "center",
     backgroundColor: "#111",

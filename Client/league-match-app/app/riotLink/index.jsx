@@ -1,20 +1,44 @@
 import { router } from "expo-router";
-import { useState } from "react";
-import { Text, TextInput, TouchableOpacity, View } from "react-native";
+import { useEffect, useState } from "react";
+import { Alert, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import RiotLinkModal from "../../components/common/RiotLinkModal";
+import { useAuth } from "../../context/authContext";
+import { userApi } from "../../utils/api/userApi";
 import { styles } from "./../../styles/riotLinkStyle";
 
 export default function Index() {
-  const [isOpen, setIsOpen] = useState(false);
+  const { user, loading } = useAuth();
+  const [riotID, setRiotID] = useState("");
+  const [tagLine, setTagLine] = useState("");
 
   const handleLinkLater = () => {
     router.push("/menu/menu");
   };
 
-  const handleLink = () => {
-    router.push("/menu/menu");
+  const handleLink = async () => {
+    const fullRiotID = `${riotID}#${tagLine}`;
+    const uid = user?.uid;
+    if (!riotID || !tagLine) {
+      Alert.alert("Please enter both Riot ID and Tagline.");
+      return;
+    }
+
+    try {
+      await userApi.updateUser({
+        uid: uid,
+        riotId: fullRiotID,
+      });
+      router.push("/menu/menu");
+    } catch (err) {
+      console.log(err);
+    } finally {
+    }
   };
+
+  useEffect(() => {
+    console.log(riotID);
+    console.log(tagLine);
+  }, [riotID, tagLine]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -27,6 +51,8 @@ export default function Index() {
             placeholder="Riot ID"
             style={styles.input}
             placeholderTextColor="#888"
+            maxLength={16}
+            onChangeText={setRiotID}
           />
         </View>
 
@@ -36,6 +62,8 @@ export default function Index() {
             placeholder="#000"
             style={styles.input}
             placeholderTextColor="#888"
+            maxLength={5}
+            onChangeText={setTagLine}
           />
         </View>
       </View>
@@ -48,13 +76,6 @@ export default function Index() {
         <TouchableOpacity style={styles.riotButton} onPress={handleLink}>
           <Text>Link</Text>
         </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.riotButton}
-          onPress={() => setIsOpen(true)}
-        >
-          <Text>open modal</Text>
-        </TouchableOpacity>
-        <RiotLinkModal visible={isOpen} onClose={() => setIsOpen(false)} />
       </View>
     </SafeAreaView>
   );

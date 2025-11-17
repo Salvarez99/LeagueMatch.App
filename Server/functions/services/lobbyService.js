@@ -28,6 +28,12 @@ class LobbyService {
       throw new Error("Host user not found");
     }
 
+    if (!host.riotId) {
+      const err = new Error("Host must link Riot ID before creating a lobby");
+      err.code = "MISSING_RIOT_ID";
+      throw err;
+    }
+
     // const lobbiesRef = db.collection("lobbies");
     const snapshot = await this.lobbiesRef.where("hostId", "==", hostId).get();
 
@@ -122,6 +128,17 @@ class LobbyService {
   async joinLobby(lobbyId, playerData) {
     const { uid, position = null, championId = null } = playerData;
     const lobbyRef = this.lobbiesRef.doc(lobbyId);
+
+    
+    const user = await userService.getUserById(uid);
+
+    if (!user) throw new Error("User not found");
+
+    if (!user.riotId) {
+      const err = new Error("User must link Riot ID before joining a lobby");
+      err.code = "MISSING_RIOT_ID";
+      throw err;
+    }
 
     let resultLobby = null;
 
