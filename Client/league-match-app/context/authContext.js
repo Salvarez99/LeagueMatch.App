@@ -23,6 +23,9 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [devRedirected, setDevRedirected] = useState(false);
 
+  // Tracks if Riot ID has already been linked this session
+  const [riotLinked, setRiotLinked] = useState(false);
+
   const lastUserRef = useRef(null);
   const lastAppJSON = useRef(null);
 
@@ -34,7 +37,6 @@ export const AuthProvider = ({ children }) => {
     LOG.auth("Auth listener initialized");
 
     const unsubAuth = onAuthStateChanged(auth, (currentUser) => {
-      // Log only when user actually changes
       if (currentUser?.uid !== lastUserRef.current) {
         LOG.auth("Auth state →", currentUser?.uid || "null");
         lastUserRef.current = currentUser?.uid || null;
@@ -43,7 +45,6 @@ export const AuthProvider = ({ children }) => {
       setUser(currentUser);
       setLoading(false);
 
-      // Attach Firestore listener
       if (currentUser) {
         const userRef = doc(db, "users", currentUser.uid);
 
@@ -51,9 +52,8 @@ export const AuthProvider = ({ children }) => {
           userRef,
           (snapshot) => {
             const data = snapshot.data() || null;
-
-            // Log only if Firestore data actually changed
             const json = JSON.stringify(data);
+
             if (json !== lastAppJSON.current) {
               LOG.store("Firestore user updated:");
               logObjectDeep("appUser", data);
@@ -76,7 +76,7 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   // ------------------------------
-  // DEV MODE AUTH
+  // DEV MODE LOGIN (runs once before Firestore loads)
   // ------------------------------
 
   useEffect(() => {
@@ -107,14 +107,6 @@ export const AuthProvider = ({ children }) => {
             username: "DevTester",
           });
         }
-
-        if (DEV_CONFIG.AUTO_lINK_RIOT_ID) {
-          LOG.dev("Linking Riot ID…");
-          await userApi.updateUser({
-            uid: auth.currentUser.uid,
-            riotId: DEV_CONFIG.TEST_RIOT_ID,
-          });
-        }
       } catch (err) {
         LOG.error("Dev mode error:", err);
       }
@@ -122,6 +114,29 @@ export const AuthProvider = ({ children }) => {
 
     autoAuth();
   }, []);
+
+  // ------------------------------
+  // DEV MODE — LINK RIOT ID (fixed)
+  // ------------------------------
+
+  useEffect(() => {
+    if (!DEV_CONFIG.DEV_MODE) return;
+    if (!user || !appUser) return;       // wait for Firestore to load fully
+    if (riotLinked) return;              // prevent multiple updates
+
+    const shouldLink =
+      DEV_CONFIG.AUTO_lINK_RIOT_ID && !appUser.riotId;
+
+    if (shouldLink) {
+      LOG.dev("Linking Riot ID…");
+      setRiotLinked(true);
+
+      userApi.updateUser({
+        uid: user.uid,
+        riotId: DEV_CONFIG.TEST_RIOT_ID,
+      });
+    }
+  }, [user, appUser]);
 
   // ------------------------------
   // DEV MODE REDIRECT
@@ -132,7 +147,6 @@ export const AuthProvider = ({ children }) => {
     if (!user || !appUser) return;
     if (devRedirected) return;
 
-    // Redirect once
     LOG.dev("Redirecting → /menu/menu");
     setDevRedirected(true);
     router.replace("/menu/menu");
