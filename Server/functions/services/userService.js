@@ -21,14 +21,6 @@ class UserService {
 
     return { id: user.uid, ...userDoc };
 
-    // const userId = user.uid;
-
-    // await this.usersRef.doc(userId).set({
-    //   ...user,
-    //   uid: userId, // ensure Firestore doc ID matches uid field
-    // });
-
-    // return { id: userId, ...user };
   }
 
   // Get user by UID
