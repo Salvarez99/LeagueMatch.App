@@ -9,20 +9,26 @@ class UserService {
 
   // Add a new user
   async addUser(userData) {
+    // const user = new User(userData);
     const user = new User(userData);
-
+    
     if (!user.uid || !user.username || !user.email) {
       throw new Error("uid, username, and email are required");
     }
+    const userDoc = user.toJSON();
 
-    const userId = user.uid;
+    await this.usersRef.doc(user.uid).set(userDoc);
 
-    await this.usersRef.doc(userId).set({
-      ...user,
-      uid: userId, // ensure Firestore doc ID matches uid field
-    });
+    return { id: user.uid, ...userDoc };
 
-    return { id: userId, ...user };
+    // const userId = user.uid;
+
+    // await this.usersRef.doc(userId).set({
+    //   ...user,
+    //   uid: userId, // ensure Firestore doc ID matches uid field
+    // });
+
+    // return { id: userId, ...user };
   }
 
   // Get user by UID
@@ -35,7 +41,8 @@ class UserService {
   // Update user with Riot info
   async updateUser({ uid, username, riotId }) {
     if (!riotId) throw new Error("riotId is required");
-    if (!uid && !username) throw new Error("Either uid or username is required");
+    if (!uid && !username)
+      throw new Error("Either uid or username is required");
 
     let userRef;
 
@@ -57,7 +64,9 @@ class UserService {
     const puuid = riotAccount.puuid;
 
     const rankData = await riotService.getRankByPuuid(puuid);
-    const rank = rankData[1] ? `${rankData[1].tier} ${rankData[1].rank}` : "Unranked";
+    const rank = rankData[1]
+      ? `${rankData[1].tier} ${rankData[1].rank}`
+      : "Unranked";
 
     await userRef.set({ riotId, puuid, rank }, { merge: true });
 

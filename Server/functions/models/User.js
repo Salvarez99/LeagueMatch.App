@@ -1,31 +1,25 @@
 class User {
-  constructor({
-    uid,
-    username,
-    email,
-    puuid = null,
-    riotId = null,
-    preferredRoles = [],
-    rank = null,
-  }) {
-    this.uid = uid;
-    this.puuid = puuid; // Riot Games PUUID
-    this.riotId = riotId; // Summoner’s Riot ID (ex: "gameName#Tagline")
-    this.preferredRoles = preferredRoles; // Array of roles, e.g. ["Top", "Jungle"]
-    this.rank = rank; // Current rank (ex: "Gold IV")
-    this.username = username; // Display name for app
-    this.email = email; // User’s email
+  constructor(data = {}) {
+    this.uid = data.uid;
+    this.username = data.username;
+    this.email = data.email;
+
+    // Use nullish coalescing to avoid undefined overwriting defaults
+    this.puuid = data.puuid ?? null;
+    this.riotId = data.riotId ?? null;
+    this.rank = data.rank ?? null;
+    this.preferredRoles = data.preferredRoles ?? [];
   }
 
   toJSON() {
     return {
-        uid: this.uid,
-        username: this.username,
-        email: this.email,
-        riotId: this.riotId,
-        puuid: this.puuid,
-        rank: this.rank,
-        preferredRoles: this.preferredRoles,
+      uid: this.uid,
+      username: this.username,
+      email: this.email,
+      puuid: this.puuid,
+      riotId: this.riotId,
+      rank: this.rank,
+      preferredRoles: this.preferredRoles,
     };
   }
 }
