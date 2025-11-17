@@ -1,57 +1,156 @@
-import { onAuthStateChanged } from "firebase/auth";
+import { router } from "expo-router";
+import {
+  createUserWithEmailAndPassword,
+  onAuthStateChanged,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
 import { doc, onSnapshot } from "firebase/firestore";
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { auth, db } from "../firebaseConfig";
+import { userApi } from "../utils/api/userApi";
+import { DEV_CONFIG } from "./../devConfig";
+import { LOG, logObjectDeep } from "./../utils/logger";
 
 const AuthContext = createContext({
-  user: null,       // Firebase Auth user
-  appUser: null,    // Firestore user document
+  user: null,
+  appUser: null,
   loading: true,
 });
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);       // Firebase Auth user
-  const [appUser, setAppUser] = useState(null); // Firestore user doc
+  const [user, setUser] = useState(null);
+  const [appUser, setAppUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [devRedirected, setDevRedirected] = useState(false);
+
+  // Tracks if Riot ID has already been linked this session
+  const [riotLinked, setRiotLinked] = useState(false);
+
+  const lastUserRef = useRef(null);
+  const lastAppJSON = useRef(null);
+
+  // ------------------------------
+  // AUTH LISTENER
+  // ------------------------------
 
   useEffect(() => {
-    console.log("🔥 Setting up auth listener");
+    LOG.auth("Auth listener initialized");
 
     const unsubAuth = onAuthStateChanged(auth, (currentUser) => {
+      if (currentUser?.uid !== lastUserRef.current) {
+        LOG.auth("Auth state →", currentUser?.uid || "null");
+        lastUserRef.current = currentUser?.uid || null;
+      }
+
       setUser(currentUser);
       setLoading(false);
 
-      // If we have a Firebase-authenticated user → setup Firestore listener
       if (currentUser) {
-        console.log("👤 Listening to Firestore user doc:", currentUser.uid);
-
         const userRef = doc(db, "users", currentUser.uid);
 
-        const unsubFirestore = onSnapshot(
+        return onSnapshot(
           userRef,
           (snapshot) => {
-            console.log("📄 Firestore user doc updated:", snapshot.data());
-            setAppUser(snapshot.data() || null);
-          },
-          (error) => {
-            console.log("🔥 Error listening to user doc:", error);
-          }
-        );
+            const data = snapshot.data() || null;
+            const json = JSON.stringify(data);
 
-        // Return Firestore listener cleanup
-        return unsubFirestore;
+            if (json !== lastAppJSON.current) {
+              LOG.store("Firestore user updated:");
+              logObjectDeep("appUser", data);
+              lastAppJSON.current = json;
+            }
+
+            setAppUser(data);
+          },
+          (err) => LOG.error("Firestore user error:", err)
+        );
       } else {
         setAppUser(null);
       }
     });
 
     return () => {
-      console.log("🔥 Cleaning up auth listener");
+      LOG.auth("Auth listener cleaned up");
       unsubAuth();
     };
   }, []);
 
-  console.log("🔥 AuthProvider render - appUser:", appUser);
+  // ------------------------------
+  // DEV MODE LOGIN (runs once before Firestore loads)
+  // ------------------------------
+
+  useEffect(() => {
+    if (!DEV_CONFIG.DEV_MODE) return;
+
+    const autoAuth = async () => {
+      try {
+        LOG.dev("Dev mode login starting…");
+
+        try {
+          await signInWithEmailAndPassword(
+            auth,
+            DEV_CONFIG.TEST_EMAIL,
+            DEV_CONFIG.TEST_PASSWORD
+          );
+          LOG.dev("Dev mode user signed in");
+        } catch {
+          LOG.dev("Creating dev user…");
+          await createUserWithEmailAndPassword(
+            auth,
+            DEV_CONFIG.TEST_EMAIL,
+            DEV_CONFIG.TEST_PASSWORD
+          );
+
+          await userApi.createUser({
+            uid: auth.currentUser.uid,
+            email: DEV_CONFIG.TEST_EMAIL,
+            username: "DevTester",
+          });
+        }
+      } catch (err) {
+        LOG.error("Dev mode error:", err);
+      }
+    };
+
+    autoAuth();
+  }, []);
+
+  // ------------------------------
+  // DEV MODE — LINK RIOT ID (fixed)
+  // ------------------------------
+
+  useEffect(() => {
+    if (!DEV_CONFIG.DEV_MODE) return;
+    if (!user || !appUser) return;       // wait for Firestore to load fully
+    if (riotLinked) return;              // prevent multiple updates
+
+    const shouldLink =
+      DEV_CONFIG.AUTO_lINK_RIOT_ID && !appUser.riotId;
+
+    if (shouldLink) {
+      LOG.dev("Linking Riot ID…");
+      setRiotLinked(true);
+
+      userApi.updateUser({
+        uid: user.uid,
+        riotId: DEV_CONFIG.TEST_RIOT_ID,
+      });
+    }
+  }, [user, appUser]);
+
+  // ------------------------------
+  // DEV MODE REDIRECT
+  // ------------------------------
+
+  useEffect(() => {
+    if (!DEV_CONFIG.DEV_MODE) return;
+    if (!user || !appUser) return;
+    if (devRedirected) return;
+
+    LOG.dev("Redirecting → /menu/menu");
+    setDevRedirected(true);
+    router.replace("/menu/menu");
+  }, [user, appUser]);
 
   return (
     <AuthContext.Provider value={{ user, appUser, loading }}>
