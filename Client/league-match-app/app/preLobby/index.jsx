@@ -134,7 +134,7 @@ export default function PreLobby() {
     <SafeAreaView style={styles.containerStyle} edges={["bottom"]}>
       <GameModeHeader gameMap={gameMap} gameMode={gameMode} />
 
-      <HostCard host={{ uid, championId, position }} />
+      <HostCard host={{ uid, championId, position }} isLobby={false} />
 
       <GameModeCarousel setGameMap={setGameMap} setGameMode={setGameMode} />
 

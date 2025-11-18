@@ -17,6 +17,8 @@ export default function Lobby() {
   const { user, loading } = useAuth();
   const uid = user?.uid;
   const [lobby, setLobby] = useState(null);
+  // console.log("Params:", useLocalSearchParams());
+
 
   const onLeave = async () => {
     try {
@@ -29,6 +31,25 @@ export default function Lobby() {
       console.error("Error creating lobby (backend responded):", {
         status: err.response.status,
         data: err.response.data,
+      });
+    }
+  };
+
+  const onReady = async () => {
+    try {
+      const lobbyId = Array.isArray(id) ? id[0] : id;
+
+      console.log(
+        `USER ${uid} IS ATTEMPTING TO UPDATE READY STATUS IN LOBBY ${lobbyId}`
+      );
+
+      await lobbyApi.updatePlayerReady(lobbyId, uid);
+
+      console.log(`USER ${uid} READY STATUS UPDATED SUCCESSFULLY`);
+    } catch (err) {
+      console.error("Error updated ready status", {
+        status: err.response?.status,
+        data: err.response?.data,
       });
     }
   };
@@ -87,6 +108,8 @@ export default function Lobby() {
       <HostCard
         style={styles.hostCardContainerStyle}
         host={lobby?.players?.[0]}
+        isLobby={true}
+        status={lobby?.players?.[0].ready}
       />
       <PlayerCards
         style={styles.playerCardsContainerStyle}
@@ -102,6 +125,8 @@ export default function Lobby() {
       <LobbyButtons
         style={styles.lobbyButtonsContainerStyle}
         onLeave={onLeave}
+        onReady={onReady}
+        status={lobby?.players?.find((player)=> player.uid === uid)?.ready}
       />
     </SafeAreaView>
   );
