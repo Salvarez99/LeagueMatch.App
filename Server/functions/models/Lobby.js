@@ -68,6 +68,7 @@ class Lobby {
         uid: hostId,
         position: hostPosition || null,
         championId: championId || null,
+        ready: false,
       },
     ];
   }
@@ -96,7 +97,7 @@ class Lobby {
         }
 
         // Add the player
-        this.players.push({ uid, position, championId });
+        this.players.push({ uid, position, championId, ready: false });
         this.currentPlayers++;
 
         // Remove position from needed list
@@ -109,7 +110,7 @@ class Lobby {
 
       case "Aram": {
         // ARAM: No roles or champion selection needed
-        this.players.push({ uid });
+        this.players.push({ uid, ready: false });
         this.currentPlayers++;
         break;
       }
@@ -119,7 +120,7 @@ class Lobby {
         if (!championId)
           throw new Error("championId is required for Featured Mode");
 
-        this.players.push({ uid, championId });
+        this.players.push({ uid, championId, ready: false });
         this.currentPlayers++;
         break;
       }

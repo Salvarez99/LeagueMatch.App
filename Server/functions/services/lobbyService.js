@@ -63,6 +63,33 @@ class LobbyService {
     };
   }
 
+  async updateReadyStatus(lobbyId, uid) {
+    if (!lobbyId || typeof lobbyId !== "string") {
+      throw new Error("Invalid lobbyId (was empty or undefined)");
+    }
+    if (!uid) throw new Error("uid required");
+
+    const lobbyRef = this.lobbiesRef.doc(lobbyId);
+    console.log("LOBBY ID:", lobbyId);
+    console.log("REF PATH:", lobbyRef.path);
+
+    await db.runTransaction(async (tx) => {
+      const snap = await tx.get(lobbyRef);
+      if (!snap.exists) throw new Error("Lobby not found");
+
+      const players = snap.data().players || [];
+
+      const updatedPlayers = players.map((player) => {
+        if (player.uid === uid) {
+          return { ...player, ready: !player.ready };
+        }
+        return player;
+      });
+
+      tx.update(lobbyRef, { players: updatedPlayers });
+    });
+  }
+
   async updateDiscord(lobbyId, hostId, discordLink) {
     const ref = this.lobbiesRef.doc(lobbyId);
 
@@ -129,7 +156,6 @@ class LobbyService {
     const { uid, position = null, championId = null } = playerData;
     const lobbyRef = this.lobbiesRef.doc(lobbyId);
 
-    
     const user = await userService.getUserById(uid);
 
     if (!user) throw new Error("User not found");

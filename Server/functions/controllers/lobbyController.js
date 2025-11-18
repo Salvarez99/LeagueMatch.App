@@ -37,6 +37,23 @@ class LobbyController {
     }
   }
 
+  async ready(req, res) {
+    try {
+      const { lobbyId, uid,} = req.query;
+      await lobbyService.updateReadyStatus(lobbyId, uid);
+      res.status(200).json({
+        success:true,
+        message: "Ready status updated successfully",
+      })
+    } catch (err) {
+      res.status(500).json({
+        success: false,
+        message: "Error updating ready status",
+        error: err.message,
+      });
+    }
+  }
+
   // POST /lobby_updateDiscord
   // body: { lobbyId, hostId, discordLink }
   async updateDiscord(req, res) {
