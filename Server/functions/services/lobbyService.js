@@ -34,7 +34,6 @@ class LobbyService {
       throw err;
     }
 
-    // const lobbiesRef = db.collection("lobbies");
     const snapshot = await this.lobbiesRef.where("hostId", "==", hostId).get();
 
     if (!snapshot.empty) {
@@ -47,6 +46,7 @@ class LobbyService {
     // Create lobby instance from model
     const lobby = new Lobby(
       hostId,
+      host.riotId,
       gameMap,
       gameMode,
       hostPosition,
@@ -179,7 +179,7 @@ class LobbyService {
       if (!lobby.isActive) throw new Error("Lobby is inactive");
 
       // Add the player using model logic
-      lobby.addPlayer(uid, position, championId);
+      lobby.addPlayer(uid, user.riotId, position, championId);
 
       // Write back to Firestore
       transaction.update(lobbyRef, lobby.toFirestore());

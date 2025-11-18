@@ -3,7 +3,7 @@ import { Text, TouchableOpacity, View } from "react-native";
 import { styles } from "./styles/PlayerCardStyle";
 
 export default function PlayerCards({ style, players = [], maxPlayers }) {
-  console.log("PlayerCards rendered with players:", players?.length);
+  // console.log("PlayerCards rendered with players:", players?.length);
 
   const actualMaxPlayers = (maxPlayers ?? 5) - 1;
 
@@ -36,14 +36,16 @@ export default function PlayerCards({ style, players = [], maxPlayers }) {
           <Text style={styles.defaultTextStyle}>Empty Slot</Text>
         ) : (
           <>
-            <Text style={styles.defaultTextStyle}>UID: {player.uid}</Text>
+            <Text style={styles.defaultTextStyle}>
+              Riot ID: {player.riotId}
+            </Text>
             <Text style={styles.defaultTextStyle}>Role: {player.position}</Text>
             <Text style={styles.defaultTextStyle}>
               Champion: {player.championId}
             </Text>
-            <Text style={styles.defaultTextStyle}>
+            {/* <Text style={styles.defaultTextStyle}>
               Ready: {player.ready ? "True" : "False"}
-            </Text>
+            </Text> */}
           </>
         )}
       </TouchableOpacity>

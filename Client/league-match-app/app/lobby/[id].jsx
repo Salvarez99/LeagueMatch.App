@@ -11,24 +11,25 @@ import { db } from "../../firebaseConfig";
 import { styles } from "../../styles/lobbyStyle";
 import { lobbyApi } from "../../utils/api/lobbyApi";
 import { useAuth } from "./../../context/authContext";
+import { LOG, logObjectDeep } from "./../../utils/logger";
 
 export default function Lobby() {
   const { id, gameMap, gameMode } = useLocalSearchParams();
   const { user, loading } = useAuth();
   const uid = user?.uid;
   const [lobby, setLobby] = useState(null);
-  // console.log("Params:", useLocalSearchParams());
+  // LOG.debug("Params:", useLocalSearchParams());
 
 
   const onLeave = async () => {
     try {
-      console.log(`USER ${uid} IS ATTEMPTING TO LEAVE LOBBY ${id}`);
+      LOG.debug(`USER ${uid} IS ATTEMPTING TO LEAVE LOBBY ${id}`);
       const res = await lobbyApi.leaveLobby(id, uid);
-      console.log(`LOBBY LEFT SUCCESSFULLY`);
+      LOG.debug(`LOBBY LEFT SUCCESSFULLY`);
 
       router.back();
     } catch (err) {
-      console.error("Error creating lobby (backend responded):", {
+      LOG.error("Error creating lobby (backend responded):", {
         status: err.response.status,
         data: err.response.data,
       });
@@ -39,15 +40,15 @@ export default function Lobby() {
     try {
       const lobbyId = Array.isArray(id) ? id[0] : id;
 
-      console.log(
+      LOG.debug(
         `USER ${uid} IS ATTEMPTING TO UPDATE READY STATUS IN LOBBY ${lobbyId}`
       );
 
       await lobbyApi.updatePlayerReady(lobbyId, uid);
 
-      console.log(`USER ${uid} READY STATUS UPDATED SUCCESSFULLY`);
+      LOG.debug(`USER ${uid} READY STATUS UPDATED SUCCESSFULLY`);
     } catch (err) {
-      console.error("Error updated ready status", {
+      LOG.error("Error updated ready status", {
         status: err.response?.status,
         data: err.response?.data,
       });
@@ -59,35 +60,34 @@ export default function Lobby() {
       const lobbyId = Array.isArray(id) ? id[0] : id;
       const lobbyRef = doc(db, "lobbies", lobbyId);
       await updateDoc(lobbyRef, { discordLink: newLink });
-      console.log("✅ Discord link updated:", newLink);
+      LOG.debug("Discord link updated:", newLink);
     } catch (error) {
-      console.error("❌ Failed to update Discord link:", error);
+      LOG.error("❌ Failed to update Discord link:", error);
     }
   };
 
   useEffect(() => {
-    console.log(`ATTEMPTING TO LISTEN TO DOC ID: ${id}`);
+    LOG.debug(`ATTEMPTING TO LISTEN TO DOC ID: ${id}`);
     if (id) {
       const lobbyId = Array.isArray(id) ? id[0] : id;
 
       const unsub = onSnapshot(
         doc(db, "lobbies", lobbyId),
         (snapshot) => {
-          console.log("SNAPSHOT RECEIVED");
+          LOG.debug("SNAPSHOT RECEIVED");
 
           if (snapshot.exists()) {
             const data = snapshot.data();
             setLobby(data);
-            data.players.forEach((player, index) => {
-              console.log(`Player ${index}: ${JSON.stringify(player)}`);
-            });
-            console.log(`isActive:`, data.isActive);
+
+            logObjectDeep("Players", data.players);
+            LOG.debug(`isActive:`, data.isActive);
           } else {
-            console.log(`Lobby doc no longer exists.`);
+            LOG.debug(`Lobby doc no longer exists.`);
           }
         },
         (error) => {
-          console.error("Error listening to lobby:", error);
+          LOG.error("Error listening to lobby:", error);
         }
       );
 

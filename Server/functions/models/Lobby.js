@@ -5,6 +5,7 @@ class Lobby {
 
   constructor(
     hostId,
+    riotId,
     gameMap,
     gameMode = null,
     hostPosition = null,
@@ -66,6 +67,8 @@ class Lobby {
     this.players = [
       {
         uid: hostId,
+        riotId,
+        riotId,
         position: hostPosition || null,
         championId: championId || null,
         ready: false,
@@ -73,7 +76,7 @@ class Lobby {
     ];
   }
 
-  addPlayer(uid, position = null, championId = null) {
+  addPlayer(uid, riotId, position = null, championId = null) {
     // Prevent duplicates
     if (this.players.some((p) => p.uid === uid)) {
       throw new Error("Player already in lobby");
@@ -97,7 +100,7 @@ class Lobby {
         }
 
         // Add the player
-        this.players.push({ uid, position, championId, ready: false });
+        this.players.push({ uid, riotId, position, championId, ready: false });
         this.currentPlayers++;
 
         // Remove position from needed list
@@ -110,7 +113,7 @@ class Lobby {
 
       case "Aram": {
         // ARAM: No roles or champion selection needed
-        this.players.push({ uid, ready: false });
+        this.players.push({ uid, riotId, ready: false });
         this.currentPlayers++;
         break;
       }
@@ -120,7 +123,7 @@ class Lobby {
         if (!championId)
           throw new Error("championId is required for Featured Mode");
 
-        this.players.push({ uid, championId, ready: false });
+        this.players.push({ uid, riotId, championId, ready: false });
         this.currentPlayers++;
         break;
       }

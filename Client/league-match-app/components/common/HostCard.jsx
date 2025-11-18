@@ -5,6 +5,7 @@ export default function HostCard({ host, isLobby, status }) {
   // Determine outline only when in lobby
   let borderColor = "transparent";
   let borderWidth = 0;
+  // console.log(host.riotId)
 
   if (isLobby) {
     borderWidth = 2;
@@ -19,14 +20,14 @@ export default function HostCard({ host, isLobby, status }) {
       >
         {host ? (
           <>
-            <Text style={styles.text}>Host: {host.uid}</Text>
+            <Text style={styles.text}>Host: {host.riotId}</Text>
             <Text style={styles.text}>Role: {host.position}</Text>
             <Text style={styles.text}>Champion: {host.championId}</Text>
-            {isLobby && (
+            {/* {isLobby && (
               <Text style={styles.text}>
                 Ready: {status ? "True" : "False"}
               </Text>
-            )}
+            )} */}
           </>
         ) : (
           <Text style={styles.text}>Loading Host...</Text>
