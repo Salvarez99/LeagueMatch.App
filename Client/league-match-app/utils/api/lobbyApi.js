@@ -13,4 +13,6 @@ export const lobbyApi = {
 
   updatePlayerReady: (lobbyId, uid) => axiosClient.patch(`/lobby_ready?lobbyId=${lobbyId}&uid=${uid}`),
 
+  kickPlayer: (lobbyId, hostId, data)=> axiosClient.patch(`/lobby_kick?lobbyId=${lobbyId}&hostId=${hostId}`, data),
+
 };

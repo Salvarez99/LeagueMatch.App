@@ -90,6 +90,24 @@ class LobbyService {
     });
   }
 
+  async kickPlayer(lobbyId, hostId, uid) {
+    const lobbyRef = this.lobbiesRef.doc(lobbyId);
+    const host = await userService.getUserById(hostId);
+    if (!host) throw new Error("Host user not found");
+
+    await db.runTransaction(async (tx) => {
+      const snap = await tx.get(lobbyRef);
+      if (!snap.exists) throw new Error("Lobby not found");
+
+      if (snap.data().hostId !== hostId) {
+        throw new Error("Not authorized");
+      }
+      const players = snap.data().players || [];
+      const playersAfterKick = players.filter((player) => player.uid !== uid);
+      tx.update(lobbyRef, { players: playersAfterKick });
+    });
+  }
+
   async updateDiscord(lobbyId, hostId, discordLink) {
     const ref = this.lobbiesRef.doc(lobbyId);
 

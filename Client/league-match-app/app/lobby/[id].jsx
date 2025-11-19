@@ -18,7 +18,6 @@ export default function Lobby() {
   const { user, loading } = useAuth();
   const uid = user?.uid;
   const [lobby, setLobby] = useState(null);
-  // LOG.debug("Params:", useLocalSearchParams());
 
 
   const onLeave = async () => {
@@ -80,10 +79,17 @@ export default function Lobby() {
             const data = snapshot.data();
             setLobby(data);
 
+            const isInLobby = data.players.some((player) => player.uid === uid);
+            if(!isInLobby){
+              router.back();
+              return;
+            }
+
             logObjectDeep("Players", data.players);
             LOG.debug(`isActive:`, data.isActive);
           } else {
             LOG.debug(`Lobby doc no longer exists.`);
+            router.back();
           }
         },
         (error) => {
@@ -109,7 +115,7 @@ export default function Lobby() {
         style={styles.hostCardContainerStyle}
         host={lobby?.players?.[0]}
         isLobby={true}
-        status={lobby?.players?.[0].ready}
+        status={lobby?.players?.[0]?.ready}
       />
       <PlayerCards
         style={styles.playerCardsContainerStyle}

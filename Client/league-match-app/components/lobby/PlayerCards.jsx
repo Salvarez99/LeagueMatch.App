@@ -1,11 +1,13 @@
 // PlayerCards.tsx
+import * as Clipboard from "expo-clipboard";
 import { Text, TouchableOpacity, View } from "react-native";
+import Toast from "react-native-toast-message";
 import { styles } from "./styles/PlayerCardStyle";
 
 export default function PlayerCards({ style, players = [], maxPlayers }) {
-  // console.log("PlayerCards rendered with players:", players?.length);
 
   const actualMaxPlayers = (maxPlayers ?? 5) - 1;
+  const hostRender = true;
 
   // Create empty slots for remaining players
   const slots = Array.from({ length: actualMaxPlayers });
@@ -31,6 +33,16 @@ export default function PlayerCards({ style, players = [], maxPlayers }) {
           },
         ]}
         disabled={isEmpty}
+        onLongPress={async () => {
+          await Clipboard.setStringAsync(player.riotId);
+          Toast.show({
+            type: "success",
+            text1: "Copied Riot ID to clipboard: ",
+            text2: player.riotId,
+            position: "center",
+            topOffset: 55,
+          });
+        }}
       >
         {isEmpty ? (
           <Text style={styles.defaultTextStyle}>Empty Slot</Text>
@@ -43,9 +55,6 @@ export default function PlayerCards({ style, players = [], maxPlayers }) {
             <Text style={styles.defaultTextStyle}>
               Champion: {player.championId}
             </Text>
-            {/* <Text style={styles.defaultTextStyle}>
-              Ready: {player.ready ? "True" : "False"}
-            </Text> */}
           </>
         )}
       </TouchableOpacity>

@@ -1,4 +1,6 @@
+import * as Clipboard from "expo-clipboard";
 import { Text, TouchableOpacity, View } from "react-native";
+import Toast from "react-native-toast-message";
 import { styles } from "./Styles/HostCardStyle";
 
 export default function HostCard({ host, isLobby, status }) {
@@ -17,6 +19,17 @@ export default function HostCard({ host, isLobby, status }) {
       <TouchableOpacity
         style={[styles.hostCardButtonStyle, { borderColor, borderWidth }]}
         disabled={!isLobby} // optional: host card not interactive outside lobby
+        onLongPress={async () => {
+          if (!host?.riotId) return;
+          await Clipboard.setStringAsync(host.riotId);
+          Toast.show({
+            type: "success",
+            text1: "Copied Riot ID to clipboard: ",
+            text2: host.riotId,
+            position: "center",
+            topOffset: 55,
+          });
+        }}
       >
         {host ? (
           <>
