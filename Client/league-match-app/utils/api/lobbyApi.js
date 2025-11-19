@@ -3,7 +3,7 @@ import axiosClient from "./axiosClient";
 export const lobbyApi = {
   createLobby: (data) => axiosClient.post("/lobby_create", data),
 
-  findLobby: (data) => axiosClient.post("/lobby_find", data),
+  findLobby: (uid, data) => axiosClient.post(`/lobby_find?uid=${uid}`, data),
 
   getById: (lobbyId) => axiosClient.get(`/lobby_get?lobbyId=${lobbyId}`),
 

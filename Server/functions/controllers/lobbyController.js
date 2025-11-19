@@ -134,6 +134,7 @@ class LobbyController {
   }
 
   async find(req, res) {
+    const uid = req.params.uid;
     try {
       const {
         gameMap,
@@ -151,10 +152,11 @@ class LobbyController {
         gameMode,
         desiredPosition,
         ranks,
+        uid
       });
 
       if (!lobby) {
-        res.status(404).json({
+        return res.status(404).json({
           success: false,
           message: "No lobbies found",
         });
