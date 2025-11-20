@@ -13,7 +13,6 @@ export default function PlayerCards({
   onKick,
 }) {
   const actualMaxPlayers = (maxPlayers ?? 5) - 1;
-  const hostRender = true;
   const [selectedPlayerUid, setSelectedPlayerUid] = useState(null);
 
   // Create empty slots for remaining players
