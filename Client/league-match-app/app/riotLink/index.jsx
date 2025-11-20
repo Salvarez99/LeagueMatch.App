@@ -7,7 +7,7 @@ import { userApi } from "../../utils/api/userApi";
 import { styles } from "./../../styles/riotLinkStyle";
 
 export default function Index() {
-  const { user, loading } = useAuth();
+  const { user, authLoading } = useAuth();
   const [riotID, setRiotID] = useState("");
   const [tagLine, setTagLine] = useState("");
 
@@ -34,11 +34,6 @@ export default function Index() {
     } finally {
     }
   };
-
-  useEffect(() => {
-    console.log(riotID);
-    console.log(tagLine);
-  }, [riotID, tagLine]);
 
   return (
     <SafeAreaView style={styles.container}>
