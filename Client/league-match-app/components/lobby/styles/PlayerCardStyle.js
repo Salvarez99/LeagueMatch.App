@@ -1,14 +1,6 @@
 import { StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
-  playersContainer: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "center",
-    paddingVertical:5,
-    paddingBottom: 0,
-  },
-
   playerCardWrapper: {
     width: "45%",
     height: "47%",
@@ -18,7 +10,7 @@ export const styles = StyleSheet.create({
   playerCard: {
     backgroundColor: "#D9D9D9",
     width: "100%",
-    height: "100%",               // default height
+    height: "100%", // default height
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 10,
@@ -26,7 +18,7 @@ export const styles = StyleSheet.create({
   },
 
   playerCardSelected: {
-    height: "78%",               // shrinks when selected
+    height: "78%", // shrinks when selected
     borderBottomLeftRadius: 0,
     borderBottomRightRadius: 0,
   },
