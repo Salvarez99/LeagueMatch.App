@@ -84,6 +84,25 @@ class LobbyController {
     }
   }
 
+  async updateChampion(req, res) {
+    const { lobbyId, uid } = req.query;
+    const { championId } = req.body;
+
+    try {
+      await lobbyService.updateChampion(lobbyId, uid, championId);
+      res.status(200).json({
+        success: true,
+        message: "Champion updated successfully",
+      });
+    } catch (err) {
+      res.status(500).json({
+        success: false,
+        message: "Error updating champion",
+        error: err.message,
+      });
+    }
+  }
+
   async getAvailableLobbies(req, res) {
     const { desiredRole } = req.body;
     try {
@@ -152,7 +171,7 @@ class LobbyController {
         gameMode,
         desiredPosition,
         ranks,
-        uid
+        uid,
       });
 
       if (!lobby) {
