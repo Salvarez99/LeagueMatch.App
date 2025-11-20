@@ -3,7 +3,7 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
 } from "firebase/auth";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Alert,
   KeyboardAvoidingView,
@@ -25,7 +25,7 @@ export default function Index() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const { user, loading: authLoading, appUser } = useAuth();
+  const { user, loading: authLoading, appUser, appUserLoading } = useAuth();
   const hasRiotId = !!appUser?.riotId;
 
   const router = useRouter();
@@ -66,12 +66,14 @@ export default function Index() {
         console.log("✅ User signed in");
 
         // Wait for auth state to propagate
-        await new Promise((resolve) => setTimeout(resolve, 1000));
+        await new Promise((resolve) => setTimeout(resolve, 300));
 
-        if(!hasRiotId){
-          router.push("/riotLink");
-        }else{
-          router.push("/menu/menu")
+        const hasRiotId = !!appUser?.riotId;
+
+        if (hasRiotId) {
+          router.replace("/menu/menu");
+        } else {
+          router.replace("/riotLink");
         }
       }
     } catch (err) {
@@ -84,6 +86,20 @@ export default function Index() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (authLoading || appUserLoading) return; // WAIT for both to finish
+
+    if (user) {
+      const hasRiotId = !!appUser?.riotId;
+
+      if (hasRiotId) {
+        router.replace("/menu/menu");
+      } else {
+        router.replace("/riotLink");
+      }
+    }
+  }, [user, authLoading, appUserLoading, appUser]);
 
   return (
     <KeyboardAvoidingView

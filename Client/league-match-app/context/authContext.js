@@ -14,13 +14,15 @@ import { LOG, logObjectDeep } from "./../utils/logger";
 const AuthContext = createContext({
   user: null,
   appUser: null,
-  loading: true,
+  authLoading: true,
 });
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [appUser, setAppUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [appUserLoading, setAppUserLoading] = useState(true);
+
+  const [authLoading, setAuthLoading] = useState(true);
   const [devRedirected, setDevRedirected] = useState(false);
 
   // Tracks if Riot ID has already been linked this session
@@ -42,8 +44,9 @@ export const AuthProvider = ({ children }) => {
         lastUserRef.current = currentUser?.uid || null;
       }
 
+      setAppUserLoading(true);
       setUser(currentUser);
-      setLoading(false);
+      setAuthLoading(false);
 
       if (currentUser) {
         const userRef = doc(db, "users", currentUser.uid);
@@ -56,11 +59,12 @@ export const AuthProvider = ({ children }) => {
 
             if (json !== lastAppJSON.current) {
               LOG.store("Firestore user updated:");
-              logObjectDeep("appUser: ",data);
+              logObjectDeep("appUser: ", data);
               lastAppJSON.current = json;
             }
 
             setAppUser(data);
+            setAppUserLoading(false);
           },
           (err) => LOG.error("Firestore user error:", err)
         );
@@ -121,11 +125,10 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     if (!DEV_CONFIG.DEV_MODE) return;
-    if (!user || !appUser) return;       // wait for Firestore to load fully
-    if (riotLinked) return;              // prevent multiple updates
+    if (!user || !appUser) return; // wait for Firestore to load fully
+    if (riotLinked) return; // prevent multiple updates
 
-    const shouldLink =
-      DEV_CONFIG.AUTO_lINK_RIOT_ID && !appUser.riotId;
+    const shouldLink = DEV_CONFIG.AUTO_lINK_RIOT_ID && !appUser.riotId;
 
     if (shouldLink) {
       LOG.dev("Linking Riot ID…");
@@ -153,7 +156,7 @@ export const AuthProvider = ({ children }) => {
   }, [user, appUser]);
 
   return (
-    <AuthContext.Provider value={{ user, appUser, loading }}>
+    <AuthContext.Provider value={{ user, appUser, authLoading, appUserLoading }}>
       {children}
     </AuthContext.Provider>
   );

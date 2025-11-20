@@ -130,6 +130,30 @@ class LobbyService {
     });
   }
 
+  async updateChampion(lobbyId, uid, championId) {
+    const lobbyRef = this.lobbiesRef.doc(lobbyId);
+
+    if (!lobbyDoc.exists) {
+      throw new Error("Lobby not found");
+    }
+
+    await db.runTransaction(async (tx) => {
+      const snap = await tx.get(lobbyRef);
+      if (!snap.exists) throw new Error("Lobby not found");
+
+      const players = snap.data().players || [];
+      const updatedPlayers = players.map((player) => {
+        if (player.uid === uid) {
+          return { ...player, championId: championId };
+        }
+        return player;
+      });
+
+      tx.update(lobbyRef, { players: updatedPlayers });
+    });
+
+  }
+
   async getAvailableLobbies(desiredRole) {
     const snapshot = await this.lobbiesRef
       .where("isActive", "==", true)
@@ -163,7 +187,7 @@ class LobbyService {
   async findLobby(data) {
     const { gameMap, gameMode, desiredPosition, ranks, uid } = data;
 
-    if(!uid){
+    if (!uid) {
       throw new Error("uid is required to find a lobby");
     }
 
