@@ -141,11 +141,17 @@ export default function Lobby() {
 
       LOG.debug("🔍 PLAYER STATUS CHECK", { uid, isInLobby, isKicked });
 
-      // --- 2. USER KICKED ---
+      // // --- 2. USER KICKED ---
       if (isKicked) {
         LOG.debug("⛔ USER IS IN kickedPlayers ARRAY — redirecting");
         setJoinConfirmed(false);
         setHasJoined(false);
+        router.back();
+        return;
+      }
+
+      if (!data.isActive) {
+        LOG.debug("⚠️ LOBBY IS NOT ACTIVE — redirecting");
         router.back();
         return;
       }
