@@ -21,25 +21,13 @@ export default function Lobby() {
   const [lobby, setLobby] = useState(null);
   const [joinConfirmed, setJoinConfirmed] = useState(false);
 
-  const [hasJoined, setHasJoined] = useState(justJoined === "true");
 
   LOG.debug("🔵 LOBBY SCREEN MOUNTED", {
     id,
     gameMap,
     gameMode,
     uid,
-    // justJoined,
-    // initialHasJoined: hasJoined,
   });
-
-  // // Sync hasJoined when navigation param changes
-  // useEffect(() => {
-  //   LOG.debug("🔄 Updating hasJoined from navigation param", {
-  //     justJoined,
-  //     newHasJoined: justJoined === "true",
-  //   });
-  //   setHasJoined(justJoined === "true");
-  // }, [justJoined]);
 
   // USER LEAVE
   const onLeave = async () => {
@@ -49,7 +37,6 @@ export default function Lobby() {
       const res = await lobbyApi.leaveLobby(id, uid);
       LOG.debug("🟢 LEAVE SUCCESS — resetting hasJoined", res.data);
 
-      setHasJoined(false);
       setJoinConfirmed(false);
 
       router.back();
@@ -125,7 +112,6 @@ export default function Lobby() {
       if (!snapshot.exists()) {
         LOG.debug("⚠️ LOBBY DELETED — redirecting");
         setJoinConfirmed(false);
-        setHasJoined(false);
         router.back();
         return;
       }
@@ -145,7 +131,6 @@ export default function Lobby() {
       if (isKicked) {
         LOG.debug("⛔ USER IS IN kickedPlayers ARRAY — redirecting");
         setJoinConfirmed(false);
-        setHasJoined(false);
         router.back();
         return;
       }
@@ -160,7 +145,6 @@ export default function Lobby() {
       if (!joinConfirmed && isInLobby) {
         LOG.debug("🎉 FIRST SNAPSHOT CONFIRMATION — joinConfirmed = true");
         setJoinConfirmed(true);
-        setHasJoined(true);
         return;
       }
 
@@ -168,7 +152,6 @@ export default function Lobby() {
       if (joinConfirmed && !isInLobby) {
         LOG.debug("⚠️ USER REMOVED AFTER CONFIRMATION — redirecting");
         setJoinConfirmed(false);
-        setHasJoined(false);
         router.back();
         return;
       }
