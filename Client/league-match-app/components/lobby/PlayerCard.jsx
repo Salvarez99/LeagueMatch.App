@@ -1,9 +1,16 @@
-import { useState } from "react";
+import * as Clipboard from "expo-clipboard";
 import { Text, TouchableOpacity, View } from "react-native";
+import Toast from "react-native-toast-message";
 import { styles } from "./styles/PlayerCardStyle";
 
-
-export default function PlayerCard ({ isHost, player, isEmpty, setSelectedPlayerUid, selectedPlayerUid, onKick }) {
+export default function PlayerCard({
+  isHost,
+  player,
+  isEmpty,
+  setSelectedPlayerUid,
+  selectedPlayerUid,
+  onKick,
+}) {
   let borderColor = "#ccc";
   let borderWidth = 2;
   let borderStyle = "solid";
@@ -74,4 +81,4 @@ export default function PlayerCard ({ isHost, player, isEmpty, setSelectedPlayer
       )}
     </View>
   );
-};
+}
