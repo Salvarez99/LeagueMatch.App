@@ -152,8 +152,20 @@ class LobbyService {
     return { id: doc.id, ...doc.data() };
   }
 
+  // 🔥 Shared kicked filtering helper
+  filterKicked(uid, docs) {
+    return docs.filter((d) => {
+      const data = d.data();
+      return !data.kickedPlayers?.includes(uid);
+    });
+  }
+
   async findLobby(data) {
     const { gameMap, gameMode, desiredPosition, ranks, uid } = data;
+
+    if(!uid){
+      throw new Error("uid is required to find a lobby");
+    }
 
     switch (gameMap) {
       case "Summoner's Rift":
@@ -161,6 +173,7 @@ class LobbyService {
           throw new Error(
             "desiredPosition is required for Summoner's Rift Modes"
           );
+
         return this.searchForRift(
           gameMap,
           gameMode,
@@ -243,29 +256,30 @@ class LobbyService {
   }
 
   async searchForRift(gameMap, gameMode, desiredPosition, ranks, uid) {
-    const positionQuery = await this.findBase(gameMap, gameMode);
-    const positionSnap = await positionQuery
+    const baseQuery = await this.findBase(gameMap, gameMode);
+
+    const positionSnap = await baseQuery
       .where("filter.positionsNeeded", "array-contains", desiredPosition)
       .get();
 
-    const rankQuery = await this.findBase(gameMap, gameMode);
     const rankSnap = ranks?.length
-      ? await rankQuery
+      ? await baseQuery
           .where("filter.ranksFilter", "array-contains-any", ranks)
           .get()
       : null;
 
-    const positionLobbies = new Set(positionSnap.docs.map((d) => d.id));
+    // Merge the results safely
+    let mergedDocs;
 
-    const finalDocs = rankSnap
-      ? rankSnap.docs.filter((d) => positionLobbies.has(d.id))
-      : positionSnap.docs;
+    if (rankSnap) {
+      const positionIds = new Set(positionSnap.docs.map((d) => d.id));
+      mergedDocs = rankSnap.docs.filter((d) => positionIds.has(d.id));
+    } else {
+      mergedDocs = positionSnap.docs;
+    }
 
-    // ❗ Remove lobbies where user was previously kicked
-    const cleaned = finalDocs.filter((d) => {
-      const data = d.data();
-      return !data.kickedPlayers?.includes(uid);
-    });
+    // 🔥 Apply kicked filtering
+    const cleaned = this.filterKicked(uid, mergedDocs);
 
     if (cleaned.length === 0) return null;
 
@@ -275,35 +289,28 @@ class LobbyService {
 
   async searchForAram(gameMap, gameMode, uid) {
     const query = await this.findBase(gameMap, gameMode);
-    const querySnap = await query.get();
+    const snap = await query.get();
 
-    if (querySnap.empty) return null;
+    if (snap.empty) return null;
 
-    // Filter out kicked-player lobbies
-    const cleanedDocs = querySnap.docs.filter((d) => {
-      const data = d.data();
-      return !data.kickedPlayers?.includes(uid);
-    });
+    const cleaned = this.filterKicked(uid, snap.docs);
 
-    if (cleanedDocs.length === 0) return null;
+    if (cleaned.length === 0) return null;
 
-    return { id: cleanedDocs[0].id, ...cleanedDocs[0].data() };
+    return { id: cleaned[0].id, ...cleaned[0].data() };
   }
 
   async searchForFeatured(gameMap, gameMode, uid) {
     const query = await this.findBase(gameMap, gameMode);
-    const querySnap = await query.get();
+    const snap = await query.get();
 
-    if (querySnap.empty) return null;
+    if (snap.empty) return null;
 
-    const cleanedDocs = querySnap.docs.filter((d) => {
-      const data = d.data();
-      return !data.kickedPlayers?.includes(uid);
-    });
+    const cleaned = this.filterKicked(uid, snap.docs);
 
-    if (cleanedDocs.length === 0) return null;
+    if (cleaned.length === 0) return null;
 
-    return { id: cleanedDocs[0].id, ...cleanedDocs[0].data() };
+    return { id: cleaned[0].id, ...cleaned[0].data() };
   }
 }
 

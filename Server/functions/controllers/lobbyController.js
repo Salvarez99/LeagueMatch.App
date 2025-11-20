@@ -134,7 +134,7 @@ class LobbyController {
   }
 
   async find(req, res) {
-    const uid = req.params.uid;
+    const uid = req.query.uid;
     try {
       const {
         gameMap,
