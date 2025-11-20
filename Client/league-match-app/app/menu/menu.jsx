@@ -2,12 +2,10 @@ import { router } from "expo-router";
 import { Text, TouchableOpacity } from "react-native";
 import {
   SafeAreaView,
-  useSafeAreaInsets,
 } from "react-native-safe-area-context";
 import { styles } from "./../../styles/menuStyle";
 
 export default function Index() {
-  const insets = useSafeAreaInsets();
   return (
     <SafeAreaView
       style={[styles.safeAreaStyle]}
