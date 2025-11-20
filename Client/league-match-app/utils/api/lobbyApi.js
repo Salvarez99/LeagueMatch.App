@@ -3,7 +3,7 @@ import axiosClient from "./axiosClient";
 export const lobbyApi = {
   createLobby: (data) => axiosClient.post("/lobby_create", data),
 
-  findLobby: (data) => axiosClient.post("/lobby_find", data),
+  findLobby: (uid, data) => axiosClient.post(`/lobby_find?uid=${uid}`, data),
 
   getById: (lobbyId) => axiosClient.get(`/lobby_get?lobbyId=${lobbyId}`),
 
@@ -12,5 +12,7 @@ export const lobbyApi = {
   leaveLobby: (lobbyId, uid) => axiosClient.delete(`/lobby_leave?lobbyId=${lobbyId}&uid=${uid}`),
 
   updatePlayerReady: (lobbyId, uid) => axiosClient.patch(`/lobby_ready?lobbyId=${lobbyId}&uid=${uid}`),
+
+  kickPlayer: (lobbyId, hostId, data)=> axiosClient.patch(`/lobby_kick?lobbyId=${lobbyId}&hostId=${hostId}`, data),
 
 };

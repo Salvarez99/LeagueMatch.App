@@ -5,6 +5,7 @@ class Lobby {
 
   constructor(
     hostId,
+    riotId,
     gameMap,
     gameMode = null,
     hostPosition = null,
@@ -66,6 +67,7 @@ class Lobby {
     this.players = [
       {
         uid: hostId,
+        riotId: riotId,
         position: hostPosition || null,
         championId: championId || null,
         ready: false,
@@ -73,7 +75,7 @@ class Lobby {
     ];
   }
 
-  addPlayer(uid, position = null, championId = null) {
+  addPlayer(uid, riotId, position = null, championId = null) {
     // Prevent duplicates
     if (this.players.some((p) => p.uid === uid)) {
       throw new Error("Player already in lobby");
@@ -97,7 +99,7 @@ class Lobby {
         }
 
         // Add the player
-        this.players.push({ uid, position, championId, ready: false });
+        this.players.push({ uid, riotId, position, championId, ready: false });
         this.currentPlayers++;
 
         // Remove position from needed list
@@ -110,17 +112,17 @@ class Lobby {
 
       case "Aram": {
         // ARAM: No roles or champion selection needed
-        this.players.push({ uid, ready: false });
+        this.players.push({ uid, riotId, ready: false });
         this.currentPlayers++;
         break;
       }
 
-      case "Featured Mode": {
+      case "Featured Modes": {
         // Featured Mode (like Arena): Only champion required
         if (!championId)
           throw new Error("championId is required for Featured Mode");
 
-        this.players.push({ uid, championId, ready: false });
+        this.players.push({ uid, riotId, championId, ready: false });
         this.currentPlayers++;
         break;
       }
@@ -137,45 +139,57 @@ class Lobby {
     }
   }
 
-  removePlayer(uid) {
+  removePlayer(uid, kicked = false) {
+    // 0️⃣ If host leaves → shutdown lobby completely
     if (this.hostId === uid) {
       this.isActive = false;
       this.players = [];
       this.currentPlayers = 0;
-      this.filter.positionsNeeded = [];
+      this.filter = {
+        ranksFilter: this.filter?.ranksFilter ?? [],
+        positionsNeeded: [],
+      };
+
       this.kickedPlayers = this.kickedPlayers || [];
       this.kickedPlayers.push(uid);
+
       return;
     }
 
-    const playerIndex = this.players.findIndex((p) => p.uid === uid);
-    if (playerIndex === -1) {
+    // 1️⃣ Find player in the list
+    const index = this.players.findIndex((p) => p.uid === uid);
+    if (index === -1) {
       throw new Error("Player not found in lobby");
     }
 
-    const [removedPlayer] = this.players.splice(playerIndex, 1);
-    this.currentPlayers = Math.max(this.currentPlayers - 1, 0);
+    // Pull out the player being removed
+    const [removedPlayer] = this.players.splice(index, 1);
 
-    // Ensure filter arrays exist
+    this.currentPlayers = Math.max(0, this.currentPlayers - 1);
+
+    // Ensure structures exist
     this.filter = this.filter || {};
     this.filter.positionsNeeded = this.filter.positionsNeeded || [];
     this.kickedPlayers = this.kickedPlayers || [];
 
-    // Reopen the role/position slot if applicable
-    if (
-      removedPlayer.position &&
-      this.gameMap === "Summoner's Rift" &&
-      !this.filter.positionsNeeded.includes(removedPlayer.position)
-    ) {
-      this.filter.positionsNeeded.push(removedPlayer.position);
+    // 2️⃣ Restore role (Summoner's Rift only)
+    if (this.gameMap === "Summoner's Rift") {
+      // Normalize position
+      const role = (removedPlayer.position || "").trim();
+
+      if (role.length > 0) {
+        // Only restore if not already included
+        if (!this.filter.positionsNeeded.includes(role)) {
+          this.filter.positionsNeeded.push(role);
+        }
+      }
     }
 
-    //Appended to kickedPlayers
-    this.kickedPlayers = this.kickedPlayers || [];
-    this.kickedPlayers.push(removedPlayer.uid);
+    // 3️⃣ Track kicked/removed players for analytics
+    if (kicked) this.kickedPlayers.push(uid);
 
-    // Mark lobby active again if not full
-    if (!this.isActive && this.currentPlayers < this.maxPlayers) {
+    // 4️⃣ Reactivate lobby if it was full before
+    if (this.currentPlayers < this.maxPlayers) {
       this.isActive = true;
     }
   }

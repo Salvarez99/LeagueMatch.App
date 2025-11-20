@@ -34,7 +34,6 @@ class LobbyService {
       throw err;
     }
 
-    // const lobbiesRef = db.collection("lobbies");
     const snapshot = await this.lobbiesRef.where("hostId", "==", hostId).get();
 
     if (!snapshot.empty) {
@@ -47,6 +46,7 @@ class LobbyService {
     // Create lobby instance from model
     const lobby = new Lobby(
       hostId,
+      host.riotId,
       gameMap,
       gameMode,
       hostPosition,
@@ -90,6 +90,28 @@ class LobbyService {
     });
   }
 
+  async kickPlayer(lobbyId, hostId, targetUid) {
+    const lobbyRef = this.lobbiesRef.doc(lobbyId);
+
+    await db.runTransaction(async (tx) => {
+      const snap = await tx.get(lobbyRef);
+      if (!snap.exists) throw new Error("Lobby not found");
+
+      const lobby = Lobby.fromFireStore(snap.data());
+
+      // Ensure the caller is the host
+      if (lobby.hostId !== hostId) {
+        throw new Error("Unauthorized: Only the host can kick players");
+      }
+
+      // Remove the player and restore the needed role
+      lobby.removePlayer(targetUid, true);
+
+      // Write back updated state
+      tx.update(lobbyRef, lobby.toFirestore());
+    });
+  }
+
   async updateDiscord(lobbyId, hostId, discordLink) {
     const ref = this.lobbiesRef.doc(lobbyId);
 
@@ -130,8 +152,20 @@ class LobbyService {
     return { id: doc.id, ...doc.data() };
   }
 
+  // 🔥 Shared kicked filtering helper
+  filterKicked(uid, docs) {
+    return docs.filter((d) => {
+      const data = d.data();
+      return !data.kickedPlayers?.includes(uid);
+    });
+  }
+
   async findLobby(data) {
-    const { gameMap, gameMode, desiredPosition, ranks } = data;
+    const { gameMap, gameMode, desiredPosition, ranks, uid } = data;
+
+    if(!uid){
+      throw new Error("uid is required to find a lobby");
+    }
 
     switch (gameMap) {
       case "Summoner's Rift":
@@ -139,13 +173,20 @@ class LobbyService {
           throw new Error(
             "desiredPosition is required for Summoner's Rift Modes"
           );
-        return this.searchForRift(gameMap, gameMode, desiredPosition, ranks);
+
+        return this.searchForRift(
+          gameMap,
+          gameMode,
+          desiredPosition,
+          ranks,
+          uid
+        );
 
       case "Aram":
-        return this.searchForAram(gameMap, gameMode);
+        return this.searchForAram(gameMap, gameMode, uid);
 
       case "Featured Mode":
-        return this.searchForFeatured(gameMap, gameMode);
+        return this.searchForFeatured(gameMap, gameMode, uid);
 
       default:
         throw new Error("Unsupported GameMap");
@@ -179,7 +220,7 @@ class LobbyService {
       if (!lobby.isActive) throw new Error("Lobby is inactive");
 
       // Add the player using model logic
-      lobby.addPlayer(uid, position, championId);
+      lobby.addPlayer(uid, user.riotId, position, championId);
 
       // Write back to Firestore
       transaction.update(lobbyRef, lobby.toFirestore());
@@ -214,57 +255,62 @@ class LobbyService {
       .where("isActive", "==", true);
   }
 
-  async searchForRift(gameMap, gameMode, desiredPosition, ranks) {
-    // First query: Find lobbies that need the desired position
-    const positionQuery = await this.findBase(gameMap, gameMode);
-    const positionSnap = await positionQuery
+  async searchForRift(gameMap, gameMode, desiredPosition, ranks, uid) {
+    const baseQuery = await this.findBase(gameMap, gameMode);
+
+    const positionSnap = await baseQuery
       .where("filter.positionsNeeded", "array-contains", desiredPosition)
       .get();
 
-    // Second query: Find lobbies that match any of the specified ranks (if ranks provided)
-    const rankQuery = await this.findBase(gameMap, gameMode);
     const rankSnap = ranks?.length
-      ? await rankQuery
+      ? await baseQuery
           .where("filter.ranksFilter", "array-contains-any", ranks)
           .get()
       : null;
 
-    // Merge results: Rank filtering uses client-side intersection
-    // - Create a Set of lobby IDs from position results for O(1) lookup
-    const positionLobbies = new Set(positionSnap.docs.map((d) => d.id));
+    // Merge the results safely
+    let mergedDocs;
 
-    // - If ranks were queried, filter rank results to only include lobbies
-    //   that also matched the position requirement (intersection of both queries)
-    // - If no ranks provided, use all position-matched lobbies
-    const finalDocs = rankSnap
-      ? rankSnap.docs.filter((d) => positionLobbies.has(d.id))
-      : positionSnap.docs;
+    if (rankSnap) {
+      const positionIds = new Set(positionSnap.docs.map((d) => d.id));
+      mergedDocs = rankSnap.docs.filter((d) => positionIds.has(d.id));
+    } else {
+      mergedDocs = positionSnap.docs;
+    }
 
-    if (finalDocs.length === 0) return null;
+    // 🔥 Apply kicked filtering
+    const cleaned = this.filterKicked(uid, mergedDocs);
 
-    // Return the first lobby that matches both position AND rank criteria
-    const doc = finalDocs[0];
+    if (cleaned.length === 0) return null;
+
+    const doc = cleaned[0];
     return { id: doc.id, ...doc.data() };
   }
 
-  async searchForAram(gameMap, gameMode) {
+  async searchForAram(gameMap, gameMode, uid) {
     const query = await this.findBase(gameMap, gameMode);
+    const snap = await query.get();
 
-    const querySnap = await query.limit(1).get();
+    if (snap.empty) return null;
 
-    if (querySnap.empty) return null;
+    const cleaned = this.filterKicked(uid, snap.docs);
 
-    const doc = querySnap.docs[0];
-    return { id: doc.id, ...doc.data() };
+    if (cleaned.length === 0) return null;
+
+    return { id: cleaned[0].id, ...cleaned[0].data() };
   }
 
-  async searchForFeatured(gameMap, gameMode) {
-    const query = await this.findBase(gameMap, gameMode); // get the Query
-    const querySnap = await query.limit(1).get(); // then run it
+  async searchForFeatured(gameMap, gameMode, uid) {
+    const query = await this.findBase(gameMap, gameMode);
+    const snap = await query.get();
 
-    if (querySnap.empty) return null;
-    const doc = querySnap.docs[0];
-    return { id: doc.id, ...doc.data() };
+    if (snap.empty) return null;
+
+    const cleaned = this.filterKicked(uid, snap.docs);
+
+    if (cleaned.length === 0) return null;
+
+    return { id: cleaned[0].id, ...cleaned[0].data() };
   }
 }
 

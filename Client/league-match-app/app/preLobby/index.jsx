@@ -13,100 +13,166 @@ import RankFilterDropdown from "../../components/preLobby/RankFilterDropdown";
 import { useAuth } from "./../../context/authContext";
 import { styles } from "./../../styles/preLobbyStyle";
 import { lobbyApi } from "./../../utils/api/lobbyApi";
+import { LOG } from "./../../utils/logger";
 
 export default function PreLobby() {
   const { user, loading, appUser } = useAuth();
+  const uid = user?.uid;
+
   const [gameMap, setGameMap] = useState("Summoner's Rift");
   const [gameMode, setGameMode] = useState("");
   const [position, setPosition] = useState("");
   const [championId, setChampionId] = useState("");
   const [rankFilter, setRankFilter] = useState([]);
+
   const router = useRouter();
   const { mode } = useLocalSearchParams();
   const hasRiotId = !!appUser?.riotId;
+
   const [riotModalOpen, setRiotModalOpen] = useState(false);
 
-  const uid = user?.uid;
+  // --------------------------
+  // DEBUG MOUNT
+  // --------------------------
+  useEffect(() => {
+    LOG.debug("🟦 PreLobby Mounted - Debug State Dump", {
+      uid,
+      mode,
+      gameMap,
+      gameMode,
+      position,
+      championId,
+      rankFilter,
+      hasRiotId,
+      riotId: appUser?.riotId,
+    });
+  }, []);
 
+  // ==========================================================
+  // HOST / JOIN SUBMIT HANDLER
+  // ==========================================================
   const handleSubmit = async () => {
+    LOG.debug("🔵 handleSubmit()", { mode, hasRiotId });
+
     if (!hasRiotId) {
+      LOG.debug("🛑 No Riot ID — opening Riot modal");
       setRiotModalOpen(true);
       return;
     }
 
-    switch (mode) {
-      case "host":
-        handleCreateLobby();
-        break;
-      case "join":
-        handleJoinLobby();
-        break;
-    }
+    if (mode === "host") return handleCreateLobby();
+    if (mode === "join") return handleJoinLobby();
   };
 
+  // ==========================================================
+  // CREATE LOBBY
+  // ==========================================================
   const handleCreateLobby = async () => {
-    const hostId = uid;
+    LOG.debug("🟧 HANDLE CREATE LOBBY", {
+      uid,
+      payload: {
+        hostId: uid,
+        hostPosition: position,
+        gameMap,
+        gameMode,
+        championId,
+        rankFilter,
+      },
+    });
 
     try {
       const res = await lobbyApi.createLobby({
-        hostId: hostId,
+        hostId: uid,
         hostPosition: position,
-        gameMap: gameMap,
-        gameMode: gameMode,
-        championId: championId,
-        rankFilter: rankFilter,
+        gameMap,
+        gameMode,
+        championId,
+        rankFilter,
       });
 
-      console.log(`ATTEMPTING TO CREATE LOBBY WITH FOLLOWING DETAILS:`);
-      console.log(`hostId: ${hostId}`);
-      console.log(`gameMap: ${gameMap}`);
-      console.log(`gameMode: ${gameMode}`);
-      console.log(`position: ${position}`);
-      console.log(`championId: ${championId}`);
-      console.log(`rankFilter: ${rankFilter}`);
+      LOG.debug("🟩 CREATE LOBBY SUCCESS", {
+        response: res.data,
+      });
 
       const id = res.data.id;
 
-      router.push({
-        pathname: `/lobby/${id}`,
-        params: {
-          gameMap,
-          gameMode,
-        },
+      LOG.debug("➡️ NAVIGATING TO /lobby/[id]", {
+        id,
+        gameMap,
+        gameMode,
       });
 
-      console.log(`LOBBY CREATED SUCCESSFULLY. ID: ${id}`);
+      router.push({
+        pathname: `/lobby/${id}`,
+        params: { gameMap, gameMode },
+      });
     } catch (err) {
+      LOG.error("❌ CREATE LOBBY ERROR", {
+        status: err.response?.status,
+        data: err.response?.data,
+      });
+
       if (
         err.response?.data?.error ===
         "Host must link Riot ID before creating a lobby"
       ) {
-        console.log("Host must link Riot ID before creating a lobby");
-        console.log(`${err.response?.data?.error}`);
+        LOG.debug("⚠️ Host missing Riot ID — opening Riot modal");
         setRiotModalOpen(true);
-        return;
       }
-
-      console.error(err);
     }
   };
 
+  // ==========================================================
+  // JOIN LOBBY
+  // ==========================================================
   const handleJoinLobby = async () => {
-    console.log(`uid:${uid}`);
+    LOG.debug("🟪 HANDLE JOIN LOBBY START", {
+      uid,
+      gameMap,
+      gameMode,
+      position,
+      championId,
+      rankFilter,
+    });
+
     try {
-      const findRes = await lobbyApi.findLobby({
-        gameMap: gameMap,
-        gameMode: gameMode,
+      LOG.debug("🔍 Searching for lobby with:", {
+        gameMap,
+        gameMode,
         desiredPosition: position,
         ranks: rankFilter,
       });
 
+      const findRes = await lobbyApi.findLobby(uid, {
+        gameMap,
+        gameMode,
+        desiredPosition: position,
+        ranks: rankFilter,
+      });
+
+      LOG.debug("🟩 FIND LOBBY SUCCESS:", findRes.data);
+
       const lobbyId = findRes.data.id;
 
+      LOG.debug("➡️ Attempting JOIN with payload:", {
+        uid,
+        position,
+        championId,
+        lobbyId,
+      });
+
       const joinRes = await lobbyApi.joinLobby(lobbyId, {
-        uid: uid,
-        position: position,
-        championId: championId,
+        uid,
+        position,
+        championId,
+      });
+
+      LOG.debug("🟩 JOIN SUCCESS:", {
+        returnedLobby: joinRes.data?.updatedLobby,
+      });
+
+      LOG.debug("➡️ NAVIGATE TO LOBBY WITH justJoined=true", {
+        lobbyId,
       });
 
       router.push({
@@ -114,34 +180,44 @@ export default function PreLobby() {
         params: {
           gameMap,
           gameMode,
+          justJoined: "true",
         },
       });
     } catch (err) {
-      console.error("Error finding lobby:", {
-        data: err.response.data,
+      LOG.error("❌ JOIN FAILED", {
+        status: err.response?.status,
+        data: err.response?.data,
+        error: err,
       });
     }
   };
 
+  // ==========================================================
+  // ON LOAD DEBUG
+  // ==========================================================
   useEffect(() => {
-    console.log(`Mode: ${mode}`);
-    console.log(`User: ${user.uid}`);
-
-    console.log("Loading:", loading);
+    LOG.debug("⬆️ PreLobby state updated", {
+      uid,
+      mode,
+      loading,
+    });
   }, [user, loading]);
 
   return (
     <SafeAreaView style={styles.containerStyle} edges={["bottom"]}>
       <GameModeHeader gameMap={gameMap} gameMode={gameMode} />
 
-      <HostCard host={{ uid, championId, position }} isLobby={false} />
+      <HostCard
+        host={{ uid, riotId: appUser.riotId, championId, position }}
+        isLobby={false}
+      />
 
       <GameModeCarousel setGameMap={setGameMap} setGameMode={setGameMode} />
 
       <View style={styles.champPosContainerStyle}>
         <PickChampionButton setChampionId={setChampionId} />
         <PickPositionDropdown
-          items={["Top", "Jungle", "Mid", "Adc", "Support"]}
+          items={["Top", "Jungle", "Middle", "Adc", "Support"]}
           value={position}
           onSelect={(p) => setPosition(p)}
         />

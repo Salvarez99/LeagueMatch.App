@@ -56,7 +56,7 @@ export const AuthProvider = ({ children }) => {
 
             if (json !== lastAppJSON.current) {
               LOG.store("Firestore user updated:");
-              logObjectDeep("appUser", data);
+              logObjectDeep("appUser: ",data);
               lastAppJSON.current = json;
             }
 

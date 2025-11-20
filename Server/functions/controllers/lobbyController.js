@@ -39,12 +39,12 @@ class LobbyController {
 
   async ready(req, res) {
     try {
-      const { lobbyId, uid,} = req.query;
+      const { lobbyId, uid } = req.query;
       await lobbyService.updateReadyStatus(lobbyId, uid);
       res.status(200).json({
-        success:true,
+        success: true,
         message: "Ready status updated successfully",
-      })
+      });
     } catch (err) {
       res.status(500).json({
         success: false,
@@ -54,6 +54,24 @@ class LobbyController {
     }
   }
 
+  async kick(req, res) {
+    const { lobbyId, hostId } = req.query;
+    const { uid } = req.body;
+
+    try {
+      await lobbyService.kickPlayer(lobbyId, hostId, uid);
+      res.status(200).json({
+        success: true,
+        message: "Player kicked successfully",
+      });
+    } catch (err) {
+      res.status(500).json({
+        succes: false,
+        message: "Error kicking player",
+        error: err.message,
+      });
+    }
+  }
   // POST /lobby_updateDiscord
   // body: { lobbyId, hostId, discordLink }
   async updateDiscord(req, res) {
@@ -116,6 +134,7 @@ class LobbyController {
   }
 
   async find(req, res) {
+    const uid = req.query.uid;
     try {
       const {
         gameMap,
@@ -133,10 +152,11 @@ class LobbyController {
         gameMode,
         desiredPosition,
         ranks,
+        uid
       });
 
       if (!lobby) {
-        res.status(404).json({
+        return res.status(404).json({
           success: false,
           message: "No lobbies found",
         });
