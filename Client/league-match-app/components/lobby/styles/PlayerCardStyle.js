@@ -5,18 +5,20 @@ export const styles = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap",
     justifyContent: "center",
-    paddingVertical: 10,
+    paddingVertical:5,
+    paddingBottom: 0,
   },
 
   playerCardWrapper: {
     width: "45%",
-    margin: "2%",
+    height: "47%",
+    margin: "1.5%",
   },
 
   playerCard: {
     backgroundColor: "#D9D9D9",
     width: "100%",
-    height: 140,               // default height
+    height: "100%",               // default height
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 10,
@@ -24,7 +26,7 @@ export const styles = StyleSheet.create({
   },
 
   playerCardSelected: {
-    height: 100,               // shrinks when selected
+    height: "78%",               // shrinks when selected
     borderBottomLeftRadius: 0,
     borderBottomRightRadius: 0,
   },

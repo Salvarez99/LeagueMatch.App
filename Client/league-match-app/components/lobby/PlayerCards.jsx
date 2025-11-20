@@ -22,7 +22,7 @@ export default function PlayerCards({
   const PlayerCard = ({ player, isEmpty }) => {
     let borderColor = "#ccc";
     let borderWidth = 2;
-    let borderStyle = isEmpty ? "dashed" : "solid";
+    let borderStyle = "solid";
 
     if (!isEmpty) {
       borderColor = player.ready ? "#00C851" : "#ff4444";
