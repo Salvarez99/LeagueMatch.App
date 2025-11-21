@@ -1,6 +1,10 @@
 import * as Clipboard from "expo-clipboard";
+import { useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import Toast from "react-native-toast-message";
+import { useAuth } from "../../context/authContext";
+import { champions } from "../../utils/constants";
+import PickChampionModal from "../preLobby/PickChampionModal";
 import { styles } from "./styles/PlayerCardStyle";
 
 export default function PlayerCard({
@@ -10,10 +14,17 @@ export default function PlayerCard({
   setSelectedPlayerUid,
   selectedPlayerUid,
   onKick,
+  onChampionSelect,
 }) {
+  const { appUser } = useAuth();
   let borderColor = "#ccc";
   let borderWidth = 2;
   let borderStyle = "solid";
+
+  const isPlayerCurrentUser = player?.uid === appUser?.uid;
+  const [isOpen, setIsOpen] = useState(false);
+  const [championId, setChampionId] = useState(player?.championId);
+  const [championName, setChampionName] = useState(champions[championId]);
 
   if (!isEmpty) {
     borderColor = player.ready ? "#00C851" : "#ff4444";
@@ -33,19 +44,25 @@ export default function PlayerCard({
             borderStyle,
             opacity: isEmpty ? 0.5 : 1,
           },
-          isSelected && styles.playerCardSelected, // shrink if selected
+          isHost && isSelected && styles.playerCardSelected, // shrink if selected
         ]}
         disabled={isEmpty}
         onPress={() => {
-          //If user is not host or slot is empty then do nothing
-          if (!isHost || isEmpty) return;
+          //If slot is empty then do nothing
+          if (isEmpty) return;
 
-          //User is host: if player is already selected then unselect them
-          setSelectedPlayerUid(
-            selectedPlayerUid === player.uid ? null : player.uid
-          );
+          //If user is not host and is current player then open champ modal
+          if (!isHost && isPlayerCurrentUser) {
+            setIsOpen(true);
+            return;
+          }
+
+          //If user is host then toggle selected player to show kick button
+          if (isHost)
+            setSelectedPlayerUid(
+              selectedPlayerUid === player.uid ? null : player.uid
+            );
         }}
-        
         //OnLongPress copy the players riotId to clipBoard and show toast
         onLongPress={async () => {
           if (isEmpty) return;
@@ -86,6 +103,18 @@ export default function PlayerCard({
         >
           <Text style={styles.kickButtonText}>Kick Player</Text>
         </TouchableOpacity>
+      )}
+
+      {!isHost && isPlayerCurrentUser && !isEmpty && isOpen && (
+        <PickChampionModal
+          visible={isOpen}
+          onClose={() => setIsOpen(false)}
+          setChampionId={(id) => {
+            setChampionId(id);
+            onChampionSelect(player.uid, id); // <-- SEND UPWARD
+          }}
+          setChampionName={setChampionName}
+        />
       )}
     </View>
   );
