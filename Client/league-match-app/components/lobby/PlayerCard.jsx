@@ -23,6 +23,7 @@ export default function PlayerCard({
 
   return (
     <View style={styles.playerCardWrapper}>
+      {/*Player Card*/}
       <TouchableOpacity
         style={[
           styles.playerCard,
@@ -36,11 +37,16 @@ export default function PlayerCard({
         ]}
         disabled={isEmpty}
         onPress={() => {
+          //If user is not host or slot is empty then do nothing
           if (!isHost || isEmpty) return;
+
+          //User is host: if player is already selected then unselect them
           setSelectedPlayerUid(
             selectedPlayerUid === player.uid ? null : player.uid
           );
         }}
+        
+        //OnLongPress copy the players riotId to clipBoard and show toast
         onLongPress={async () => {
           if (isEmpty) return;
           await Clipboard.setStringAsync(player.riotId);
@@ -53,6 +59,7 @@ export default function PlayerCard({
           });
         }}
       >
+        {/*If the playerSlot is empty then render an empty card */}
         {isEmpty ? (
           <Text style={styles.defaultTextStyle}>Empty Slot</Text>
         ) : (
@@ -68,6 +75,7 @@ export default function PlayerCard({
         )}
       </TouchableOpacity>
 
+      {/*If player is host and playerCard is not empty then render kick button */}
       {isHost && isSelected && !isEmpty && (
         <TouchableOpacity
           style={styles.kickButton}
