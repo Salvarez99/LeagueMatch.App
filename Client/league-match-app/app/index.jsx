@@ -68,8 +68,6 @@ export default function Index() {
         // Wait for auth state to propagate
         await new Promise((resolve) => setTimeout(resolve, 300));
 
-        const hasRiotId = !!appUser?.riotId;
-
         if (hasRiotId) {
           router.replace("/menu/menu");
         } else {

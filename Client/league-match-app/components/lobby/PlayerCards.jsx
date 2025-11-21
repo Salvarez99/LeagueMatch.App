@@ -10,6 +10,7 @@ export default function PlayerCards({
   maxPlayers,
   isHost = false,
   onKick,
+  onUpdateChampion,
 }) {
   const actualMaxPlayers = (maxPlayers ?? 5) - 1;
   const [selectedPlayerUid, setSelectedPlayerUid] = useState(null);
@@ -30,6 +31,7 @@ export default function PlayerCards({
             setSelectedPlayerUid={setSelectedPlayerUid}
             selectedPlayerUid={selectedPlayerUid}
             onKick={onKick}
+            onChampionSelect={onUpdateChampion}
           />
         );
       })}

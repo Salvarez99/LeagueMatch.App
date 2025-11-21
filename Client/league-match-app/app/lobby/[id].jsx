@@ -21,7 +21,7 @@ export default function Lobby() {
   const players = lobby?.players;
 
   // 3. All backend actions (leave, kick, ready, discord)
-  const { onLeave, onReady, onKickPlayer, updateDiscordLink } = useLobbyActions(
+  const { onLeave, onReady, onKickPlayer, updateDiscordLink, handleUpdateChampion } = useLobbyActions(
     id,
     uid
   );
@@ -43,6 +43,7 @@ export default function Lobby() {
         host={host}
         isLobby={true}
         status={host?.ready}
+        onChampionSelect={handleUpdateChampion}
       />
 
       {/* OTHER PLAYERS */}
@@ -52,6 +53,7 @@ export default function Lobby() {
         maxPlayers={lobby?.maxPlayers}
         isHost={lobby?.hostId === uid}
         onKick={onKickPlayer}
+        onUpdateChampion={handleUpdateChampion}
       />
 
       {/* DISCORD BUTTON */}

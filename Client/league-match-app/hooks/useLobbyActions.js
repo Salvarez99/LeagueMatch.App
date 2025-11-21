@@ -55,10 +55,21 @@ export function useLobbyActions(lobbyId, uid) {
     }
   };
 
+  const handleUpdateChampion = async (playerUid, championId) => {
+  try {
+    await lobbyApi.updateChampion(lobbyId, playerUid, { championId });
+    console.log("Champion updated", playerUid, championId);
+  } catch (error) {
+    console.error("Failed to update champion:", error);
+  }
+};
+
+
   return {
     onLeave,
     onReady,
     onKickPlayer,
     updateDiscordLink,
+    handleUpdateChampion,
   };
 }

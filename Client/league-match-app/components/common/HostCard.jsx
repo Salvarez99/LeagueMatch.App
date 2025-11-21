@@ -1,50 +1,62 @@
 import * as Clipboard from "expo-clipboard";
+import { useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import Toast from "react-native-toast-message";
+import { champions } from "../../utils/constants";
+import PickChampionModal from "../preLobby/PickChampionModal";
 import { styles } from "./Styles/HostCardStyle";
 
-export default function HostCard({ host, isLobby, status }) {
-  // Determine outline only when in lobby
+export default function HostCard({ host, isLobby, status, onChampionSelect }) {
+  if (!host) {
+    return (
+      <View style={styles.containerStyle}>
+        <Text style={styles.text}>Loading Host...</Text>
+      </View>
+    );
+  }
+
   let borderColor = "transparent";
   let borderWidth = 0;
-  // console.log(host.riotId)
+
+  const [isOpen, setIsOpen] = useState(false);
+  const [championId, setChampionId] = useState(host.championId || "");
+  const [championName, setChampionName] = useState(
+    champions[host.championId] || ""
+  );
 
   if (isLobby) {
     borderWidth = 2;
-    borderColor = status ? "#00C851" : "#ff4444"; // green or red
+    borderColor = status ? "#00C851" : "#ff4444";
   }
 
   return (
     <View style={styles.containerStyle}>
       <TouchableOpacity
         style={[styles.hostCardButtonStyle, { borderColor, borderWidth }]}
-        disabled={!isLobby} // optional: host card not interactive outside lobby
+        disabled={!isLobby}
         onLongPress={async () => {
-          if (!host?.riotId) return;
           await Clipboard.setStringAsync(host.riotId);
           Toast.show({
             type: "success",
-            text1: "Copied Riot ID to clipboard: ",
+            text1: "Copied Riot ID",
             text2: host.riotId,
-            position: "center",
-            topOffset: 55,
           });
         }}
+        onPress={() => setIsOpen(true)}
       >
-        {host ? (
-          <>
-            <Text style={styles.text}>Host: {host.riotId}</Text>
-            <Text style={styles.text}>Role: {host.position}</Text>
-            <Text style={styles.text}>Champion: {host.championId}</Text>
-            {/* {isLobby && (
-              <Text style={styles.text}>
-                Ready: {status ? "True" : "False"}
-              </Text>
-            )} */}
-          </>
-        ) : (
-          <Text style={styles.text}>Loading Host...</Text>
-        )}
+        <Text style={styles.text}>Host: {host.riotId}</Text>
+        <Text style={styles.text}>Role: {host.position}</Text>
+        <Text style={styles.text}>Champion: {host.championId}</Text>
+
+        <PickChampionModal
+          visible={isOpen}
+          onClose={() => setIsOpen(false)}
+          setChampionId={(id) => {
+            setChampionId(id);
+            onChampionSelect(host.uid, id);
+          }}
+          setChampionName={setChampionName}
+        />
       </TouchableOpacity>
     </View>
   );
