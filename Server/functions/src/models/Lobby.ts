@@ -1,6 +1,7 @@
 import { IPlayerData } from "../interfaces/IPlayerData";
 import { ILobbyData } from "../interfaces/ILobbyData";
 import { ILobbyFilter } from "../interfaces/ILobbyFilter";
+import { DocumentData } from "firebase-admin/firestore";
 
 export class Lobby {
   hostId: string;
@@ -219,11 +220,9 @@ export class Lobby {
     return { ...this };
   }
 
-  static fromFireStore(data: ILobbyData) {
+  static fromFireStore(data: DocumentData) {
     const lobby = Object.create(Lobby.prototype);
     Object.assign(lobby, data);
     return lobby;
   }
 }
-
-module.exports = Lobby;

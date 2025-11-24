@@ -2,57 +2,48 @@ import * as functions from "firebase-functions";
 import { Request, Response } from "express";
 
 /**
- * Auto-exports only the controller's own methods as Firebase HTTPS functions.
- * Filters out inherited Object methods and non-functions.
+ * Creates Firebase HTTPS functions for each method of a controller instance.
+ * Output function names follow the schema: `${prefix}_${methodName}`.
  */
-export function exportController(
+export function exportFunctions(
   controller: Record<string, any>,
-  prefix: string = ""
-) {
+  prefix: string
+): Record<string, any> {
   const exported: Record<string, any> = {};
 
   const prototype = Object.getPrototypeOf(controller);
 
+  // Get ONLY the controller's actual methods (remove inherited Object methods)
   const methodNames = Object.getOwnPropertyNames(prototype).filter((key) => {
-    const value = controller[key];
-
-    // Skip constructor
     if (key === "constructor") return false;
 
-    // Must be a function
-    if (typeof value !== "function") return false;
+    const value = controller[key];
 
-    // Skip inherited object methods
-    if (
-      [
+    return (
+      typeof value === "function" &&
+      ![
         "__defineGetter__",
         "__defineSetter__",
+        "__lookupGetter__",
+        "__lookupSetter__",
         "hasOwnProperty",
         "isPrototypeOf",
         "propertyIsEnumerable",
         "toLocaleString",
         "toString",
         "valueOf",
-        "__lookupGetter__",
-        "__lookupSetter__",
         "__proto__",
       ].includes(key)
-    ) {
-      return false;
-    }
-
-    return true;
+    );
   });
 
-  for (const key of methodNames) {
-  const functionName = prefix ? `${prefix}_${key}` : key;
-  console.log(`function name: ${functionName}`);
+  for (const methodName of methodNames) {
+    const functionName = `${prefix}_${methodName}`;
 
-  exported[functionName] = functions.https.onRequest(
-    (req: Request, res: Response) => controller[key](req, res)
-  );
-}
-
+    exported[functionName] = functions.https.onRequest(
+      (req: Request, res: Response) => controller[methodName](req, res)
+    );
+  }
 
   return exported;
 }

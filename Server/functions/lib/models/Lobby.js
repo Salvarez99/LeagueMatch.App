@@ -169,4 +169,3 @@ exports.Lobby = Lobby;
 Lobby.mapPositions = {
     "Summoner's Rift": ["Top", "Jungle", "Middle", "Adc", "Support"],
 };
-module.exports = Lobby;

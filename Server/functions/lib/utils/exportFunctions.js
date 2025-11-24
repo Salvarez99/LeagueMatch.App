@@ -33,45 +33,38 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.exportController = exportController;
+exports.exportFunctions = exportFunctions;
 const functions = __importStar(require("firebase-functions"));
 /**
- * Auto-exports only the controller's own methods as Firebase HTTPS functions.
- * Filters out inherited Object methods and non-functions.
+ * Creates Firebase HTTPS functions for each method of a controller instance.
+ * Output function names follow the schema: `${prefix}_${methodName}`.
  */
-function exportController(controller, prefix = "") {
+function exportFunctions(controller, prefix) {
     const exported = {};
     const prototype = Object.getPrototypeOf(controller);
+    // Get ONLY the controller's actual methods (remove inherited Object methods)
     const methodNames = Object.getOwnPropertyNames(prototype).filter((key) => {
-        const value = controller[key];
-        // Skip constructor
         if (key === "constructor")
             return false;
-        // Must be a function
-        if (typeof value !== "function")
-            return false;
-        // Skip inherited object methods
-        if ([
-            "__defineGetter__",
-            "__defineSetter__",
-            "hasOwnProperty",
-            "isPrototypeOf",
-            "propertyIsEnumerable",
-            "toLocaleString",
-            "toString",
-            "valueOf",
-            "__lookupGetter__",
-            "__lookupSetter__",
-            "__proto__",
-        ].includes(key)) {
-            return false;
-        }
-        return true;
+        const value = controller[key];
+        return (typeof value === "function" &&
+            ![
+                "__defineGetter__",
+                "__defineSetter__",
+                "__lookupGetter__",
+                "__lookupSetter__",
+                "hasOwnProperty",
+                "isPrototypeOf",
+                "propertyIsEnumerable",
+                "toLocaleString",
+                "toString",
+                "valueOf",
+                "__proto__",
+            ].includes(key));
     });
-    for (const key of methodNames) {
-        const functionName = prefix ? `${prefix}_${key}` : key;
-        console.log(`function name: ${functionName}`);
-        exported[functionName] = functions.https.onRequest((req, res) => controller[key](req, res));
+    for (const methodName of methodNames) {
+        const functionName = `${prefix}_${methodName}`;
+        exported[functionName] = functions.https.onRequest((req, res) => controller[methodName](req, res));
     }
     return exported;
 }
