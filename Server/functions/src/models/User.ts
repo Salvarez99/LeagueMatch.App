@@ -1,5 +1,15 @@
-class User {
-  constructor(data = {}) {
+import { IUserData } from "../interfaces/IUserData";
+
+export class User {
+  uid: string;
+  username: string;
+  email: string;
+  puuid: string | null;
+  riotId: string | null;
+  rank: string | null;
+  preferredRoles: string[];
+
+  constructor(data: IUserData) {
     this.uid = data.uid;
     this.username = data.username;
     this.email = data.email;
@@ -23,5 +33,3 @@ class User {
     };
   }
 }
-
-module.exports = User;

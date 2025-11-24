@@ -1,21 +1,23 @@
-const userService = require("../services/userService");
+import { Request, Response } from "express";
+import { userService } from "../services/userService";
+import { IUserData } from "../interfaces/IUserData";
 
-class UserController {
+export class UserController {
   // POST /addUser
-  async addUser(req, res) {
+  async addUser(req: Request, res: Response) {
     try {
       if (req.method !== "POST") {
         return res.status(405).json({ error: "Method Not Allowed" });
       }
 
-      const userDTO = req.body;
+      const userDTO: IUserData = req.body;
       const createdUser = await userService.addUser(userDTO);
 
       return res.status(200).json({
         success: true,
         data: createdUser,
       });
-    } catch (err) {
+    } catch (err: any) {
       console.error("addUser error:", err);
       return res.status(400).json({
         success: false,
@@ -25,19 +27,25 @@ class UserController {
   }
 
   // POST /updateUser
-  async updateUser(req, res) {
+  async updateUser(req: Request, res: Response) {
     try {
       if (req.method !== "POST") {
         return res.status(405).json({ error: "Method Not Allowed" });
       }
 
-      const updatedUser = await userService.updateUser(req.body);
+      const { uid, username, riotId } = req.body as {
+        uid: string | null;
+        username: string | null;
+        riotId: string;
+      };
+
+      const updatedUser = await userService.updateUser(uid, username, riotId);
 
       return res.status(200).json({
         success: true,
         data: updatedUser,
       });
-    } catch (err) {
+    } catch (err: any) {
       console.error("updateUser error:", err);
       return res.status(500).json({
         success: false,
@@ -47,5 +55,5 @@ class UserController {
   }
 }
 
-// export singleton instance (so you can easily import it in index.js)
-module.exports = new UserController();
+// Singleton export
+export const userController = new UserController();

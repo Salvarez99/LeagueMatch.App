@@ -1,9 +1,8 @@
-// controllers/lobbyController.js
-const { error } = require("firebase-functions/logger");
-const lobbyService = require("../services/lobbyService");
+import { Request, Response } from "express";
+import { lobbyService } from "../services/lobbyService";
 
-class LobbyController {
-  async create(req, res) {
+export class LobbyController {
+  async create(req: Request, res: Response) {
     try {
       const {
         hostId,
@@ -23,13 +22,13 @@ class LobbyController {
         rankFilter,
       });
 
-      res.status(201).json({
+      return res.status(201).json({
         success: true,
         message: "Lobby created successfully",
         id: newLobby.id,
       });
-    } catch (err) {
-      res.status(500).json({
+    } catch (err: any) {
+      return res.status(500).json({
         success: false,
         message: "Error creating lobby",
         error: err.message,
@@ -37,16 +36,19 @@ class LobbyController {
     }
   }
 
-  async ready(req, res) {
+  async ready(req: Request, res: Response) {
     try {
-      const { lobbyId, uid } = req.query;
+      const lobbyId = req.query.lobbyId as string;
+      const uid = req.query.uid as string;
+
       await lobbyService.updateReadyStatus(lobbyId, uid);
-      res.status(200).json({
+
+      return res.status(200).json({
         success: true,
         message: "Ready status updated successfully",
       });
-    } catch (err) {
-      res.status(500).json({
+    } catch (err: any) {
+      return res.status(500).json({
         success: false,
         message: "Error updating ready status",
         error: err.message,
@@ -54,48 +56,53 @@ class LobbyController {
     }
   }
 
-  async kick(req, res) {
-    const { lobbyId, hostId } = req.query;
-    const { uid } = req.body;
-
+  async kick(req: Request, res: Response) {
     try {
+      const lobbyId = req.query.lobbyId as string;
+      const hostId = req.query.hostId as string;
+      const { uid } = req.body;
+
       await lobbyService.kickPlayer(lobbyId, hostId, uid);
-      res.status(200).json({
+
+      return res.status(200).json({
         success: true,
         message: "Player kicked successfully",
       });
-    } catch (err) {
-      res.status(500).json({
-        succes: false,
+    } catch (err: any) {
+      return res.status(500).json({
+        success: false,
         message: "Error kicking player",
         error: err.message,
       });
     }
   }
-  // POST /lobby_updateDiscord
-  // body: { lobbyId, hostId, discordLink }
-  async updateDiscord(req, res) {
-    const { lobbyId, hostId, discordLink } = req.body;
+
+  async updateDiscord(req: Request, res: Response) {
     try {
+      const { lobbyId, hostId, discordLink } = req.body;
+
       await lobbyService.updateDiscord(lobbyId, hostId, discordLink);
-      res.json({ success: true });
-    } catch (err) {
-      res.status(400).json({ error: err.message });
+
+      return res.json({ success: true });
+    } catch (err: any) {
+      return res.status(400).json({ success: false, error: err.message });
     }
   }
 
-  async updateChampion(req, res) {
-    const { lobbyId, uid } = req.query;
-    const { championId } = req.body;
-
+  async updateChampion(req: Request, res: Response) {
     try {
+      const lobbyId = req.query.lobbyId as string;
+      const uid = req.query.uid as string;
+      const { championId } = req.body;
+
       await lobbyService.updateChampion(lobbyId, uid, championId);
-      res.status(200).json({
+
+      return res.status(200).json({
         success: true,
         message: "Champion updated successfully",
       });
-    } catch (err) {
-      res.status(500).json({
+    } catch (err: any) {
+      return res.status(500).json({
         success: false,
         message: "Error updating champion",
         error: err.message,
@@ -103,17 +110,19 @@ class LobbyController {
     }
   }
 
-  async getAvailableLobbies(req, res) {
-    const { desiredRole } = req.body;
+  async getAvailableLobbies(req: Request, res: Response) {
     try {
+      const { desiredRole } = req.body;
+
       const lobbies = await lobbyService.getAvailableLobbies(desiredRole);
-      res.status(200).json({
+
+      return res.status(200).json({
         success: true,
         message: "Available lobbies fetched",
         lobbies,
       });
-    } catch (err) {
-      res.status(500).json({
+    } catch (err: any) {
+      return res.status(500).json({
         success: false,
         message: "Error getting available lobbies",
         error: err.message,
@@ -121,9 +130,10 @@ class LobbyController {
     }
   }
 
-  async get(req, res) {
+  async get(req: Request, res: Response) {
     try {
-      const lobbyId = req.query.lobbyId; // get from query param
+      const lobbyId = req.query.lobbyId as string;
+
       if (!lobbyId) {
         return res.status(400).json({
           success: false,
@@ -142,9 +152,13 @@ class LobbyController {
         });
       }
 
-      res.status(200).json({ success: true, message: "lobby found", lobby });
-    } catch (err) {
-      res.status(500).json({
+      return res.status(200).json({
+        success: true,
+        message: "Lobby found",
+        lobby,
+      });
+    } catch (err: any) {
+      return res.status(500).json({
         success: false,
         message: "Error retrieving lobby",
         error: err.message,
@@ -152,9 +166,9 @@ class LobbyController {
     }
   }
 
-  async find(req, res) {
-    const uid = req.query.uid;
+  async find(req: Request, res: Response) {
     try {
+      const uid = req.query.uid as string;
       const {
         gameMap,
         gameMode,
@@ -163,7 +177,10 @@ class LobbyController {
       } = req.body;
 
       if (!gameMap || !gameMode) {
-        throw new Error("gameMap and gameMode are required");
+        return res.status(400).json({
+          success: false,
+          message: "gameMap and gameMode are required",
+        });
       }
 
       const lobby = await lobbyService.findLobby({
@@ -181,13 +198,13 @@ class LobbyController {
         });
       }
 
-      res.status(201).json({
+      return res.status(201).json({
         success: true,
         message: "Lobby found",
         id: lobby.id,
       });
-    } catch (err) {
-      res.status(500).json({
+    } catch (err: any) {
+      return res.status(500).json({
         success: false,
         message: "Error finding lobby",
         error: err.message,
@@ -195,7 +212,7 @@ class LobbyController {
     }
   }
 
-  async join(req, res) {
+  async join(req: Request, res: Response) {
     try {
       if (req.method !== "POST") {
         return res.status(405).json({
@@ -205,7 +222,7 @@ class LobbyController {
         });
       }
 
-      const { lobbyId } = req.query;
+      const lobbyId = req.query.lobbyId as string;
       const { uid, position = null, championId = null } = req.body;
 
       if (!lobbyId || !uid) {
@@ -227,17 +244,16 @@ class LobbyController {
         message: "Player successfully joined lobby",
         updatedLobby,
       });
-    } catch (error) {
-      console.error("Error joining lobby:", error);
+    } catch (err: any) {
       return res.status(500).json({
         success: false,
         message: "Error joining lobby",
-        error: error.message,
+        error: err.message,
       });
     }
   }
 
-  async leave(req, res) {
+  async leave(req: Request, res: Response) {
     try {
       if (req.method !== "DELETE") {
         return res.status(405).json({
@@ -247,7 +263,8 @@ class LobbyController {
         });
       }
 
-      const { lobbyId, uid } = req.query;
+      const lobbyId = req.query.lobbyId as string;
+      const uid = req.query.uid as string;
 
       if (!lobbyId || !uid) {
         return res.status(400).json({
@@ -261,16 +278,16 @@ class LobbyController {
 
       return res.status(200).json({
         success: true,
-        message: `Left lobby successsfully`,
+        message: `Left lobby successfully`,
       });
-    } catch (error) {
+    } catch (err: any) {
       return res.status(500).json({
         success: false,
         message: "Error leaving lobby.",
-        error: error.message,
+        error: err.message,
       });
     }
   }
 }
 
-module.exports = new LobbyController();
+export const lobbyController = new LobbyController();

@@ -1,11 +1,13 @@
-const fetch = require("node-fetch");
+import { IRiotAccount, IRiotRankEntry } from "../interfaces/riot";
 
-class RiotService {
-  constructor(apiKey) {
-    this.apiKey = apiKey || process.env.RIOT_API_KEY;
+export class RiotService {
+  apiKey: string;
+
+  constructor(apiKey?: string) {
+    this.apiKey = apiKey ?? process.env.RIOT_API_KEY ?? "";
   }
 
-  async getAccountByRiotId(gameName, tag) {
+  async getAccountByRiotId(gameName: string, tag: string): Promise<IRiotAccount> {
     const baseUrl = "https://americas.api.riotgames.com";
     const url = `${baseUrl}/riot/account/v1/accounts/by-riot-id/${gameName}/${tag}`;
 
@@ -19,10 +21,10 @@ class RiotService {
       );
     }
 
-    return response.json();
+    return response.json() as Promise<IRiotAccount>;
   }
 
-  async getRankByPuuid(puuid) {
+  async getRankByPuuid(puuid: string): Promise<IRiotRankEntry[]> {
     const baseUrl = "https://na1.api.riotgames.com";
     const url = `${baseUrl}/lol/league/v4/entries/by-puuid/${puuid}`;
 
@@ -34,9 +36,9 @@ class RiotService {
       throw new Error(`Failed to fetch Riot rank data (${response.status})`);
     }
 
-    return response.json();
+    return response.json() as Promise<IRiotRankEntry[]>;
   }
 }
 
-// Export a singleton instance
-module.exports = new RiotService();
+// Singleton export
+export const riotService = new RiotService();
