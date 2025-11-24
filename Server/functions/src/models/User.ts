@@ -1,5 +1,15 @@
+import { IUserData } from "../interfaces/IUserData";
+
 class User {
-  constructor(data = {}) {
+  uid: string;
+  username: string;
+  email: string;
+  puuid: string | null;
+  riotId: string | null;
+  rank: string | null;
+  preferredRoles: string[];
+
+  constructor(data: IUserData) {
     this.uid = data.uid;
     this.username = data.username;
     this.email = data.email;

@@ -1,16 +1,32 @@
+import { IPlayerData } from "../interfaces/IPlayerData";
+import { ILobbyData } from "../interfaces/ILobbyData";
+import { ILobbyFilter } from "../interfaces/ILobbyFilter";
+
 class Lobby {
+  hostId: string;
+  riotId: string;
+  gameMap: string;
+  gameMode: string;
+  kickedPlayers: string[];
+  currentPlayers: number;
+  maxPlayers: number;
+  createdAt: string;
+  isActive: boolean;
+  filter: ILobbyFilter;
+  players: IPlayerData[];
+
   static mapPositions = {
     "Summoner's Rift": ["Top", "Jungle", "Middle", "Adc", "Support"],
   };
 
   constructor(
-    hostId,
-    riotId,
-    gameMap,
-    gameMode = null,
-    hostPosition = null,
-    championId = null,
-    ranksFilter = []
+    hostId: string,
+    riotId: string,
+    gameMap: string,
+    gameMode: string | null = null,
+    hostPosition: string | null = null,
+    championId: string | null = null,
+    ranksFilter: string[] = []
   ) {
     if (!hostId || !gameMap) throw new Error("hostId and gameMap are required");
 
@@ -75,7 +91,12 @@ class Lobby {
     ];
   }
 
-  addPlayer(uid, riotId, position = null, championId = null) {
+  addPlayer(
+    uid: string,
+    riotId: string,
+    position: string | null = null,
+    championId: string | null = null
+  ) {
     // Prevent duplicates
     if (this.players.some((p) => p.uid === uid)) {
       throw new Error("Player already in lobby");
@@ -139,7 +160,7 @@ class Lobby {
     }
   }
 
-  removePlayer(uid, kicked = false) {
+  removePlayer(uid: string, kicked: boolean = false) {
     // 0️⃣ If host leaves → shutdown lobby completely
     if (this.hostId === uid) {
       this.isActive = false;
@@ -168,7 +189,7 @@ class Lobby {
     this.currentPlayers = Math.max(0, this.currentPlayers - 1);
 
     // Ensure structures exist
-    this.filter = this.filter || {};
+    this.filter = this.filter || { ranksFilter: [] };
     this.filter.positionsNeeded = this.filter.positionsNeeded || [];
     this.kickedPlayers = this.kickedPlayers || [];
 
@@ -198,7 +219,7 @@ class Lobby {
     return { ...this };
   }
 
-  static fromFireStore(data) {
+  static fromFireStore(data: ILobbyData) {
     const lobby = Object.create(Lobby.prototype);
     Object.assign(lobby, data);
     return lobby;

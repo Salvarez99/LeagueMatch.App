@@ -1,3 +1,5 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 class Lobby {
     constructor(hostId, riotId, gameMap, gameMode = null, hostPosition = null, championId = null, ranksFilter = []) {
         if (!hostId || !gameMap)
