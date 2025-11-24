@@ -1,6 +1,6 @@
 import { IUserData } from "../interfaces/IUserData";
 
-class User {
+export class User {
   uid: string;
   username: string;
   email: string;
@@ -33,5 +33,3 @@ class User {
     };
   }
 }
-
-module.exports = User;

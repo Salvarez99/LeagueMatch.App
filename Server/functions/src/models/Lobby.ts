@@ -2,7 +2,7 @@ import { IPlayerData } from "../interfaces/IPlayerData";
 import { ILobbyData } from "../interfaces/ILobbyData";
 import { ILobbyFilter } from "../interfaces/ILobbyFilter";
 
-class Lobby {
+export class Lobby {
   hostId: string;
   riotId: string;
   gameMap: string;

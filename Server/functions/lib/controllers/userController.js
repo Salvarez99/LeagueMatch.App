@@ -1,4 +1,7 @@
-const userService = require("../services/userService");
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.userController = exports.UserController = void 0;
+const userService_1 = require("../services/userService");
 class UserController {
     // POST /addUser
     async addUser(req, res) {
@@ -7,7 +10,7 @@ class UserController {
                 return res.status(405).json({ error: "Method Not Allowed" });
             }
             const userDTO = req.body;
-            const createdUser = await userService.addUser(userDTO);
+            const createdUser = await userService_1.userService.addUser(userDTO);
             return res.status(200).json({
                 success: true,
                 data: createdUser,
@@ -27,7 +30,8 @@ class UserController {
             if (req.method !== "POST") {
                 return res.status(405).json({ error: "Method Not Allowed" });
             }
-            const updatedUser = await userService.updateUser(req.body);
+            const { uid, username, riotId } = req.body;
+            const updatedUser = await userService_1.userService.updateUser(uid, username, riotId);
             return res.status(200).json({
                 success: true,
                 data: updatedUser,
@@ -42,5 +46,6 @@ class UserController {
         }
     }
 }
-// export singleton instance (so you can easily import it in index.js)
-module.exports = new UserController();
+exports.UserController = UserController;
+// Singleton export
+exports.userController = new UserController();

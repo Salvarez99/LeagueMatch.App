@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Lobby = void 0;
 class Lobby {
     constructor(hostId, riotId, gameMap, gameMode = null, hostPosition = null, championId = null, ranksFilter = []) {
         if (!hostId || !gameMap)
@@ -133,7 +134,7 @@ class Lobby {
         const [removedPlayer] = this.players.splice(index, 1);
         this.currentPlayers = Math.max(0, this.currentPlayers - 1);
         // Ensure structures exist
-        this.filter = this.filter || {};
+        this.filter = this.filter || { ranksFilter: [] };
         this.filter.positionsNeeded = this.filter.positionsNeeded || [];
         this.kickedPlayers = this.kickedPlayers || [];
         // 2️⃣ Restore role (Summoner's Rift only)
@@ -164,6 +165,7 @@ class Lobby {
         return lobby;
     }
 }
+exports.Lobby = Lobby;
 Lobby.mapPositions = {
     "Summoner's Rift": ["Top", "Jungle", "Middle", "Adc", "Support"],
 };

@@ -1,7 +1,9 @@
-const fetch = require("node-fetch");
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.riotService = exports.RiotService = void 0;
 class RiotService {
     constructor(apiKey) {
-        this.apiKey = apiKey || process.env.RIOT_API_KEY;
+        this.apiKey = apiKey ?? process.env.RIOT_API_KEY ?? "";
     }
     async getAccountByRiotId(gameName, tag) {
         const baseUrl = "https://americas.api.riotgames.com";
@@ -26,5 +28,6 @@ class RiotService {
         return response.json();
     }
 }
-// Export a singleton instance
-module.exports = new RiotService();
+exports.RiotService = RiotService;
+// Singleton export
+exports.riotService = new RiotService();
