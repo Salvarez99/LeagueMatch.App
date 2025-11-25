@@ -28,6 +28,13 @@ export class LobbyController {
         id: newLobby.id,
       });
     } catch (err: any) {
+      if (err.statusCode) {
+        return res.status(err.statusCode).json({
+          success: false,
+          message: err.message,
+          code: err.code || null,
+        });
+      }
       return res.status(500).json({
         success: false,
         message: "Error creating lobby",
@@ -48,6 +55,13 @@ export class LobbyController {
         message: "Ready status updated successfully",
       });
     } catch (err: any) {
+      if (err.statusCode) {
+        return res.status(err.statusCode).json({
+          success: false,
+          message: err.message,
+          code: err.code || null,
+        });
+      }
       return res.status(500).json({
         success: false,
         message: "Error updating ready status",
@@ -69,6 +83,13 @@ export class LobbyController {
         message: "Player kicked successfully",
       });
     } catch (err: any) {
+      if (err.statusCode) {
+        return res.status(err.statusCode).json({
+          success: false,
+          message: err.message,
+          code: err.code || null,
+        });
+      }
       return res.status(500).json({
         success: false,
         message: "Error kicking player",
@@ -85,6 +106,13 @@ export class LobbyController {
 
       return res.json({ success: true });
     } catch (err: any) {
+      if (err.statusCode) {
+        return res.status(err.statusCode).json({
+          success: false,
+          message: err.message,
+          code: err.code || null,
+        });
+      }
       return res.status(400).json({ success: false, error: err.message });
     }
   }
@@ -102,6 +130,13 @@ export class LobbyController {
         message: "Champion updated successfully",
       });
     } catch (err: any) {
+      if (err.statusCode) {
+        return res.status(err.statusCode).json({
+          success: false,
+          message: err.message,
+          code: err.code || null,
+        });
+      }
       return res.status(500).json({
         success: false,
         message: "Error updating champion",
@@ -122,6 +157,13 @@ export class LobbyController {
         lobbies,
       });
     } catch (err: any) {
+      if (err.statusCode) {
+        return res.status(err.statusCode).json({
+          success: false,
+          message: err.message,
+          code: err.code || null,
+        });
+      }
       return res.status(500).json({
         success: false,
         message: "Error getting available lobbies",
@@ -158,6 +200,13 @@ export class LobbyController {
         lobby,
       });
     } catch (err: any) {
+      if (err.statusCode) {
+        return res.status(err.statusCode).json({
+          success: false,
+          message: err.message,
+          code: err.code || null,
+        });
+      }
       return res.status(500).json({
         success: false,
         message: "Error retrieving lobby",
@@ -198,12 +247,19 @@ export class LobbyController {
         });
       }
 
-      return res.status(201).json({
+      return res.status(200).json({
         success: true,
         message: "Lobby found",
         id: lobby.id,
       });
     } catch (err: any) {
+      if (err.statusCode) {
+        return res.status(err.statusCode).json({
+          success: false,
+          message: err.message,
+          code: err.code || null,
+        });
+      }
       return res.status(500).json({
         success: false,
         message: "Error finding lobby",

@@ -18,7 +18,13 @@ export class UserController {
         data: createdUser,
       });
     } catch (err: any) {
-      console.error("addUser error:", err);
+      if (err.statusCode) {
+        return res.status(err.statusCode).json({
+          success: false,
+          message: err.message,
+          code: err.code || null,
+        });
+      }
       return res.status(400).json({
         success: false,
         message: err.message,
@@ -46,7 +52,13 @@ export class UserController {
         data: updatedUser,
       });
     } catch (err: any) {
-      console.error("updateUser error:", err);
+      if (err.statusCode) {
+        return res.status(err.statusCode).json({
+          success: false,
+          message: err.message,
+          code: err.code || null,
+        });
+      }
       return res.status(500).json({
         success: false,
         message: err.message,

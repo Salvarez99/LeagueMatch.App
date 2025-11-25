@@ -2,6 +2,7 @@ import { IUserData } from "../interfaces/IUserData";
 import { User } from "../models/User";
 import { riotService } from "./riotService";
 import { IRiotRankEntry, IRiotAccount } from "../interfaces/riot";
+import * as Error from "../utils/AppError";
 
 import { db } from "../firebaseConfig";
 
@@ -15,7 +16,7 @@ export class UserService {
     const user = new User(userData);
 
     if (!user.uid || !user.username || !user.email) {
-      throw new Error("uid, username, and email are required");
+      throw new Error.BadRequestError("uid, username, and email are required");
     }
 
     const userDoc = user.toJSON();
@@ -38,9 +39,9 @@ export class UserService {
     username: string | null,
     riotId: string
   ) {
-    if (!riotId) throw new Error("riotId is required");
+    if (!riotId) throw new Error.UnauthorizedError("riotId is required");
     if (!uid && !username)
-      throw new Error("Either uid or username is required");
+      throw new Error.UnauthorizedError("Either uid or username is required");
 
     let userRef;
 
@@ -53,7 +54,7 @@ export class UserService {
         .limit(1)
         .get();
 
-      if (snapshot.empty) throw new Error("User not found");
+      if (snapshot.empty) throw new Error.NotFoundError("User not found");
       userRef = snapshot.docs[0].ref;
     }
 

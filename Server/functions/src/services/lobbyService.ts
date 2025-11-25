@@ -1,6 +1,7 @@
 import { db } from "../firebaseConfig";
 import { userService } from "./userService";
 import { Lobby } from "../models/Lobby";
+import * as Error from "../utils/AppError";
 import {
   ILobbyCreateData,
   IFindLobbyData,
@@ -32,17 +33,17 @@ export class LobbyService {
     } = lobbyData;
 
     if (!hostId || !gameMap) {
-      throw new Error("hostId and gameMap are required");
+      throw new Error.BadRequestError("hostId and gameMap are required");
     }
 
     // Ensure host exists
     const host = await userService.getUserById(hostId);
     if (!host) {
-      throw new Error("Host user not found");
+      throw new Error.NotFoundError("Host user not found");
     }
 
     if (!host.riotId) {
-      const err: any = new Error(
+      const err: any = new Error.UnauthorizedError(
         "Host must link Riot ID before creating a lobby"
       );
       err.code = "MISSING_RIOT_ID";
@@ -54,7 +55,7 @@ export class LobbyService {
     if (!snapshot.empty) {
       snapshot.forEach((doc) => {
         if (doc.data().isActive) {
-          throw new Error(`hostId ${hostId} active lobby already exists`);
+          throw new Error.BadRequestError(`hostId ${hostId} active lobby already exists`);
         }
       });
     }
@@ -81,9 +82,9 @@ export class LobbyService {
 
   async updateReadyStatus(lobbyId: string, uid: string) {
     if (!lobbyId || typeof lobbyId !== "string") {
-      throw new Error("Invalid lobbyId (was empty or undefined)");
+      throw new Error.NotFoundError("Invalid lobbyId (was empty or undefined)");
     }
-    if (!uid) throw new Error("uid required");
+    if (!uid) throw new Error.BadRequestError("uid required");
 
     const lobbyRef = this.lobbiesRef.doc(lobbyId);
     console.log("LOBBY ID:", lobbyId);
@@ -91,7 +92,7 @@ export class LobbyService {
 
     await db.runTransaction(async (tx) => {
       const snap = await tx.get(lobbyRef);
-      if (!snap.exists) throw new Error("Lobby not found");
+      if (!snap.exists) throw new Error.NotFoundError("Lobby not found");
 
       const players = (snap.data()?.players ?? []) as any[];
 
@@ -111,12 +112,12 @@ export class LobbyService {
 
     await db.runTransaction(async (tx) => {
       const snap = await tx.get(lobbyRef);
-      if (!snap.exists) throw new Error("Lobby not found");
+      if (!snap.exists) throw new Error.NotFoundError("Lobby not found");
 
       const lobby = Lobby.fromFireStore(snap.data());
 
       if (lobby.hostId !== hostId) {
-        throw new Error("Unauthorized: Only the host can kick players");
+        throw new Error.UnauthorizedError("Unauthorized: Only the host can kick players");
       }
 
       lobby.removePlayer(targetUid, true);
@@ -132,11 +133,11 @@ export class LobbyService {
       const lobbyDoc = await tx.get(ref);
 
       if (!lobbyDoc.exists) {
-        throw new Error("Lobby not found");
+        throw new Error.NotFoundError("Lobby not found");
       }
 
       if (lobbyDoc.data()?.hostId !== hostId) {
-        throw new Error("Not authorized");
+        throw new Error.UnauthorizedError("Not authorized");
       }
 
       tx.update(ref, { discordLink: discordLink || null });
@@ -148,7 +149,7 @@ export class LobbyService {
 
     await db.runTransaction(async (tx) => {
       const snap = await tx.get(lobbyRef);
-      if (!snap.exists) throw new Error("Lobby not found");
+      if (!snap.exists) throw new Error.NotFoundError("Lobby not found");
 
       const players = (snap.data()?.players ?? []) as any[];
 
@@ -197,13 +198,13 @@ export class LobbyService {
     const { gameMap, gameMode, desiredPosition, ranks, uid } = data;
 
     if (!uid) {
-      throw new Error("uid is required to find a lobby");
+      throw new Error.BadRequestError("uid is required to find a lobby");
     }
 
     switch (gameMap) {
       case "Summoner's Rift":
         if (!desiredPosition) {
-          throw new Error(
+          throw new Error.BadRequestError(
             "desiredPosition is required for Summoner's Rift Modes"
           );
         }
@@ -223,7 +224,7 @@ export class LobbyService {
         return this.searchForFeatured(gameMap, gameMode, uid);
 
       default:
-        throw new Error("Unsupported GameMap");
+        throw new Error.BadRequestError("Unsupported GameMap");
     }
   }
 
@@ -233,10 +234,10 @@ export class LobbyService {
 
     const user = await userService.getUserById(uid);
 
-    if (!user) throw new Error("User not found");
+    if (!user) throw new Error.NotFoundError("User not found");
 
     if (!user.riotId) {
-      const err: any = new Error(
+      const err: any = new Error.UnauthorizedError(
         "User must link Riot ID before joining a lobby"
       );
       err.code = "MISSING_RIOT_ID";
@@ -247,11 +248,11 @@ export class LobbyService {
 
     await db.runTransaction(async (transaction) => {
       const lobbySnap = await transaction.get(lobbyRef);
-      if (!lobbySnap.exists) throw new Error("Lobby not found");
+      if (!lobbySnap.exists) throw new Error.NotFoundError("Lobby not found");
 
       const lobby = Lobby.fromFireStore(lobbySnap.data());
 
-      if (!lobby.isActive) throw new Error("Lobby is inactive");
+      if (!lobby.isActive) throw new Error.BadRequestError("Lobby is inactive");
 
       lobby.addPlayer(uid, user.riotId, position, championId);
 
@@ -268,7 +269,7 @@ export class LobbyService {
 
     await db.runTransaction(async (transaction) => {
       const lobbySnap = await transaction.get(lobbyRef);
-      if (!lobbySnap.exists) throw new Error("Lobby not found");
+      if (!lobbySnap.exists) throw new Error.NotFoundError("Lobby not found");
 
       const lobby = Lobby.fromFireStore(lobbySnap.data());
 
