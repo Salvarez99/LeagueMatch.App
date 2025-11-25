@@ -21,6 +21,13 @@ class LobbyController {
             });
         }
         catch (err) {
+            if (err.statusCode) {
+                return res.status(err.statusCode).json({
+                    success: false,
+                    message: err.message,
+                    code: err.code || null,
+                });
+            }
             return res.status(500).json({
                 success: false,
                 message: "Error creating lobby",
@@ -39,6 +46,13 @@ class LobbyController {
             });
         }
         catch (err) {
+            if (err.statusCode) {
+                return res.status(err.statusCode).json({
+                    success: false,
+                    message: err.message,
+                    code: err.code || null,
+                });
+            }
             return res.status(500).json({
                 success: false,
                 message: "Error updating ready status",
@@ -58,6 +72,13 @@ class LobbyController {
             });
         }
         catch (err) {
+            if (err.statusCode) {
+                return res.status(err.statusCode).json({
+                    success: false,
+                    message: err.message,
+                    code: err.code || null,
+                });
+            }
             return res.status(500).json({
                 success: false,
                 message: "Error kicking player",
@@ -72,6 +93,13 @@ class LobbyController {
             return res.json({ success: true });
         }
         catch (err) {
+            if (err.statusCode) {
+                return res.status(err.statusCode).json({
+                    success: false,
+                    message: err.message,
+                    code: err.code || null,
+                });
+            }
             return res.status(400).json({ success: false, error: err.message });
         }
     }
@@ -87,6 +115,13 @@ class LobbyController {
             });
         }
         catch (err) {
+            if (err.statusCode) {
+                return res.status(err.statusCode).json({
+                    success: false,
+                    message: err.message,
+                    code: err.code || null,
+                });
+            }
             return res.status(500).json({
                 success: false,
                 message: "Error updating champion",
@@ -105,6 +140,13 @@ class LobbyController {
             });
         }
         catch (err) {
+            if (err.statusCode) {
+                return res.status(err.statusCode).json({
+                    success: false,
+                    message: err.message,
+                    code: err.code || null,
+                });
+            }
             return res.status(500).json({
                 success: false,
                 message: "Error getting available lobbies",
@@ -137,6 +179,13 @@ class LobbyController {
             });
         }
         catch (err) {
+            if (err.statusCode) {
+                return res.status(err.statusCode).json({
+                    success: false,
+                    message: err.message,
+                    code: err.code || null,
+                });
+            }
             return res.status(500).json({
                 success: false,
                 message: "Error retrieving lobby",
@@ -167,13 +216,20 @@ class LobbyController {
                     message: "No lobbies found",
                 });
             }
-            return res.status(201).json({
+            return res.status(200).json({
                 success: true,
                 message: "Lobby found",
                 id: lobby.id,
             });
         }
         catch (err) {
+            if (err.statusCode) {
+                return res.status(err.statusCode).json({
+                    success: false,
+                    message: err.message,
+                    code: err.code || null,
+                });
+            }
             return res.status(500).json({
                 success: false,
                 message: "Error finding lobby",
