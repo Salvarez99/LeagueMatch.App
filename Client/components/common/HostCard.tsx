@@ -5,8 +5,6 @@ import { Text, TouchableOpacity, View } from "react-native";
 import Toast from "react-native-toast-message";
 import PickChampionModal from "../preLobby/PickChampionModal";
 import { styles } from "./Styles/HostCardStyle";
-import * as t from "@/lea";
-
 interface HostCardProps {
   host: Host | null;
   isLobby: boolean;
