@@ -1,15 +1,15 @@
 import { SafeAreaView } from "react-native-safe-area-context";
-import GameModeHeader from "../../components/common/GameModeHeader";
-import HostCard from "../../components/common/HostCard";
-import DiscordButton from "../../components/lobby/DiscordButton";
-import LobbyButtons from "../../components/lobby/LobbyButtons";
-import PlayerCards from "../../components/lobby/PlayerCards";
-import { styles } from "../../styles/lobbyStyle";
+import GameModeHeader from "@/components/common/GameModeHeader";
+import HostCard from "@/components/common/HostCard";
+import DiscordButton from "@/components/lobby/DiscordButton";
+import LobbyButtons from "@/components/lobby/LobbyButtons";
+import PlayerCards from "@/components/lobby/PlayerCards";
+import { styles } from "@/styles/lobbyStyle";
 
 // Custom hooks
-import { useLobbyActions } from "../../hooks/useLobbyActions";
-import { useLobbyListener } from "../../hooks/useLobbyListener";
-import { useLobbyParams } from "../../hooks/useLobbyParams";
+import { useLobbyActions } from "@/hooks/useLobbyActions";
+import { useLobbyListener } from "@/hooks/useLobbyListener";
+import { useLobbyParams } from "@/hooks/useLobbyParams";
 
 export default function Lobby() {
   // 1. Page params (id, uid, gameMap, gameMode)

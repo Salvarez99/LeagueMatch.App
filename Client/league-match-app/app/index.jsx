@@ -14,10 +14,10 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { useAuth } from "./../context/authContext";
-import { auth } from "./../firebaseConfig";
-import { styles } from "./../styles/indexStyle";
-import { userApi } from "./../utils/api/userApi";
+import { useAuth } from "@/context/authContext";
+import { auth } from "@/firebaseConfig";
+import { styles } from "@/styles/indexStyle";
+import { userApi } from "@/utils/api/userApi";
 
 export default function Index() {
   const [isLogin, setIsLogin] = useState(true);

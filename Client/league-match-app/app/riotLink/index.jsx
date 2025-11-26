@@ -2,9 +2,9 @@ import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import { Alert, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useAuth } from "../../context/authContext";
-import { userApi } from "../../utils/api/userApi";
-import { styles } from "./../../styles/riotLinkStyle";
+import { useAuth } from "@/context/authContext";
+import { userApi } from "@/utils/api/userApi";
+import { styles } from "@/styles/riotLinkStyle";
 
 export default function Index() {
   const { user, authLoading } = useAuth();

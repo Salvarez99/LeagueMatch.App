@@ -1,15 +1,15 @@
 import { useState } from "react";
 import { View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import GameModeHeader from "../../components/common/GameModeHeader";
-import HostCard from "../../components/common/HostCard";
-import RiotLinkModal from "../../components/common/RiotLinkModal";
-import GameModeCarousel from "../../components/preLobby/GameModeCarousel";
-import LobbySearchButton from "../../components/preLobby/LobbySearchButton";
-import PickChampionButton from "../../components/preLobby/PickChampionButton";
-import PickPositionDropdown from "../../components/preLobby/PickPositionDropdown";
-import RankFilterDropdown from "../../components/preLobby/RankFilterDropdown";
-import { styles } from "../../styles/preLobbyStyle";
+import GameModeHeader from "@/components/common/GameModeHeader";
+import HostCard from "@/components/common/HostCard";
+import RiotLinkModal from "@/components/common/RiotLinkModal";
+import GameModeCarousel from "@/components/preLobby/GameModeCarousel";
+import LobbySearchButton from "@/components/preLobby/LobbySearchButton";
+import PickChampionButton from "@/components/preLobby/PickChampionButton";
+import PickPositionDropdown from "@/components/preLobby/PickPositionDropdown";
+import RankFilterDropdown from "@/components/preLobby/RankFilterDropdown";
+import { styles } from "@/styles/preLobbyStyle";
 
 // Custom hooks
 import { usePreLobbyActions } from "../../hooks/usePreLobbyActions";

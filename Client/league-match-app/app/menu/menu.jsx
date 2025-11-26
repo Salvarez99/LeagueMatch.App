@@ -3,7 +3,7 @@ import { Text, TouchableOpacity } from "react-native";
 import {
   SafeAreaView,
 } from "react-native-safe-area-context";
-import { styles } from "./../../styles/menuStyle";
+import { styles } from "@/styles/menuStyle";
 
 export default function Index() {
   return (
