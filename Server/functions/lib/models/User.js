@@ -1,19 +1,18 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.User = void 0;
-var User = /** @class */ (function () {
-    function User(data) {
-        var _a, _b, _c, _d;
+class User {
+    constructor(data) {
         this.uid = data.uid;
         this.username = data.username;
         this.email = data.email;
         // Use nullish coalescing to avoid undefined overwriting defaults
-        this.puuid = (_a = data.puuid) !== null && _a !== void 0 ? _a : null;
-        this.riotId = (_b = data.riotId) !== null && _b !== void 0 ? _b : null;
-        this.rank = (_c = data.rank) !== null && _c !== void 0 ? _c : null;
-        this.preferredRoles = (_d = data.preferredRoles) !== null && _d !== void 0 ? _d : [];
+        this.puuid = data.puuid ?? null;
+        this.riotId = data.riotId ?? null;
+        this.rank = data.rank ?? null;
+        this.preferredRoles = data.preferredRoles ?? [];
     }
-    User.prototype.toJSON = function () {
+    toJSON() {
         return {
             uid: this.uid,
             username: this.username,
@@ -23,7 +22,6 @@ var User = /** @class */ (function () {
             rank: this.rank,
             preferredRoles: this.preferredRoles,
         };
-    };
-    return User;
-}());
+    }
+}
 exports.User = User;
