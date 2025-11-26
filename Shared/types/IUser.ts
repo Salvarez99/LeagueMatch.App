@@ -1,4 +1,4 @@
-export interface User {
+export interface IUser {
   email: string;
   preferredRoles: string[];
   puuid: string | null;

@@ -1,7 +1,7 @@
-export default interface LobbyPlayer {
-  championId: string | null;
-  position: string | null;
-  ready: boolean;
-  riotId: string;
+export interface ILobbyPlayer {
   uid: string;
+  riotId: string;
+  position: string | null;
+  championId: string | null;
+  ready: boolean;
 }

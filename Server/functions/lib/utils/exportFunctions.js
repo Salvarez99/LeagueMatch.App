@@ -34,19 +34,19 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.exportFunctions = exportFunctions;
-const functions = __importStar(require("firebase-functions"));
+var functions = __importStar(require("firebase-functions"));
 /**
  * Creates Firebase HTTPS functions for each method of a controller instance.
  * Output function names follow the schema: `${prefix}_${methodName}`.
  */
 function exportFunctions(controller, prefix) {
-    const exported = {};
-    const prototype = Object.getPrototypeOf(controller);
+    var exported = {};
+    var prototype = Object.getPrototypeOf(controller);
     // Get ONLY the controller's actual methods (remove inherited Object methods)
-    const methodNames = Object.getOwnPropertyNames(prototype).filter((key) => {
+    var methodNames = Object.getOwnPropertyNames(prototype).filter(function (key) {
         if (key === "constructor")
             return false;
-        const value = controller[key];
+        var value = controller[key];
         return (typeof value === "function" &&
             ![
                 "__defineGetter__",
@@ -62,9 +62,13 @@ function exportFunctions(controller, prefix) {
                 "__proto__",
             ].includes(key));
     });
-    for (const methodName of methodNames) {
-        const functionName = `${prefix}_${methodName}`;
-        exported[functionName] = functions.https.onRequest((req, res) => controller[methodName](req, res));
+    var _loop_1 = function (methodName) {
+        var functionName = "".concat(prefix, "_").concat(methodName);
+        exported[functionName] = functions.https.onRequest(function (req, res) { return controller[methodName](req, res); });
+    };
+    for (var _i = 0, methodNames_1 = methodNames; _i < methodNames_1.length; _i++) {
+        var methodName = methodNames_1[_i];
+        _loop_1(methodName);
     }
     return exported;
 }

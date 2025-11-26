@@ -13,9 +13,12 @@
     "**/*.tsx",
     ".expo/types/**/*.ts",
     "expo-env.d.ts",
-    "app/menu/menu.tsx",
-    "utils/api/axiosClient.js",
-    "utils/api/lobbyApi.js",
-    "app/index.tsx"
+    "../Shared/**/*.ts",
+    "../Shared/**/*.tsx",
+    "../Shared/**/*.d.ts",
+    // "app/menu/menu.tsx",
+    // "utils/api/axiosClient.js",
+    // "utils/api/lobbyApi.js",
+    // "app/index.tsx"
   ]
 }

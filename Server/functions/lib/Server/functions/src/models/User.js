@@ -1,8 +1,5 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.User = void 0;
-var User = /** @class */ (function () {
-    function User(data) {
+export class User {
+    constructor(data) {
         var _a, _b, _c, _d;
         this.uid = data.uid;
         this.username = data.username;
@@ -13,7 +10,7 @@ var User = /** @class */ (function () {
         this.rank = (_c = data.rank) !== null && _c !== void 0 ? _c : null;
         this.preferredRoles = (_d = data.preferredRoles) !== null && _d !== void 0 ? _d : [];
     }
-    User.prototype.toJSON = function () {
+    toJSON() {
         return {
             uid: this.uid,
             username: this.username,
@@ -23,7 +20,5 @@ var User = /** @class */ (function () {
             rank: this.rank,
             preferredRoles: this.preferredRoles,
         };
-    };
-    return User;
-}());
-exports.User = User;
+    }
+}

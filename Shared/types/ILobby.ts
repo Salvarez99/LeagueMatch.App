@@ -1,6 +1,6 @@
-import ILobbyPlayer from "./ILobbyPlayer"
+import type { ILobbyPlayer } from "./ILobbyPlayer";
 
-export interface Lobby {
+export interface ILobby {
   createdAt: string;
   currentPlayers: number;
   gameMap: string;
