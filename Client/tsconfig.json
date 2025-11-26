@@ -1,0 +1,21 @@
+{
+  "extends": "expo/tsconfig.base",
+  "compilerOptions": {
+    "strict": true,
+    "baseUrl": "../../",
+    "paths": {
+      "@/*": ["Client/*"],
+      "@Shared/*":["Shared/*"]
+    }
+  },
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    ".expo/types/**/*.ts",
+    "expo-env.d.ts",
+    "app/menu/menu.tsx",
+    "utils/api/axiosClient.js",
+    "utils/api/lobbyApi.js",
+    "app/index.tsx"
+  ]
+}

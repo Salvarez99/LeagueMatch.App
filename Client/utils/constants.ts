@@ -1,4 +1,9 @@
-export const champions = [
+interface champion {
+  id: string;
+  name: string;
+}
+
+export const champions: champion[] = [
   { id: "Aatrox", name: "Aatrox" },
   { id: "Ahri", name: "Ahri" },
   { id: "Akali", name: "Akali" },

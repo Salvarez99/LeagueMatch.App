@@ -1,12 +1,32 @@
+import { champions } from "@/utils/constants";
 import * as Clipboard from "expo-clipboard";
 import { useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import Toast from "react-native-toast-message";
-import { champions } from "../../utils/constants";
 import PickChampionModal from "../preLobby/PickChampionModal";
 import { styles } from "./Styles/HostCardStyle";
+import * as t from "@/lea";
 
-export default function HostCard({ host, isLobby, status, onChampionSelect }) {
+interface HostCardProps {
+  host: Host | null;
+  isLobby: boolean;
+  status: boolean;
+  onChampionSelect: (uid: string, championId: string) => void;
+}
+
+interface Host {
+  uid: string;
+  riotId: string;
+  position: string;
+  championId: string;
+}
+
+export default function HostCard({
+  host,
+  isLobby,
+  status,
+  onChampionSelect,
+}: HostCardProps) {
   if (!host) {
     return (
       <View style={styles.containerStyle}>
@@ -51,7 +71,7 @@ export default function HostCard({ host, isLobby, status, onChampionSelect }) {
         <PickChampionModal
           visible={isOpen}
           onClose={() => setIsOpen(false)}
-          setChampionId={(id) => {
+          setChampionId={(id: string) => {
             setChampionId(id);
             onChampionSelect(host.uid, id);
           }}
