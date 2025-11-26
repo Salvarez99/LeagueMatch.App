@@ -19,49 +19,70 @@ import { auth } from "@/firebaseConfig";
 import { styles } from "@/styles/indexStyle";
 import { userApi } from "@/utils/api/userApi";
 
+// --- Types ---
+type CreateUserPayload = {
+  uid: string;
+  email: string;
+  username: string;
+};
+
 export default function Index() {
-  const [isLogin, setIsLogin] = useState(true);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [loading, setLoading] = useState(false);
-  const { user, loading: authLoading, appUser, appUserLoading } = useAuth();
+  // ----- State -----
+  const [isLogin, setIsLogin] = useState<boolean>(true);
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [confirmPassword, setConfirmPassword] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
+
+  // ----- Auth Context -----
+  const { user, authLoading, appUser, appUserLoading } = useAuth();
   const hasRiotId = !!appUser?.riotId;
 
   const router = useRouter();
 
+  // ----- Handler -----
   const handleAuth = async () => {
     // Validate inputs
     if (!email || !password) {
       Alert.alert("Error", "Please fill in all fields");
       return;
     }
+
+    if (!isLogin && password !== confirmPassword) {
+      Alert.alert("Error", "Passwords do not match");
+      return;
+    }
+
     setLoading(true);
+
     try {
       if (!isLogin) {
-        // Sign up flow
+        // SIGN UP FLOW
         const userCredential = await createUserWithEmailAndPassword(
           auth,
           email,
           password
         );
-        const user = userCredential.user;
-        console.log("✅ User created in Firebase:", user.uid);
 
-        // Create user in your database
-        await userApi.createUser({
-          uid: user.uid,
+        const firebaseUser = userCredential.user;
+        console.log("✅ User created in Firebase:", firebaseUser.uid);
+
+        // Create user in Firestore (through your backend API)
+        const payload: CreateUserPayload = {
+          uid: firebaseUser.uid,
           email: email,
           username: "Generic Username",
-        });
+        };
+
+        await userApi.createUser(payload);
         console.log("✅ User profile created in database");
 
-        // Wait for auth state to propagate
+        // Wait for auth propagation
         await new Promise((resolve) => setTimeout(resolve, 1000));
 
         router.push("/riotLink");
       } else {
-        // Login flow
+        // LOGIN FLOW
         await signInWithEmailAndPassword(auth, email, password);
         console.log("✅ User signed in");
 
@@ -74,19 +95,20 @@ export default function Index() {
           router.replace("/riotLink");
         }
       }
-    } catch (err) {
+    } catch (err: any) {
       console.log("❌ Auth error:", {
         errorCode: err.code,
         errorMessage: err.message,
       });
-      Alert.alert("Error", err.message || "Authentication failed");
+      Alert.alert("Error", err.message ?? "Authentication failed");
     } finally {
       setLoading(false);
     }
   };
 
+  // ----- Auto-Redirect on Auth Load -----
   useEffect(() => {
-    if (authLoading || appUserLoading) return; // WAIT for both to finish
+    if (authLoading || appUserLoading) return;
 
     if (user) {
       const hasRiotId = !!appUser?.riotId;
@@ -99,6 +121,7 @@ export default function Index() {
     }
   }, [user, authLoading, appUserLoading, appUser]);
 
+  // ----- UI -----
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -116,6 +139,7 @@ export default function Index() {
             {isLogin ? "Sign in to continue" : "Sign up to get started"}
           </Text>
 
+          {/* Email */}
           <View style={styles.inputContainer}>
             <Text style={styles.label}>Email</Text>
             <TextInput
@@ -129,6 +153,7 @@ export default function Index() {
             />
           </View>
 
+          {/* Password */}
           <View style={styles.inputContainer}>
             <Text style={styles.label}>Password</Text>
             <TextInput
@@ -141,6 +166,7 @@ export default function Index() {
             />
           </View>
 
+          {/* Confirm Password (Sign Up Only) */}
           {!isLogin && (
             <View style={styles.inputContainer}>
               <Text style={styles.label}>Confirm Password</Text>
@@ -155,18 +181,25 @@ export default function Index() {
             </View>
           )}
 
+          {/* Forgot Password */}
           {isLogin && (
             <TouchableOpacity style={styles.forgotPassword}>
               <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
             </TouchableOpacity>
           )}
 
-          <TouchableOpacity style={styles.authButton} onPress={handleAuth}>
+          {/* Submit */}
+          <TouchableOpacity
+            style={[styles.authButton, loading && { opacity: 0.7 }]}
+            onPress={handleAuth}
+            disabled={loading}
+          >
             <Text style={styles.authButtonText}>
               {isLogin ? "Log In" : "Sign Up"}
             </Text>
           </TouchableOpacity>
 
+          {/* Toggle Login / Signup */}
           <View style={styles.switchContainer}>
             <Text style={styles.switchText}>
               {isLogin
