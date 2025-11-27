@@ -1,7 +1,7 @@
 import type { DocumentData } from "firebase-admin/firestore";
-import type { ILobby } from "../../../../Packages/Shared/src/types/ILobby";
-import type { ILobbyFilter } from "../interfaces/ILobbyFilter";
-import type { ILobbyPlayer } from "../../../../Packages/Shared/src/types/ILobbyPlayer";
+import type { ILobby } from "@leaguematch/shared";
+import type { ILobbyFilter } from "@leaguematch/shared";
+import type { ILobbyPlayer } from "@leaguematch/shared";
 
 export class Lobby implements ILobby {
   hostId: string;
