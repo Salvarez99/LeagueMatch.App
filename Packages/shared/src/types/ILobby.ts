@@ -1,4 +1,5 @@
 import type { ILobbyPlayer } from "./ILobbyPlayer";
+import type { ILobbyFilter } from "./ILobbyFilter";
 
 export interface ILobby {
   createdAt: string;
@@ -9,4 +10,6 @@ export interface ILobby {
   isActive: boolean;
   kickedPlayers: string[];
   players: ILobbyPlayer[];
+  filter: ILobbyFilter;
+  maxPlayers: number;
 }
