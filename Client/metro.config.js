@@ -1,15 +1,13 @@
 const { getDefaultConfig } = require("expo/metro-config");
-const path = require("path");
 
-module.exports = (() => {
-  const config = getDefaultConfig(__dirname);
+const config = getDefaultConfig(__dirname);
 
-  // Allow importing from '@Shared/...' and make Metro watch the folder
-  config.resolver.extraNodeModules = {
-    "@Shared": path.resolve(__dirname, "../Shared"),
-  };
+// Allow Metro to compile the shared package
+config.resolver.nodeModulesPaths = [
+  "./node_modules",
+  "../packages/shared/node_modules",
+];
 
-  config.watchFolders = [path.resolve(__dirname, "../Shared")];
+config.watchFolders = ["../packages/shared"];
 
-  return config;
-})();
+module.exports = config;

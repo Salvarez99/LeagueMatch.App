@@ -5,7 +5,6 @@
     "baseUrl": "..",
     "paths": {
       "@/*": ["Client/*"],
-      "@Shared/*": ["Shared/*"]
     }
   },
   "include": [
@@ -13,9 +12,6 @@
     "**/*.tsx",
     ".expo/types/**/*.ts",
     "expo-env.d.ts",
-    "../Shared/**/*.ts",
-    "../Shared/**/*.tsx",
-    "../Shared/**/*.d.ts",
     // "app/menu/menu.tsx",
     // "utils/api/axiosClient.js",
     // "utils/api/lobbyApi.js",
