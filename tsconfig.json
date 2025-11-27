@@ -2,7 +2,7 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@Shared/*": ["Shared/*"]
+      "@Shared/*": ["Packages/Shared/*"]
     }
   }
 }

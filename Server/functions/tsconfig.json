@@ -11,7 +11,7 @@
     "resolveJsonModule": true,
     "baseUrl": ".",
     "paths": {
-      "@Shared/*": ["../../Shared/*"]
+      "@Shared/*": ["../../Packages/Shared/*"]
     }
   },
   "include": ["src"],

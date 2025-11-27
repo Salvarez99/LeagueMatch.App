@@ -1,7 +1,7 @@
 import type { DocumentData } from "firebase-admin/firestore";
-import type { ILobby } from "@Shared/types/ILobby";
+import type { ILobby } from "../../../../Packages/Shared/src/types/ILobby";
 import type { ILobbyFilter } from "../interfaces/ILobbyFilter";
-import type { ILobbyPlayer } from "@Shared/types/ILobbyPlayer";
+import type { ILobbyPlayer } from "../../../../Packages/Shared/src/types/ILobbyPlayer";
 
 export class Lobby implements ILobby {
   hostId: string;
@@ -56,7 +56,9 @@ export class Lobby implements ILobby {
         if (!championId) throw new Error("championId required for SR");
 
         this.maxPlayers =
-          gameMode === "Ranked Solo/Duo" ? 2 : Lobby.mapPositions[gameMap].length;
+          gameMode === "Ranked Solo/Duo"
+            ? 2
+            : Lobby.mapPositions[gameMap].length;
 
         const positions = Lobby.mapPositions["Summoner's Rift"];
         const positionsNeeded = positions.filter((p) => p !== hostPosition);
@@ -135,13 +137,25 @@ export class Lobby implements ILobby {
         break;
 
       case "Aram":
-        this.players.push({ uid, riotId, position: null, championId: null, ready: false });
+        this.players.push({
+          uid,
+          riotId,
+          position: null,
+          championId: null,
+          ready: false,
+        });
         break;
 
       case "Featured Modes":
         if (!championId)
           throw new Error("championId required for Featured Modes");
-        this.players.push({ uid, riotId, position: null, championId, ready: false });
+        this.players.push({
+          uid,
+          riotId,
+          position: null,
+          championId,
+          ready: false,
+        });
         break;
     }
 
