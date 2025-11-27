@@ -125,7 +125,7 @@ class Lobby {
             hostId: this.hostId,
             isActive: this.isActive,
             kickedPlayers: this.kickedPlayers,
-            players: this.players,
+            players: this.players.map((p) => p instanceof Player_1.Player ? p.toObject() : p),
             filter: this.filter,
             maxPlayers: this.maxPlayers,
         };

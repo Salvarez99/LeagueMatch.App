@@ -172,7 +172,9 @@ export class Lobby implements ILobby {
       hostId: this.hostId,
       isActive: this.isActive,
       kickedPlayers: this.kickedPlayers,
-      players: this.players,
+      players: this.players.map((p) =>
+        p instanceof Player ? p.toObject() : p
+      ),
       filter: this.filter,
       maxPlayers: this.maxPlayers,
     };
@@ -194,7 +196,13 @@ export class Lobby implements ILobby {
 
     lobby.players = (data.players ?? []).map(
       (p: ILobbyPlayer) =>
-        new Player(p.uid, p.riotId, p.position ?? null, p.championId ?? null, p.ready)
+        new Player(
+          p.uid,
+          p.riotId,
+          p.position ?? null,
+          p.championId ?? null,
+          p.ready
+        )
     );
 
     lobby.maxPlayers = data.maxPlayers ?? lobby.maxPlayers;

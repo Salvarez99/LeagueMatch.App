@@ -9,5 +9,14 @@ class Player {
         this.championId = championId;
         this.ready = ready;
     }
+    toObject() {
+        return {
+            uid: this.uid,
+            riotId: this.riotId,
+            position: this.position,
+            championId: this.championId,
+            ready: this.ready,
+        };
+    }
 }
 exports.Player = Player;
