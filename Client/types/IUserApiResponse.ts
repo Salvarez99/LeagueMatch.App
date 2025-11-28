@@ -5,14 +5,14 @@ import { BaseResponse, ErrorResponse } from "./Base";
 export interface AddSuccess extends BaseResponse, IUser {
   success: true;
 }
-export type Create = AddSuccess | ErrorResponse;
+export type Add = AddSuccess | ErrorResponse;
 
 // FIND /lobby_find
 export interface UpdateSuccess extends BaseResponse, IUser {
   success: true;
   id: string;
 }
-export type Find = UpdateSuccess | ErrorResponse;
+export type Update = UpdateSuccess | ErrorResponse;
 
 // GENERIC success-only endpoints
 export interface GenericSuccess extends BaseResponse {
