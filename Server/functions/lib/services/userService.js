@@ -50,7 +50,7 @@ class UserService {
         }
         const userDoc = user.toJSON();
         await this.usersRef.doc(user.uid).set(userDoc);
-        return { id: user.uid, ...userDoc };
+        return { ...userDoc };
     }
     // Get a user by UID
     async getUserById(uid) {
@@ -88,7 +88,14 @@ class UserService {
         const soloQueue = rankData.find((entry) => entry.queueType === "RANKED_SOLO_5x5");
         const rank = soloQueue ? `${soloQueue.tier} ${soloQueue.rank}` : "Unranked";
         await userRef.set({ riotId, puuid, rank }, { merge: true });
-        return { uid: userRef.id, riotId, puuid, rank };
+        const updatedSnap = await userRef.get();
+        if (!updatedSnap.exists) {
+            throw new Error.NotFoundError("User not found after update");
+        }
+        const updatedUser = updatedSnap.data();
+        return {
+            ...updatedUser,
+        };
     }
 }
 exports.UserService = UserService;

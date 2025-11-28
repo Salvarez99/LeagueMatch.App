@@ -13,7 +13,7 @@ class UserController {
             const createdUser = await userService_1.userService.addUser(userDTO);
             return res.status(200).json({
                 success: true,
-                data: createdUser,
+                createdUser,
             });
         }
         catch (err) {
@@ -21,7 +21,6 @@ class UserController {
                 return res.status(err.statusCode).json({
                     success: false,
                     message: err.message,
-                    code: err.code || null,
                 });
             }
             return res.status(400).json({
@@ -40,7 +39,7 @@ class UserController {
             const updatedUser = await userService_1.userService.updateUser(uid, username, riotId);
             return res.status(200).json({
                 success: true,
-                data: updatedUser,
+                updatedUser,
             });
         }
         catch (err) {
@@ -48,7 +47,6 @@ class UserController {
                 return res.status(err.statusCode).json({
                     success: false,
                     message: err.message,
-                    code: err.code || null,
                 });
             }
             return res.status(500).json({
