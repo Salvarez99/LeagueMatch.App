@@ -3,10 +3,11 @@ import { doc, onSnapshot } from "firebase/firestore";
 import { router } from "expo-router";
 import { db } from "../firebaseConfig";
 import { LOG } from "../utils/logger";
+import { ILobby } from "@leaguematch/shared";
 
-export function useLobbyListener(lobbyId, uid) {
-  const [lobby, setLobby] = useState(null);
-  const [joinConfirmed, setJoinConfirmed] = useState(false);
+export function useLobbyListener(lobbyId: string, uid: string) {
+  const [lobby, setLobby] = useState<ILobby | null>(null);
+  const [joinConfirmed, setJoinConfirmed] = useState<boolean>(false);
 
   useEffect(() => {
     if (!lobbyId || !uid) return;
@@ -27,7 +28,7 @@ export function useLobbyListener(lobbyId, uid) {
           return;
         }
 
-        const data = snap.data();
+        const data = snap.data() as ILobby;
         const players = data.players || [];
         const kicked = data.kickedPlayers || [];
 

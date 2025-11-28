@@ -1,6 +1,19 @@
 import { useRouter } from "expo-router";
 import { lobbyApi } from "../utils/api/lobbyApi";
 import { LOG } from "../utils/logger";
+import type { AxiosError } from "axios";
+
+interface PreLobbyActionsParams {
+  uid: string;
+  mode: string;
+  gameMap: string;
+  gameMode: string;
+  position: string;
+  championId: string;
+  rankFilter: string[];
+  hasRiotId: boolean;
+  setRiotModalOpen: (open: boolean) => void;
+}
 
 export function usePreLobbyActions({
   uid,
@@ -12,7 +25,7 @@ export function usePreLobbyActions({
   rankFilter,
   hasRiotId,
   setRiotModalOpen,
-}) {
+}: PreLobbyActionsParams) {
   const router = useRouter();
 
   const handleSubmit = async () => {
@@ -43,18 +56,18 @@ export function usePreLobbyActions({
       const id = res.data.id;
 
       router.push({
-        pathname: `/lobby/${id}`,
-        params: { gameMap, gameMode },
+        pathname: `/lobby/[id]`,
+        params: { id, gameMap, gameMode },
       });
-    } catch (err) {
-      const code =
-        err.response?.data?.error || err.response?.data?.message || "Unknown";
+    } catch (err: unknown) {
+      const error = err as AxiosError;
+      const code: string | undefined = error?.code;
 
-      if (code.includes("Riot ID")) {
+      if (code?.includes("Riot ID")) {
         setRiotModalOpen(true);
       }
 
-      LOG.error("Create lobby failed", err.response?.data);
+      LOG.error("Create lobby failed", error.response?.data);
     }
   }
 
@@ -67,24 +80,26 @@ export function usePreLobbyActions({
         ranks: rankFilter,
       });
 
-      const lobbyId = findRes.data.id;
+      const id = findRes.data.id;
 
-      await lobbyApi.joinLobby(lobbyId, {
+      await lobbyApi.joinLobby(id, {
         uid,
         position,
         championId,
       });
 
       router.push({
-        pathname: `/lobby/${lobbyId}`,
+        pathname: `/lobby/[id]`,
         params: {
+          id,
           gameMap,
           gameMode,
           justJoined: "true",
         },
       });
-    } catch (err) {
-      LOG.error("Join lobby failed", err.response?.data);
+    } catch (err: unknown) {
+      const error = err as AxiosError;
+      LOG.error("Join lobby failed", error.response?.data);
     }
   }
 
