@@ -4,7 +4,7 @@
   "scripts": {
     "build": "tsc",
     "watch": "tsc --watch",
-    "emus": "npm run build && firebase emulators:start",
+    "emus": "concurrently \"npm run watch\"  \"firebase emulators:start\"",
     "serve": "npm run build && firebase emulators:start --only functions",
     "shell": "firebase functions:shell",
     "start": "npm run shell",
@@ -23,6 +23,7 @@
   },
   "devDependencies": {
     "@types/node": "^24.10.1",
+    "concurrently": "^9.2.1",
     "firebase-functions-test": "^3.1.0",
     "typescript": "^5.9.3"
   },
