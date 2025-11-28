@@ -18,12 +18,12 @@ import { usePreLobbyParams } from "../../hooks/usePreLobbyParams";
 export default function PreLobby() {
   const { uid, mode, hasRiotId, appUser } = usePreLobbyParams();
   
-  const [gameMap, setGameMap] = useState("Summoner's Rift");
-  const [gameMode, setGameMode] = useState("");
-  const [position, setPosition] = useState("");
-  const [championId, setChampionId] = useState("");
-  const [rankFilter, setRankFilter] = useState([]);
-  const [riotModalOpen, setRiotModalOpen] = useState(false);
+  const [gameMap, setGameMap] = useState<string>("Summoner's Rift");
+  const [gameMode, setGameMode] = useState<string>("");
+  const [position, setPosition] = useState<string>("");
+  const [championId, setChampionId] = useState<string>("");
+  const [rankFilter, setRankFilter] = useState<string[]>([]);
+  const [riotModalOpen, setRiotModalOpen] = useState<boolean>(false);
   
   const { handleSubmit } = usePreLobbyActions({
     uid,

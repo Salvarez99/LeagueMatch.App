@@ -2,8 +2,7 @@ interface champion {
   id: string;
   name: string;
 }
-
-export const champions: champion[] = [
+const championList: champion[] = [
   { id: "Aatrox", name: "Aatrox" },
   { id: "Ahri", name: "Ahri" },
   { id: "Akali", name: "Akali" },
@@ -176,5 +175,10 @@ export const champions: champion[] = [
   { id: "Zoe", name: "Zoe" },
   { id: "Zyra", name: "Zyra" },
 ];
+
+export const champions: Record<string, string> = Object.fromEntries(
+  championList.map((c) => [c.id, c.name])
+);
+
 
 export const roles = ["Top", "Jg", "Mid", "Adc", "Sup"];

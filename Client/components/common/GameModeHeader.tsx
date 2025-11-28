@@ -1,7 +1,11 @@
 import { Text, View } from "react-native";
 import { styles } from "./Styles/GameModeHeaderStyle";
 
-export default function GameModeHeader({ gameMap, gameMode }) {
+interface GameModeHeaderProps{
+  gameMap: string;
+  gameMode: string;
+}
+export default function GameModeHeader({ gameMap, gameMode }: GameModeHeaderProps) {
   return (
     <View style={styles.conatinerStyle}>
       <View style={styles.gameDetailsContainer}>

@@ -13,4 +13,5 @@ export interface ILobby {
   players: ILobbyPlayer[];
   filter: ILobbyFilter;
   maxPlayers: number;
+  discordLink?: string | null;
 }

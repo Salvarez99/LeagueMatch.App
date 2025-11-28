@@ -5,18 +5,17 @@ import { Text, TouchableOpacity, View } from "react-native";
 import Toast from "react-native-toast-message";
 import PickChampionModal from "../preLobby/PickChampionModal";
 import { styles } from "./Styles/HostCardStyle";
+interface Host {
+  uid: string | null;
+  riotId: string|null|undefined;
+  position: string;
+  championId: string;
+}
 interface HostCardProps {
   host: Host | null;
   isLobby: boolean;
-  status: boolean;
-  onChampionSelect: (uid: string, championId: string) => void;
-}
-
-interface Host {
-  uid: string;
-  riotId: string;
-  position: string;
-  championId: string;
+  status?: boolean;
+  onChampionSelect?: (uid: string, championId: string) => void;
 }
 
 export default function HostCard({
@@ -36,9 +35,9 @@ export default function HostCard({
   let borderColor = "transparent";
   let borderWidth = 0;
 
-  const [isOpen, setIsOpen] = useState(false);
-  const [championId, setChampionId] = useState(host.championId || "");
-  const [championName, setChampionName] = useState(
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [championId, setChampionId] = useState<string>(host.championId || "");
+  const [championName, setChampionName] = useState<string>(
     champions[host.championId] || ""
   );
 
