@@ -11,14 +11,21 @@ import {
 } from "react-native";
 import { styles } from "./styles/DiscordButtonStyle";
 
+interface DiscordButtonProps {
+  style: any;
+  isHost: boolean;
+  discordLink: string | null | undefined;
+  onUpdateLink: (link: string) => void;
+}
+
 export default function DiscordButton({
   style,
   isHost,
   discordLink,
   onUpdateLink,
-}) {
-  const [modalVisible, setModalVisible] = useState(false);
-  const [linkInput, setLinkInput] = useState(discordLink || "");
+}: DiscordButtonProps) {
+  const [modalVisible, setModalVisible] = useState<boolean>(false);
+  const [linkInput, setLinkInput] = useState<string>(discordLink || "");
 
   const handlePress = async () => {
     if (isHost) {

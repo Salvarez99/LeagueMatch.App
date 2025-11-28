@@ -11,10 +11,17 @@ import { useAuth } from "../../context/authContext";
 import { userApi } from "../../utils/api/userApi";
 import { styles } from "./Styles/RiotLinkModalStyle";
 
-export default function RiotLinkModal({ visible, onClose }) {
-  const { user, loading } = useAuth();
-  const [riotID, setRiotID] = useState("");
-  const [tagLine, setTagLine] = useState("");
+interface RiotLinkModalProps {
+  visible: boolean;
+  onClose: (open: boolean) => void;
+}
+export default function RiotLinkModal({
+  visible,
+  onClose,
+}: RiotLinkModalProps) {
+  const { user } = useAuth();
+  const [riotID, setRiotID] = useState<string>("");
+  const [tagLine, setTagLine] = useState<string>("");
 
   const handleCancel = () => {
     onClose(false);

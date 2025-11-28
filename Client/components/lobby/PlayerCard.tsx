@@ -6,6 +6,17 @@ import { useAuth } from "../../context/authContext";
 import { champions } from "../../utils/constants";
 import PickChampionModal from "../preLobby/PickChampionModal";
 import { styles } from "./styles/PlayerCardStyle";
+import { ILobbyPlayer } from "@leaguematch/shared";
+
+interface PlayerCardProps {
+  isHost: boolean;
+  player: ILobbyPlayer | null;
+  isEmpty: boolean;
+  setSelectedPlayerUid: (uid: string | null) => void;
+  selectedPlayerUid: string | null;
+  onKick: (uid: string) => void;
+  onChampionSelect: (uid: string, championId: string) => void;
+}
 
 export default function PlayerCard({
   isHost,
@@ -15,19 +26,23 @@ export default function PlayerCard({
   selectedPlayerUid,
   onKick,
   onChampionSelect,
-}) {
+}: PlayerCardProps) {
   const { appUser } = useAuth();
-  let borderColor = "#ccc";
-  let borderWidth = 2;
-  let borderStyle = "solid";
+  let borderColor: string = "#ccc";
+  let borderWidth: number = 2;
+  let borderStyle: "solid" | "dotted" | "dashed" = "solid";
 
-  const isPlayerCurrentUser = player?.uid === appUser?.uid;
-  const [isOpen, setIsOpen] = useState(false);
-  const [championId, setChampionId] = useState(player?.championId);
-  const [championName, setChampionName] = useState(champions[championId]);
+  const isPlayerCurrentUser: boolean = player?.uid === appUser?.uid;
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [championId, setChampionId] = useState<string>(
+    player?.championId ?? ""
+  );
+  const [championName, setChampionName] = useState<string>(
+    champions[championId]
+  );
 
   if (!isEmpty) {
-    borderColor = player.ready ? "#00C851" : "#ff4444";
+    borderColor = player?.ready ? "#00C851" : "#ff4444";
   }
 
   const isSelected = selectedPlayerUid === player?.uid;
@@ -60,18 +75,18 @@ export default function PlayerCard({
           //If user is host then toggle selected player to show kick button
           if (isHost)
             setSelectedPlayerUid(
-              selectedPlayerUid === player.uid ? null : player.uid
+              selectedPlayerUid === player!.uid ? null : player!.uid
             );
         }}
         //OnLongPress copy the players riotId to clipBoard and show toast
         onLongPress={async () => {
           if (isEmpty) return;
-          await Clipboard.setStringAsync(player.riotId);
+          await Clipboard.setStringAsync(player!.riotId);
           Toast.show({
             type: "success",
             text1: "Copied Riot ID",
-            text2: player.riotId,
-            position: "center",
+            text2: player?.riotId,
+            position: "top",
             topOffset: 55,
           });
         }}
@@ -82,11 +97,11 @@ export default function PlayerCard({
         ) : (
           <>
             <Text style={styles.defaultTextStyle}>
-              Riot ID: {player.riotId}
+              Riot ID: {player?.riotId}
             </Text>
-            <Text style={styles.defaultTextStyle}>Role: {player.position}</Text>
+            <Text style={styles.defaultTextStyle}>Role: {player?.position}</Text>
             <Text style={styles.defaultTextStyle}>
-              Champion: {player.championId}
+              Champion: {player?.championId}
             </Text>
           </>
         )}
@@ -97,7 +112,7 @@ export default function PlayerCard({
         <TouchableOpacity
           style={styles.kickButton}
           onPress={() => {
-            onKick(player.uid);
+            onKick(player?.uid);
             setSelectedPlayerUid(null);
           }}
         >
@@ -109,9 +124,9 @@ export default function PlayerCard({
         <PickChampionModal
           visible={isOpen}
           onClose={() => setIsOpen(false)}
-          setChampionId={(id) => {
+          setChampionId={(id: string) => {
             setChampionId(id);
-            onChampionSelect(player.uid, id); // <-- SEND UPWARD
+            onChampionSelect(player!.uid, id); // <-- SEND UPWARD
           }}
           setChampionName={setChampionName}
         />

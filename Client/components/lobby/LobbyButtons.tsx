@@ -2,7 +2,19 @@ import { useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import { styles } from "./styles/LobbyButtonsStyle";
 
-export default function LobbyButtons({ style, onLeave, onReady, status }) {
+interface LobbyButtonsProps {
+  style: any;
+  onLeave: () => void;
+  onReady: () => void;
+  status: any;
+}
+
+export default function LobbyButtons({
+  style,
+  onLeave,
+  onReady,
+  status,
+}: LobbyButtonsProps) {
   const [disabled, setDisabled] = useState(false);
 
   const outlineColor = status ? "#00C851" : "#ff4444"; // green / red
