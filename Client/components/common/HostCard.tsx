@@ -35,7 +35,7 @@ export default function HostCard({
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [championId, setChampionId] = useState<string>(host.championId || "");
   const [championName, setChampionName] = useState<string>(
-    champions[host.championId] || ""
+    champions[championId] || ""
   );
 
   if (isLobby) {
@@ -67,7 +67,7 @@ export default function HostCard({
           onClose={() => setIsOpen(false)}
           setChampionId={(id: string) => {
             setChampionId(id);
-            onChampionSelect(host.uid, id);
+            onChampionSelect?.(host.uid, id);
           }}
           setChampionName={setChampionName}
         />

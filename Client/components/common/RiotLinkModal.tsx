@@ -29,7 +29,7 @@ export default function RiotLinkModal({
 
   const handleLink = async () => {
     const fullRiotID = `${riotID}#${tagLine}`;
-    const uid = user?.uid;
+    const uid = user!.uid;
     if (!riotID || !tagLine) {
       Alert.alert("Please enter both Riot ID and Tagline.");
       return;
@@ -51,8 +51,7 @@ export default function RiotLinkModal({
       transparent
       visible={visible}
       animationType="fade"
-      onRequestClose={onClose}
-      // statusBarTranslucent={true}
+      onRequestClose={() => onClose(false)}
     >
       <View style={styles.overlay}>
         <View style={styles.container}>
