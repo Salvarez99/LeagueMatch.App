@@ -2,12 +2,25 @@ import { useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import { styles } from "./styles/GameModeCardStyle";
 
+interface GameMap {
+  id: string;
+  title: string;
+  modes: string[];
+}
+
+interface GameModeCardProps {
+  gameMap: GameMap;
+  isFocused: boolean;
+  selectedMode: string;
+  onModeSelect: (id: string, mode: string) => void;
+}
+
 export default function GameModeCard({
   gameMap,
   isFocused,
   selectedMode,
   onModeSelect,
-}) {
+}: GameModeCardProps) {
   const [showModes, setShowModes] = useState(false);
 
   const handleCardPress = () => {
@@ -20,6 +33,7 @@ export default function GameModeCard({
       style={[styles.card, isFocused && styles.focused]}
     >
       <Text style={styles.title}>{gameMap.title}</Text>
+
       <Text style={styles.subTitle}>
         {selectedMode ? `${selectedMode}` : ""}
       </Text>

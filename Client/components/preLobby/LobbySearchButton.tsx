@@ -1,15 +1,24 @@
 import { Text, TouchableOpacity, View } from "react-native";
 import { styles } from "./styles/LobbySearchButtonStyle";
-export default function LobbySearchButton({ mode, handleCreateLobby }) {
+
+type LobbyMode = "host" | "join";
+
+interface LobbySearchButtonProps {
+  mode: LobbyMode;
+  handleCreateLobby: () => void | Promise<void>;
+}
+
+export default function LobbySearchButton({
+  mode,
+  handleCreateLobby,
+}: LobbySearchButtonProps) {
   return (
     <View style={styles.containerStyle}>
       <TouchableOpacity
         style={styles.button}
         onPress={() => handleCreateLobby()}
       >
-        <Text style={styles.text}>
-          {mode === "host" ? "Create Lobby" : "Join"}
-        </Text>
+        <Text>{mode === "host" ? "Create Lobby" : "Join"}</Text>
       </TouchableOpacity>
     </View>
   );

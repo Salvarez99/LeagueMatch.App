@@ -8,7 +8,17 @@ import {
   View,
 } from "react-native";
 
-export default function PickPositionDropdown({ items, value, onSelect }) {
+interface PickPositionDropdownProps {
+  items: string[];
+  value: string | null;
+  onSelect: (pos: string) => void;
+}
+
+export default function PickPositionDropdown({
+  items,
+  value,
+  onSelect,
+}: PickPositionDropdownProps) {
   const [open, setOpen] = useState(false);
 
   return (

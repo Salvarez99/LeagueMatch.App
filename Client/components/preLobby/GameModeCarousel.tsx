@@ -4,17 +4,31 @@ import Carousel from "react-native-reanimated-carousel";
 import Screen from "../../utils/dimensions";
 import GameModeCard from "./GameModeCard";
 
-export default function GameModeCarousel({ setGameMode, setGameMap }) {
+interface GameMap {
+  id: string;
+  title: string;
+  modes: string[];
+}
+
+interface GameModeCarouselProps {
+  setGameMode?: (mode: string) => void;
+  setGameMap?: (mapTitle: string) => void;
+}
+
+export default function GameModeCarousel({
+  setGameMode,
+  setGameMap,
+}: GameModeCarouselProps) {
   const [focusedIndex, setFocusedIndex] = useState(0);
-  const [selectedModes, setSelectedModes] = useState({});
+  const [selectedModes, setSelectedModes] = useState<Record<string, string>>({});
   const progress = useSharedValue(0);
 
-  const handleModeSelect = (mapId, mode) => {
+  const handleModeSelect = (mapId: string, mode: string) => {
     setSelectedModes({ [mapId]: mode });
-    if (setGameMode) setGameMode(mode);
+    setGameMode?.(mode);
   };
 
-  const DATA = [
+  const DATA: GameMap[] = [
     {
       id: "1",
       title: "Summoner's Rift",
@@ -40,26 +54,23 @@ export default function GameModeCarousel({ setGameMode, setGameMap }) {
       mode="parallax"
       modeConfig={{
         parallaxScrollingScale: 0.95,
-        parallaxScrollingOffset: (Screen.width * 0.35) / 2, // centers focused card peek in
+        parallaxScrollingOffset: (Screen.width * 0.35) / 2,
       }}
       onProgressChange={progress}
       onSnapToItem={(index) => {
         const realIndex = index % DATA.length;
         setFocusedIndex(realIndex);
         setSelectedModes({});
-        if (setGameMap) setGameMap(DATA[realIndex].title);
+        setGameMap?.(DATA[realIndex].title);
       }}
-      renderItem={({ item, index }) => {
-        return (
-          <GameModeCard
-            gameMap={item}
-            gameMode={item.modes}
-            isFocused={index === focusedIndex}
-            selectedMode={selectedModes[item.id]}
-            onModeSelect={handleModeSelect}
-          />
-        );
-      }}
+      renderItem={({ item, index }) => (
+        <GameModeCard
+          gameMap={item}
+          isFocused={index === focusedIndex}
+          selectedMode={selectedModes[item.id] ?? ""}
+          onModeSelect={handleModeSelect}
+        />
+      )}
     />
   );
 }

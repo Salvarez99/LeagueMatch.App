@@ -10,60 +10,71 @@ import {
   TouchableWithoutFeedback,
   View,
 } from "react-native";
-import { champions, roles } from "../../utils/constants";
+import { champions, championList, roles } from "../../utils/constants";
 import { styles } from "./styles/PickChampionModalStyle";
+
+interface PickChampionModalProps {
+  visible: boolean;
+  onClose: () => void;
+  setChampionId: (id: string) => void;
+  setChampionName: (name: string) => void;
+}
+
+interface ChampIconProps {
+  id: string;
+  name: string;
+}
+
+interface RoleButtonProps {
+  role: string;
+}
 
 export default function PickChampionModal({
   visible,
   onClose,
   setChampionId,
   setChampionName,
-}) {
+}: PickChampionModalProps) {
   const [query, setQuery] = useState("");
   const [selectedChamp, setSelectedChamp] = useState("");
-  const getChampionIconUrl = (name) =>
-    `https://ddragon.leagueoflegends.com/cdn/15.20.1/img/champion/${name}.png`;
 
-  const ChampIcon = ({ id, name }) => (
+  const getChampionIconUrl = (id: string) =>
+    `https://ddragon.leagueoflegends.com/cdn/15.20.1/img/champion/${id}.png`;
+
+  const ChampIcon = ({ id, name }: ChampIconProps) => (
     <TouchableOpacity
       style={styles.champButton}
       onPress={() => {
-        // console.log(id);
         setSelectedChamp(id);
         setChampionId(id);
         setChampionName(name);
         onClose();
       }}
     >
-      <Image
-        source={{ uri: getChampionIconUrl(id) }}
-        style={styles.champIcon}
-      />
+      <Image source={{ uri: getChampionIconUrl(id) }} style={styles.champIcon} />
       <Text style={styles.champName}>{name}</Text>
     </TouchableOpacity>
   );
 
-  const QueryChampions = (search) => {
-    if (!search || search.trim() === "") return champions;
-    const query = search.toLowerCase().trim();
-    return champions.filter((champion) =>
-      champion.id.toLowerCase().includes(query)
-    );
-  };
-
-  const RoleButtons = ({ role }) => (
+  const RoleButton = ({ role }: RoleButtonProps) => (
     <TouchableOpacity style={styles.roleButton}>
       <Text>{role}</Text>
     </TouchableOpacity>
   );
+
+  const queryChampions = (search: string) => {
+    if (!search.trim()) return championList;
+    const q = search.toLowerCase().trim();
+    return championList.filter((champ) => champ.id.toLowerCase().includes(q));
+  };
 
   useEffect(() => {
     const backHandler = BackHandler.addEventListener(
       "hardwareBackPress",
       () => {
         if (visible) {
-          onClose(); // tell parent to close modal
-          return true; // prevent default
+          onClose();
+          return true;
         }
         return false;
       }
@@ -78,32 +89,33 @@ export default function PickChampionModal({
       visible={visible}
       animationType="fade"
       onRequestClose={onClose}
-      statusBarTranslucent={true}
+      statusBarTranslucent
     >
       <TouchableWithoutFeedback onPress={onClose}>
         <View style={styles.overlay}>
-          {/* Dropdown */}
           <TouchableWithoutFeedback>
-            <View style={[styles.dropdown]}>
+            <View style={styles.dropdown}>
               <TextInput
                 style={styles.input}
-                onChangeText={setQuery}
                 value={query}
+                onChangeText={setQuery}
                 placeholder="Search..."
               />
+
               <View style={styles.roleButtonContainer}>
                 {roles.map((role) => (
-                  <RoleButtons key={role} role={role} />
+                  <RoleButton key={role} role={role} />
                 ))}
               </View>
+
               <FlatList
-                data={QueryChampions(query)}
+                data={queryChampions(query)}
                 keyExtractor={(item) => item.id}
                 numColumns={4}
                 renderItem={({ item }) => (
                   <ChampIcon id={item.id} name={item.name} />
                 )}
-                persistentScrollbar={true}
+                persistentScrollbar
                 style={{ borderRadius: 15 }}
                 contentContainerStyle={styles.contentContainerStyle}
                 ListEmptyComponent={

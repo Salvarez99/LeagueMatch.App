@@ -9,11 +9,19 @@ import {
   View,
 } from "react-native";
 
-export default function RankFilterDropdown({ value, onSelect }) {
-  const [open, setOpen] = useState(false);
-  const [selected, setSelected] = useState(value || []);
+interface RankFilterDropdownProps {
+  value: string[];
+  onSelect: (ranks: string[]) => void;
+}
 
-  const ranks = [
+export default function RankFilterDropdown({
+  value,
+  onSelect,
+}: RankFilterDropdownProps) {
+  const [open, setOpen] = useState(false);
+  const [selected, setSelected] = useState<string[]>(value || []);
+
+  const ranks: string[] = [
     "Challenger",
     "Grandmaster",
     "Master",
@@ -26,8 +34,8 @@ export default function RankFilterDropdown({ value, onSelect }) {
     "Iron",
   ];
 
-  const toggleRank = (rank) => {
-    let updated = [];
+  const toggleRank = (rank: string) => {
+    let updated: string[] = [];
 
     if (selected.includes(rank)) {
       updated = selected.filter((r) => r !== rank);
@@ -36,16 +44,14 @@ export default function RankFilterDropdown({ value, onSelect }) {
     }
 
     setSelected(updated);
-    onSelect(updated); // send updated selection to PreLobby
+    onSelect(updated); // send updated selection to parent
   };
 
   return (
     <View style={styles.anchorContainer}>
       {/* BUTTON */}
       <TouchableOpacity style={styles.button} onPress={() => setOpen(!open)}>
-        <TouchableOpacity style={styles.button} onPress={() => setOpen(!open)}>
-          <Ionicons name="options-outline" size={22} color="white" />
-        </TouchableOpacity>
+        <Ionicons name="options-outline" size={22} color="white" />
       </TouchableOpacity>
 
       {/* OVERLAY + DROPDOWN */}

@@ -2,7 +2,7 @@ interface champion {
   id: string;
   name: string;
 }
-const championList: champion[] = [
+export const championList: champion[] = [
   { id: "Aatrox", name: "Aatrox" },
   { id: "Ahri", name: "Ahri" },
   { id: "Akali", name: "Akali" },
