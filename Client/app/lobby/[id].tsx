@@ -16,32 +16,39 @@ import { ILobbyPlayer } from "@leaguematch/shared";
 export default function Lobby() {
   // 1. Page params (id, uid, gameMap, gameMode)
   const { id, uid, gameMap, gameMode } = useLobbyParams();
-  if(!id || !uid || !gameMap || !gameMode) return(
-    <View>
-      <Text>Loading...</Text>
-    </View>
-  )
 
   // 2. Firestore listener (real-time lobby updates)
+  if (!id || !uid || !gameMap || !gameMode)
+    return (
+      <View>
+        <Text>Loading...</Text>
+      </View>
+    );
   const { lobby } = useLobbyListener(id, uid);
-  const host : ILobbyPlayer = lobby!.players![0];
+  if (!lobby)
+    return (
+      <View>
+        <Text>Loading...</Text>
+      </View>
+    );
+  const host: ILobbyPlayer = lobby!.players![0];
   const players = lobby?.players;
 
   // 3. All backend actions (leave, kick, ready, discord)
-  const { onLeave, onReady, onKickPlayer, updateDiscordLink, handleUpdateChampion } = useLobbyActions(
-    id,
-    uid
-  );
+  const {
+    onLeave,
+    onReady,
+    onKickPlayer,
+    updateDiscordLink,
+    handleUpdateChampion,
+  } = useLobbyActions(id, uid);
 
   return (
     <SafeAreaView
       style={styles.containerStyle}
       edges={["left", "right", "bottom"]}
     >
-      <GameModeHeader
-        gameMap={gameMap}
-        gameMode={gameMode}
-      />
+      <GameModeHeader gameMap={gameMap} gameMode={gameMode} />
 
       {/* HOST CARD */}
       <HostCard
@@ -50,6 +57,7 @@ export default function Lobby() {
         isLobby={true}
         status={host?.ready}
         onChampionSelect={handleUpdateChampion}
+        currentUid={uid}
       />
 
       {/* OTHER PLAYERS */}

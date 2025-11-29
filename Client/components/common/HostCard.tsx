@@ -12,6 +12,7 @@ interface HostCardProps {
   host: ILobbyPlayer | null;
   isLobby: boolean;
   status?: boolean;
+  currentUid: string;
   onChampionSelect?: (uid: string, championId: string) => void;
 }
 
@@ -19,6 +20,7 @@ export default function HostCard({
   host,
   isLobby,
   status,
+  currentUid,
   onChampionSelect,
 }: HostCardProps) {
   if (!host) {
@@ -47,8 +49,13 @@ export default function HostCard({
     <View style={styles.containerStyle}>
       <TouchableOpacity
         style={[styles.hostCardButtonStyle, { borderColor, borderWidth }]}
-        disabled={!isLobby}
+        // do NOT disable the button
+        onPress={() => {
+          if (currentUid !== host.uid) return; // ⛔ tap does nothing for non-host
+          setIsOpen(true); // ✅ only host can open
+        }}
         onLongPress={async () => {
+          // Long press should still work for everyone
           await Clipboard.setStringAsync(host.riotId);
           Toast.show({
             type: "success",
@@ -56,7 +63,7 @@ export default function HostCard({
             text2: host.riotId,
           });
         }}
-        onPress={() => setIsOpen(true)}
+        delayLongPress={250}
       >
         <Text style={styles.text}>Host: {host.riotId}</Text>
         <Text style={styles.text}>Role: {host.position}</Text>
