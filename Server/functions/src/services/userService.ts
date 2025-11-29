@@ -1,4 +1,4 @@
-import { IUserData } from "../interfaces/IUserData";
+import { IUser } from "@leaguematch/shared";
 import { User } from "../models/User";
 import { riotService } from "./riotService";
 import { IRiotRankEntry, IRiotAccount } from "../interfaces/riot";
@@ -12,7 +12,7 @@ export class UserService {
   constructor() {}
 
   // Add a new user
-  async addUser(userData: IUserData) {
+  async addUser(userData: IUser) {
     const user = new User(userData);
 
     if (!user.uid || !user.username || !user.email) {
@@ -22,7 +22,7 @@ export class UserService {
     const userDoc = user.toJSON();
     await this.usersRef.doc(user.uid).set(userDoc);
 
-    return { id: user.uid, ...userDoc };
+    return { ...userDoc };
   }
 
   // Get a user by UID
@@ -30,7 +30,7 @@ export class UserService {
     const doc = await this.usersRef.doc(uid).get();
     if (!doc.exists) return null;
 
-    return { id: doc.id, ...(doc.data() as IUserData) };
+    return { id: doc.id, ...(doc.data() as IUser) };
   }
 
   // Update user with Riot info
@@ -79,7 +79,17 @@ export class UserService {
 
     await userRef.set({ riotId, puuid, rank }, { merge: true });
 
-    return { uid: userRef.id, riotId, puuid, rank };
+    const updatedSnap = await userRef.get();
+
+    if (!updatedSnap.exists) {
+      throw new Error.NotFoundError("User not found after update");
+    }
+
+    const updatedUser = updatedSnap.data();
+
+    return {
+      ...updatedUser,
+    };
   }
 }
 

@@ -3,7 +3,7 @@
 
 # Open both projects in VS Code
 code ./Server
-code ./Client/league-match-app
+code ./Client
 
 # # --- Start Firebase emulator in background (fully detached) ---
 # echo "🚀 Starting Firebase Emulator (background)..."

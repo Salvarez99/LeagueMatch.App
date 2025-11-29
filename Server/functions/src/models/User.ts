@@ -1,4 +1,4 @@
-import { IUserData } from "../interfaces/IUserData";
+import { IUser } from "@leaguematch/shared";
 
 export class User {
   uid: string;
@@ -9,7 +9,7 @@ export class User {
   rank: string | null;
   preferredRoles: string[];
 
-  constructor(data: IUserData) {
+  constructor(data: IUser) {
     this.uid = data.uid;
     this.username = data.username;
     this.email = data.email;

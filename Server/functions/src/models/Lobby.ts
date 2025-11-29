@@ -1,20 +1,20 @@
-import { IPlayerData } from "../interfaces/IPlayerData";
-import { ILobbyData } from "../interfaces/ILobbyData";
-import { ILobbyFilter } from "../interfaces/ILobbyFilter";
-import { DocumentData } from "firebase-admin/firestore";
+import type { DocumentData } from "firebase-admin/firestore";
+import type { ILobby } from "@leaguematch/shared";
+import type { ILobbyFilter } from "@leaguematch/shared";
+import type { ILobbyPlayer } from "@leaguematch/shared";
+import { Player } from "./Player";
 
-export class Lobby {
+export class Lobby implements ILobby {
   hostId: string;
-  riotId: string;
   gameMap: string;
   gameMode: string;
-  kickedPlayers: string[];
-  currentPlayers: number;
-  maxPlayers: number;
   createdAt: string;
+  currentPlayers: number;
   isActive: boolean;
+  kickedPlayers: string[];
+  players: ILobbyPlayer[];
   filter: ILobbyFilter;
-  players: IPlayerData[];
+  maxPlayers: number;
 
   static mapPositions = {
     "Summoner's Rift": ["Top", "Jungle", "Middle", "Adc", "Support"],
@@ -24,205 +24,192 @@ export class Lobby {
     hostId: string,
     riotId: string,
     gameMap: string,
-    gameMode: string | null = null,
+    gameMode: string | null,
     hostPosition: string | null = null,
     championId: string | null = null,
-    ranksFilter: string[] = []
+    ranksFilter: string[] | null = []
   ) {
     if (!hostId || !gameMap) throw new Error("hostId and gameMap are required");
 
     this.hostId = hostId;
     this.gameMap = gameMap;
-    this.gameMode = gameMode;
-    this.kickedPlayers = [];
-    this.currentPlayers = 1;
+    this.gameMode = gameMode ?? "Unknown";
     this.createdAt = new Date().toISOString();
+    this.currentPlayers = 1;
     this.isActive = true;
+    this.kickedPlayers = [];
 
-    // Determine map-specific configurations
     switch (gameMap) {
       case "Summoner's Rift": {
-        if (!gameMode)
-          throw new Error("gameMode is required for Summoner's Rift");
-        if (!hostPosition)
-          throw new Error("hostPosition is required for Summoner's Rift");
-        if (!championId)
-          throw new Error("championId is required for Summoner's Rift");
+        if (!gameMode) throw new Error("gameMode required for SR");
+        if (!hostPosition) throw new Error("hostPosition required for SR");
+        if (!championId) throw new Error("championId required for SR");
 
-        this.maxPlayers = gameMode === "Ranked Solo/Duo" ? 2 : 5;
+        this.maxPlayers =
+          gameMode === "Ranked Solo/Duo"
+            ? 2
+            : Lobby.mapPositions[gameMap].length;
+
         const positions = Lobby.mapPositions["Summoner's Rift"];
-        const positionsNeeded = positions.filter((pos) => pos !== hostPosition);
+        const positionsNeeded = positions.filter((p) => p !== hostPosition);
+
         this.filter = {
-          ranksFilter: ranksFilter,
-          positionsNeeded: positionsNeeded,
+          ranksFilter: ranksFilter ?? [],
+          positionsNeeded,
         };
         break;
       }
 
-      case "Aram": {
-        if (!gameMode) throw new Error("gameMode is required for Aram");
+      case "Aram":
+        if (!gameMode) throw new Error("gameMode required for Aram");
         this.maxPlayers = 5;
-        this.filter = { ranksFilter: ranksFilter, positionsNeeded: [] };
+        this.filter = {
+          ranksFilter: ranksFilter ?? [],
+          positionsNeeded: [],
+        };
         break;
-      }
 
-      case "Featured Modes": {
-        if (!gameMode)
-          throw new Error("gameMode is required for Featured Mode");
+      case "Featured Modes":
+        if (!gameMode) throw new Error("gameMode required for Featured Modes");
         if (!championId)
-          throw new Error("championId is required for Featured Mode");
+          throw new Error("championId required for Featured Modes");
+
         this.maxPlayers = gameMode === "Arena" ? 2 : 5;
-        this.filter = { ranksFilter: ranksFilter, positionsNeeded: [] };
+        this.filter = {
+          ranksFilter: ranksFilter ?? [],
+          positionsNeeded: [],
+        };
         break;
-      }
 
       default:
-        throw new Error("Game Map is not supported");
+        throw new Error(`Unsupported map: ${gameMap}`);
     }
 
-    // Player list starts with host
+    // Initialize host player
     this.players = [
-      {
-        uid: hostId,
-        riotId: riotId,
-        position: hostPosition || null,
-        championId: championId || null,
-        ready: false,
-      },
+      new Player(hostId, riotId, hostPosition, championId, false),
     ];
   }
 
+  // ➤ Add a player
   addPlayer(
     uid: string,
     riotId: string,
     position: string | null = null,
     championId: string | null = null
   ) {
-    // Prevent duplicates
-    if (this.players.some((p) => p.uid === uid)) {
+    if (this.players.some((p) => p.uid === uid))
       throw new Error("Player already in lobby");
-    }
 
-    if (this.currentPlayers >= this.maxPlayers) {
+    if (this.currentPlayers >= this.maxPlayers)
       throw new Error("Lobby is full");
-    }
 
-    // Behavior depends on the hosted map and mode
     switch (this.gameMap) {
-      case "Summoner's Rift": {
-        if (!position)
-          throw new Error("position is required for Summoner's Rift");
-        if (!championId)
-          throw new Error("championId is required for Summoner's Rift");
+      case "Summoner's Rift":
+        if (!position) throw new Error("position required for SR");
+        if (!championId) throw new Error("championId required for SR");
 
-        // Ensure the position is still available
         if (!this.filter.positionsNeeded.includes(position)) {
-          throw new Error(`Position ${position} is no longer available`);
+          throw new Error(`Position ${position} no longer available`);
         }
 
-        // Add the player
-        this.players.push({ uid, riotId, position, championId, ready: false });
-        this.currentPlayers++;
-
-        // Remove position from needed list
+        this.players.push(new Player(uid, riotId, position, championId));
         this.filter.positionsNeeded = this.filter.positionsNeeded.filter(
-          (pos) => pos !== position
+          (p) => p !== position
         );
-
         break;
-      }
 
-      case "Aram": {
-        // ARAM: No roles or champion selection needed
-        this.players.push({ uid, riotId, ready: false });
-        this.currentPlayers++;
+      case "Aram":
+        this.players.push(new Player(uid, riotId, null, null));
         break;
-      }
 
-      case "Featured Modes": {
-        // Featured Mode (like Arena): Only champion required
+      case "Featured Modes":
         if (!championId)
-          throw new Error("championId is required for Featured Mode");
-
-        this.players.push({ uid, riotId, championId, ready: false });
-        this.currentPlayers++;
+          throw new Error("championId required for Featured Modes");
+        this.players.push(new Player(uid, riotId, null, championId));
         break;
-      }
-
-      default:
-        throw new Error("Unsupported game map");
     }
 
-    // Update lobby status
-    if (this.currentPlayers >= this.maxPlayers) {
-      this.isActive = false;
-    } else {
-      this.isActive = true;
-    }
+    this.currentPlayers++;
+    this.isActive = this.currentPlayers < this.maxPlayers;
   }
 
-  removePlayer(uid: string, kicked: boolean = false) {
-    // 0️⃣ If host leaves → shutdown lobby completely
-    if (this.hostId === uid) {
+  // ➤ Remove a player
+  removePlayer(uid: string, kicked = false) {
+    if (uid === this.hostId) {
       this.isActive = false;
       this.players = [];
       this.currentPlayers = 0;
-      this.filter = {
-        ranksFilter: this.filter?.ranksFilter ?? [],
-        positionsNeeded: [],
-      };
-
-      this.kickedPlayers = this.kickedPlayers || [];
       this.kickedPlayers.push(uid);
-
+      this.filter.positionsNeeded = [];
       return;
     }
 
-    // 1️⃣ Find player in the list
     const index = this.players.findIndex((p) => p.uid === uid);
-    if (index === -1) {
-      throw new Error("Player not found in lobby");
-    }
+    if (index === -1) throw new Error("Player not found");
 
-    // Pull out the player being removed
-    const [removedPlayer] = this.players.splice(index, 1);
-
+    const removed = this.players.splice(index, 1)[0];
     this.currentPlayers = Math.max(0, this.currentPlayers - 1);
 
-    // Ensure structures exist
-    this.filter = this.filter || { ranksFilter: [] };
-    this.filter.positionsNeeded = this.filter.positionsNeeded || [];
-    this.kickedPlayers = this.kickedPlayers || [];
-
-    // 2️⃣ Restore role (Summoner's Rift only)
-    if (this.gameMap === "Summoner's Rift") {
-      // Normalize position
-      const role = (removedPlayer.position || "").trim();
-
-      if (role.length > 0) {
-        // Only restore if not already included
-        if (!this.filter.positionsNeeded.includes(role)) {
-          this.filter.positionsNeeded.push(role);
-        }
+    if (this.gameMap === "Summoner's Rift" && removed.position) {
+      if (!this.filter.positionsNeeded.includes(removed.position)) {
+        this.filter.positionsNeeded.push(removed.position);
       }
     }
 
-    // 3️⃣ Track kicked/removed players for analytics
     if (kicked) this.kickedPlayers.push(uid);
 
-    // 4️⃣ Reactivate lobby if it was full before
-    if (this.currentPlayers < this.maxPlayers) {
-      this.isActive = true;
-    }
+    this.isActive = this.currentPlayers < this.maxPlayers;
   }
 
-  toFirestore() {
-    return { ...this };
+  // ➤ Prepare Firestore object
+  toFirestore(): ILobby {
+    return {
+      createdAt: this.createdAt,
+      currentPlayers: this.currentPlayers,
+      gameMap: this.gameMap,
+      gameMode: this.gameMode,
+      hostId: this.hostId,
+      isActive: this.isActive,
+      kickedPlayers: this.kickedPlayers,
+      players: this.players.map((p) =>
+        p instanceof Player ? p.toObject() : p
+      ),
+      filter: this.filter,
+      maxPlayers: this.maxPlayers,
+    };
   }
 
-  static fromFireStore(data: DocumentData) {
-    const lobby = Object.create(Lobby.prototype);
-    Object.assign(lobby, data);
+  // ➤ Rehydrate Lobby from Firestore
+  static fromFirestore(data: DocumentData): Lobby {
+    const host = data.players?.[0];
+
+    const lobby = new Lobby(
+      data.hostId,
+      host?.riotId ?? "Unknown",
+      data.gameMap,
+      data.gameMode,
+      host?.position ?? null,
+      host?.championId ?? null,
+      data.filter?.ranksFilter ?? []
+    );
+
+    lobby.players = (data.players ?? []).map(
+      (p: ILobbyPlayer) =>
+        new Player(
+          p.uid,
+          p.riotId,
+          p.position ?? null,
+          p.championId ?? null,
+          p.ready
+        )
+    );
+
+    lobby.maxPlayers = data.maxPlayers ?? lobby.maxPlayers;
+    lobby.kickedPlayers = data.kickedPlayers ?? [];
+    lobby.isActive = data.isActive ?? true;
+    lobby.filter = data.filter ?? lobby.filter;
+
     return lobby;
   }
 }

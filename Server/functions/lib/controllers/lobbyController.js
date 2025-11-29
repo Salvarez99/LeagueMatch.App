@@ -25,7 +25,6 @@ class LobbyController {
                 return res.status(err.statusCode).json({
                     success: false,
                     message: err.message,
-                    code: err.code || null,
                 });
             }
             return res.status(500).json({
@@ -50,7 +49,6 @@ class LobbyController {
                 return res.status(err.statusCode).json({
                     success: false,
                     message: err.message,
-                    code: err.code || null,
                 });
             }
             return res.status(500).json({
@@ -76,7 +74,6 @@ class LobbyController {
                 return res.status(err.statusCode).json({
                     success: false,
                     message: err.message,
-                    code: err.code || null,
                 });
             }
             return res.status(500).json({
@@ -97,7 +94,6 @@ class LobbyController {
                 return res.status(err.statusCode).json({
                     success: false,
                     message: err.message,
-                    code: err.code || null,
                 });
             }
             return res.status(400).json({ success: false, error: err.message });
@@ -119,7 +115,6 @@ class LobbyController {
                 return res.status(err.statusCode).json({
                     success: false,
                     message: err.message,
-                    code: err.code || null,
                 });
             }
             return res.status(500).json({
@@ -144,7 +139,6 @@ class LobbyController {
                 return res.status(err.statusCode).json({
                     success: false,
                     message: err.message,
-                    code: err.code || null,
                 });
             }
             return res.status(500).json({
@@ -183,7 +177,6 @@ class LobbyController {
                 return res.status(err.statusCode).json({
                     success: false,
                     message: err.message,
-                    code: err.code || null,
                 });
             }
             return res.status(500).json({
@@ -227,7 +220,6 @@ class LobbyController {
                 return res.status(err.statusCode).json({
                     success: false,
                     message: err.message,
-                    code: err.code || null,
                 });
             }
             return res.status(500).json({
