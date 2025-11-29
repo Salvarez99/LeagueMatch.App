@@ -18,6 +18,7 @@ import { useAuth } from "@/context/authContext";
 import { auth } from "@/firebaseConfig";
 import { styles } from "@/styles/indexStyle";
 import { userApi } from "@/utils/api/userApi";
+import * as UserRequest from "@/types/IUserApiRequest";
 
 // --- Types ---
 type CreateUserPayload = {
@@ -68,7 +69,7 @@ export default function Index() {
         console.log("✅ User created in Firebase:", firebaseUser.uid);
 
         // Create user in Firestore (through your backend API)
-        const payload: CreateUserPayload = {
+        const payload: UserRequest.Add = {
           uid: firebaseUser.uid,
           email: email,
           username: "Generic Username",

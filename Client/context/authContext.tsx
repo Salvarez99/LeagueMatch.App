@@ -19,11 +19,12 @@ import { userApi } from "@/utils/api/userApi";
 import { DEV_CONFIG } from "@/devConfig";
 import { LOG, logObjectDeep } from "@/utils/logger";
 
-import type { AppUser, AuthUser } from "@/types/user";
+import type { AuthUser } from "@/types/user";
+import type { IUser } from "@leaguematch/shared";
 
 interface AuthContextValue {
   user: AuthUser;
-  appUser: AppUser | null;
+  appUser: IUser | null;
   authLoading: boolean;
   appUserLoading: boolean;
 }
@@ -41,7 +42,7 @@ const AuthContext = createContext<AuthContextValue>({
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<AuthUser>(null);
-  const [appUser, setAppUser] = useState<AppUser | null>(null);
+  const [appUser, setAppUser] = useState<IUser | null>(null);
   const [authLoading, setAuthLoading] = useState<boolean>(true);
   const [appUserLoading, setAppUserLoading] = useState<boolean>(true);
 
@@ -73,7 +74,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           return onSnapshot(
             userRef,
             (snapshot) => {
-              const data = snapshot.data() as AppUser | undefined;
+              const data = snapshot.data() as IUser | undefined;
               const json = JSON.stringify(data);
 
               if (json !== lastAppJSON.current) {

@@ -17,7 +17,7 @@ export default function Index() {
 
   const handleLink = async () => {
     const fullRiotID = `${riotID}#${tagLine}`;
-    const uid = user?.uid;
+    const uid = user!.uid;
     if (!riotID || !tagLine) {
       Alert.alert("Please enter both Riot ID and Tagline.");
       return;

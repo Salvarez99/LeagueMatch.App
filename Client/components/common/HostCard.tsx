@@ -5,14 +5,11 @@ import { Text, TouchableOpacity, View } from "react-native";
 import Toast from "react-native-toast-message";
 import PickChampionModal from "../preLobby/PickChampionModal";
 import { styles } from "./Styles/HostCardStyle";
-interface Host {
-  uid: string | null;
-  riotId: string|null|undefined;
-  position: string;
-  championId: string;
-}
+import { ILobbyPlayer } from "@leaguematch/shared";
+
 interface HostCardProps {
-  host: Host | null;
+  style?: any;
+  host: ILobbyPlayer | null;
   isLobby: boolean;
   status?: boolean;
   onChampionSelect?: (uid: string, championId: string) => void;

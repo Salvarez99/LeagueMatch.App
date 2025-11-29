@@ -10,14 +10,21 @@ import { styles } from "@/styles/lobbyStyle";
 import { useLobbyActions } from "@/hooks/useLobbyActions";
 import { useLobbyListener } from "@/hooks/useLobbyListener";
 import { useLobbyParams } from "@/hooks/useLobbyParams";
+import { View, Text } from "react-native";
+import { ILobbyPlayer } from "@leaguematch/shared";
 
 export default function Lobby() {
   // 1. Page params (id, uid, gameMap, gameMode)
   const { id, uid, gameMap, gameMode } = useLobbyParams();
+  if(!id || !uid || !gameMap || !gameMode) return(
+    <View>
+      <Text>Loading...</Text>
+    </View>
+  )
 
   // 2. Firestore listener (real-time lobby updates)
   const { lobby } = useLobbyListener(id, uid);
-  const host = lobby?.players?.[0];
+  const host : ILobbyPlayer = lobby!.players![0];
   const players = lobby?.players;
 
   // 3. All backend actions (leave, kick, ready, discord)
@@ -32,7 +39,6 @@ export default function Lobby() {
       edges={["left", "right", "bottom"]}
     >
       <GameModeHeader
-        style={styles.gameModeHeaderContainerStyle}
         gameMap={gameMap}
         gameMode={gameMode}
       />
@@ -50,7 +56,7 @@ export default function Lobby() {
       <PlayerCards
         style={styles.playerCardsContainerStyle}
         players={players?.slice(1) || []}
-        maxPlayers={lobby?.maxPlayers}
+        maxPlayers={lobby!.maxPlayers}
         isHost={lobby?.hostId === uid}
         onKick={onKickPlayer}
         onUpdateChampion={handleUpdateChampion}

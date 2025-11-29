@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { View } from "react-native";
+import { View, Text } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import GameModeHeader from "@/components/common/GameModeHeader";
 import HostCard from "@/components/common/HostCard";
@@ -17,14 +17,22 @@ import { usePreLobbyParams } from "../../hooks/usePreLobbyParams";
 
 export default function PreLobby() {
   const { uid, mode, hasRiotId, appUser } = usePreLobbyParams();
-  
+
   const [gameMap, setGameMap] = useState<string>("Summoner's Rift");
   const [gameMode, setGameMode] = useState<string>("");
   const [position, setPosition] = useState<string>("");
   const [championId, setChampionId] = useState<string>("");
   const [rankFilter, setRankFilter] = useState<string[]>([]);
   const [riotModalOpen, setRiotModalOpen] = useState<boolean>(false);
-  
+
+  if (!uid || !mode) {
+    return (
+      <View>
+        <Text>Loading...</Text>
+      </View>
+    );
+  }
+
   const { handleSubmit } = usePreLobbyActions({
     uid,
     mode,
@@ -43,10 +51,11 @@ export default function PreLobby() {
 
       <HostCard
         host={{
-          uid,
-          riotId: appUser?.riotId,
-          championId,
-          position,
+          uid: uid ?? "",
+          riotId: appUser?.riotId ?? "",
+          championId: championId ?? null,
+          position: position ?? null,
+          ready: false, // <-- REQUIRED to satisfy ILobbyPlayer
         }}
         isLobby={false}
       />
