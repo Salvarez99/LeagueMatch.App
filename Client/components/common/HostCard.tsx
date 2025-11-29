@@ -49,13 +49,11 @@ export default function HostCard({
     <View style={styles.containerStyle}>
       <TouchableOpacity
         style={[styles.hostCardButtonStyle, { borderColor, borderWidth }]}
-        // do NOT disable the button
         onPress={() => {
-          if (currentUid !== host.uid) return; // ⛔ tap does nothing for non-host
-          setIsOpen(true); // ✅ only host can open
+          if (currentUid !== host.uid) return;
+          setIsOpen(true);
         }}
         onLongPress={async () => {
-          // Long press should still work for everyone
           await Clipboard.setStringAsync(host.riotId);
           Toast.show({
             type: "success",
@@ -63,7 +61,6 @@ export default function HostCard({
             text2: host.riotId,
           });
         }}
-        delayLongPress={250}
       >
         <Text style={styles.text}>Host: {host.riotId}</Text>
         <Text style={styles.text}>Role: {host.position}</Text>
