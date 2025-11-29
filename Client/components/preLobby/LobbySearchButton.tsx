@@ -1,10 +1,10 @@
 import { Text, TouchableOpacity, View } from "react-native";
 import { styles } from "./styles/LobbySearchButtonStyle";
 
-type LobbyMode = "host" | "join";
+// type LobbyMode = "host" | "join";
 
 interface LobbySearchButtonProps {
-  mode: LobbyMode;
+  mode: string;
   handleCreateLobby: () => void | Promise<void>;
 }
 
