@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.User = void 0;
 class User {
     constructor(data) {
-        this.uid = data.uid;
+        this.id = data.id;
         this.username = data.username;
         this.email = data.email;
         // Use nullish coalescing to avoid undefined overwriting defaults
@@ -14,7 +14,6 @@ class User {
     }
     toJSON() {
         return {
-            uid: this.uid,
             username: this.username,
             email: this.email,
             puuid: this.puuid,

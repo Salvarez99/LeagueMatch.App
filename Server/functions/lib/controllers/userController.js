@@ -35,8 +35,8 @@ class UserController {
             if (req.method !== "POST") {
                 return res.status(405).json({ error: "Method Not Allowed" });
             }
-            const { uid, username, riotId } = req.body;
-            const updatedUser = await userService_1.userService.updateUser(uid, username, riotId);
+            const { id, username, riotId } = req.body;
+            const updatedUser = await userService_1.userService.updateUser(id, username, riotId);
             return res.status(200).json({
                 success: true,
                 updatedUser,

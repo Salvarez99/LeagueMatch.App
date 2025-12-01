@@ -3,6 +3,7 @@ import { User } from "../models/User";
 import { riotService } from "./riotService";
 import { IRiotRankEntry, IRiotAccount } from "../interfaces/riot";
 import * as Error from "../utils/AppError";
+import { IUserData } from "../interfaces/IUserData";
 
 import { db } from "../firebaseConfig";
 
@@ -12,15 +13,15 @@ export class UserService {
   constructor() {}
 
   // Add a new user
-  async addUser(userData: IUser) {
+  async addUser(userData: IUserData) {
     const user = new User(userData);
 
-    if (!user.uid || !user.username || !user.email) {
-      throw new Error.BadRequestError("uid, username, and email are required");
+    if (!user.id || !user.username || !user.email) {
+      throw new Error.BadRequestError("id, username, and email are required");
     }
 
     const userDoc = user.toJSON();
-    await this.usersRef.doc(user.uid).set(userDoc);
+    await this.usersRef.doc(user.id).set(userDoc);
 
     return { ...userDoc };
   }
@@ -35,19 +36,19 @@ export class UserService {
 
   // Update user with Riot info
   async updateUser(
-    uid: string | null,
+    id: string | null,
     username: string | null,
     riotId: string
   ) {
     if (!riotId) throw new Error.UnauthorizedError("riotId is required");
-    if (!uid && !username)
-      throw new Error.UnauthorizedError("Either uid or username is required");
+    if (!id && !username)
+      throw new Error.UnauthorizedError("Either id or username is required");
 
     let userRef;
 
     // Resolve Firestore reference
-    if (uid) {
-      userRef = this.usersRef.doc(uid);
+    if (id) {
+      userRef = this.usersRef.doc(id);
     } else {
       const snapshot = await this.usersRef
         .where("username", "==", username)

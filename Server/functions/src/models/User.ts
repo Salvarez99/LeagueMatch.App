@@ -1,7 +1,8 @@
 import { IUser } from "@leaguematch/shared";
+import { IUserData } from "../interfaces/IUserData";
 
-export class User {
-  uid: string;
+export class User implements IUserData{
+  id: string;
   username: string;
   email: string;
   puuid: string | null;
@@ -9,8 +10,8 @@ export class User {
   rank: string | null;
   preferredRoles: string[];
 
-  constructor(data: IUser) {
-    this.uid = data.uid;
+  constructor(data: IUserData) {
+    this.id = data.id;
     this.username = data.username;
     this.email = data.email;
 
@@ -23,7 +24,6 @@ export class User {
 
   toJSON() {
     return {
-      uid: this.uid,
       username: this.username,
       email: this.email,
       puuid: this.puuid,

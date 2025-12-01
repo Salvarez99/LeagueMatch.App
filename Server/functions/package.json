@@ -4,7 +4,7 @@
   "scripts": {
     "build": "tsc",
     "watch": "tsc --watch",
-    "emus": "concurrently \"npm run watch\"  \"firebase emulators:start --export-on-exit=./emulator-export \"",
+    "emus": "concurrently \"npm run watch\"  \"firebase emulators:start\"",
     "serve": "npm run build && firebase emulators:start --only functions",
     "shell": "firebase functions:shell",
     "start": "npm run shell",
