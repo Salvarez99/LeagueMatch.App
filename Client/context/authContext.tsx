@@ -19,12 +19,12 @@ import { auth, db } from "@/firebaseConfig";
 import { userApi } from "@/utils/api/userApi";
 import { LOG, logObjectDeep } from "@/utils/logger";
 
-import type { AuthUser } from "@/types/user";
+import type { AppUser, AuthUser } from "@/types/User";
 import type { IUser } from "@leaguematch/shared";
 
 interface AuthContextValue {
   authUser: AuthUser;
-  appUser: IUser | null;
+  appUser: AppUser | null;
   authLoading: boolean;
   appUserLoading: boolean;
 }
@@ -42,7 +42,7 @@ const AuthContext = createContext<AuthContextValue>({
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [authUser, setUser] = useState<AuthUser>(null);
-  const [appUser, setAppUser] = useState<IUser | null>(null);
+  const [appUser, setAppUser] = useState<AppUser | null>(null);
   const [authLoading, setAuthLoading] = useState<boolean>(true);
   const [appUserLoading, setAppUserLoading] = useState<boolean>(true);
 
@@ -75,6 +75,13 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             userRef,
             (snapshot) => {
               const data = snapshot.data() as IUser | undefined;
+
+              if (!data) {
+                setAppUserLoading(false);
+                setAppUser(null);
+                return;
+              }
+
               const json = JSON.stringify(data);
 
               if (json !== lastAppJSON.current) {
@@ -83,7 +90,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
                 lastAppJSON.current = json;
               }
 
-              setAppUser(data ?? null);
+              setAppUser({ id: snapshot.id, ...data } as AppUser);
               setAppUserLoading(false);
             },
             (err) => LOG.error("Firestore authUser error:", err)
