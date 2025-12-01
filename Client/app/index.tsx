@@ -1,3 +1,8 @@
+import { useAuth } from "@/context/authContext";
+import { auth } from "@/firebaseConfig";
+import { styles } from "@/styles/indexStyle";
+import * as UserRequest from "@/types/IUserApiRequest";
+import { userApi } from "@/utils/api/userApi";
 import { useRouter } from "expo-router";
 import {
   createUserWithEmailAndPassword,
@@ -14,18 +19,6 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { useAuth } from "@/context/authContext";
-import { auth } from "@/firebaseConfig";
-import { styles } from "@/styles/indexStyle";
-import { userApi } from "@/utils/api/userApi";
-import * as UserRequest from "@/types/IUserApiRequest";
-
-// --- Types ---
-type CreateUserPayload = {
-  uid: string;
-  email: string;
-  username: string;
-};
 
 export default function Index() {
   // ----- State -----
@@ -36,7 +29,7 @@ export default function Index() {
   const [loading, setLoading] = useState<boolean>(false);
 
   // ----- Auth Context -----
-  const { user, authLoading, appUser, appUserLoading } = useAuth();
+  const { authUser, authLoading, appUser, appUserLoading } = useAuth();
   const hasRiotId = !!appUser?.riotId;
 
   const router = useRouter();
@@ -111,7 +104,7 @@ export default function Index() {
   useEffect(() => {
     if (authLoading || appUserLoading) return;
 
-    if (user) {
+    if (authUser) {
       const hasRiotId = !!appUser?.riotId;
 
       if (hasRiotId) {
@@ -120,7 +113,7 @@ export default function Index() {
         router.replace("/riotLink");
       }
     }
-  }, [user, authLoading, appUserLoading, appUser]);
+  }, [authUser, authLoading, appUserLoading, appUser]);
 
   // ----- UI -----
   return (

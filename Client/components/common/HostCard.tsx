@@ -12,7 +12,7 @@ interface HostCardProps {
   host: ILobbyPlayer | null;
   isLobby: boolean;
   status?: boolean;
-  currentUid: string;
+  currentUid?: string;
   onChampionSelect?: (uid: string, championId: string) => void;
 }
 

@@ -8,10 +8,10 @@ interface PreLobbyQueryParams {
 
 export function usePreLobbyParams() {
   const { mode } = useLocalSearchParams() as PreLobbyQueryParams;
-  const { user, appUser } = useAuth();
+  const { authUser, appUser } = useAuth();
 
   return {
-    uid: user?.uid ?? null,
+    uid: authUser?.uid ?? null,
     mode: mode ?? null,
     hasRiotId: !!appUser?.riotId,
     appUser,

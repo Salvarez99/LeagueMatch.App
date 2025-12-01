@@ -10,13 +10,13 @@ interface LobbyParams {
 export function useLobbyParams() {
   const { id, gameMap, gameMode, justJoined } =
     useLocalSearchParams() as LobbyParams;
-  const { user } = useAuth();
+  const { authUser } = useAuth();
 
   return {
     id: id,
     gameMap,
     gameMode,
     justJoined: !!justJoined,
-    uid: user?.uid,
+    uid: authUser?.uid,
   };
 }
