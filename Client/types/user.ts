@@ -1,11 +1,8 @@
 import type { User as FirebaseUser } from "firebase/auth";
+import { IUser } from "@leaguematch/shared";
 
-export interface AppUser {
-  uid: string;
-  email: string;
-  username: string;
-  riotId?: string | null;
-  // add more fields as needed
+export interface AppUser extends IUser{
+  id: string;
 }
 
 export type AuthUser = FirebaseUser | null;
