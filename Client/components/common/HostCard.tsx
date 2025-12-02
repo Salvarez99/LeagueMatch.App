@@ -8,7 +8,6 @@ import { styles } from "./Styles/HostCardStyle";
 import { ILobbyPlayer } from "@leaguematch/shared";
 
 interface HostCardProps {
-  style?: any;
   host: ILobbyPlayer;
   isLobby: boolean;
   status?: boolean;

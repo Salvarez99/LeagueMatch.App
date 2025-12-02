@@ -1,3 +1,4 @@
+import { screenColor } from "@/utils/colors";
 import { StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
@@ -5,6 +6,7 @@ export const styles = StyleSheet.create({
     flex: 1,
     margin: 0,
     padding: 0,
+    backgroundColor: screenColor,
   },
   champPosContainerStyle: {
     flexDirection: "row",

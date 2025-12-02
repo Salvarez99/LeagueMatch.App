@@ -28,7 +28,7 @@ export default function PlayerCard({
   onChampionSelect,
 }: PlayerCardProps) {
   const { appUser } = useAuth();
-  let borderColor: string = "#ccc";
+  let borderColor: string = "#4e4e4e05";
   let borderWidth: number = 2;
   let borderStyle: "solid" | "dotted" | "dashed" = "solid";
 
@@ -57,7 +57,7 @@ export default function PlayerCard({
             borderWidth,
             borderColor,
             borderStyle,
-            opacity: isEmpty ? 0.5 : 1,
+            opacity: 1,
           },
           isHost && isSelected && styles.playerCardSelected, // shrink if selected
         ]}

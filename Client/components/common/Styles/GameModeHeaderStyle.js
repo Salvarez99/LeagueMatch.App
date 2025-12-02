@@ -1,4 +1,5 @@
 import { StyleSheet } from "react-native";
+import { surfaceColor, textColor } from "@/utils/colors";
 
 export const styles = StyleSheet.create({
   conatinerStyle: {
@@ -16,14 +17,14 @@ export const styles = StyleSheet.create({
   gameMapStyle: {
     fontSize: 18,
     fontWeight: "bold",
-    color: "#000",
+    color: textColor,
   },
   gameModeStyle: {
     fontSize: 16,
-    color: "#000",
+    color: textColor,
   },
   gameIconStyle: {
-    backgroundColor: "#D9D9D9",
+    backgroundColor: surfaceColor,
     height: 45,
     width: 45,
     borderRadius: 15,

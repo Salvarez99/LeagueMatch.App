@@ -1,6 +1,3 @@
-import { useState } from "react";
-import { View, Text } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 import GameModeHeader from "@/components/common/GameModeHeader";
 import HostCard from "@/components/common/HostCard";
 import RiotLinkModal from "@/components/common/RiotLinkModal";
@@ -10,6 +7,10 @@ import PickChampionButton from "@/components/preLobby/PickChampionButton";
 import PickPositionDropdown from "@/components/preLobby/PickPositionDropdown";
 import RankFilterDropdown from "@/components/preLobby/RankFilterDropdown";
 import { styles } from "@/styles/preLobbyStyle";
+import { Stack } from "expo-router";
+import { useState } from "react";
+import { View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 // Custom hooks
 import { usePreLobbyActions } from "../../hooks/usePreLobbyActions";
@@ -25,6 +26,7 @@ export default function PreLobby() {
   const [rankFilter, setRankFilter] = useState<string[]>([]);
   const [riotModalOpen, setRiotModalOpen] = useState<boolean>(false);
   const currentUid = appUser.id;
+  const title = mode.charAt(0).toUpperCase() + mode.slice(1);
 
   const { handleSubmit } = usePreLobbyActions({
     currentUid,
@@ -39,48 +41,51 @@ export default function PreLobby() {
   });
 
   return (
-    <SafeAreaView style={styles.containerStyle} edges={["bottom"]}>
-      <GameModeHeader gameMap={gameMap} gameMode={gameMode} />
+    <>
+      <Stack.Screen options={{ title }} />
+      <SafeAreaView style={styles.containerStyle} edges={["bottom"]}>
+        <GameModeHeader gameMap={gameMap} gameMode={gameMode} />
 
-      <HostCard
-        host={{
-          uid: currentUid,
-          riotId: appUser!.riotId ?? appUser.username,
-          championId: championId,
-          position: position,
-          ready: false, // <-- REQUIRED to satisfy ILobbyPlayer
-        }}
-        isLobby={false}
-      />
-
-      <GameModeCarousel setGameMap={setGameMap} setGameMode={setGameMode} />
-
-      <View style={styles.champPosContainerStyle}>
-        <PickChampionButton setChampionId={setChampionId} />
-        <PickPositionDropdown
-          items={["Top", "Jungle", "Middle", "Adc", "Support"]}
-          value={position}
-          onSelect={setPosition}
+        <HostCard
+          host={{
+            uid: currentUid,
+            riotId: appUser!.riotId ?? appUser.username,
+            championId: championId,
+            position: position,
+            ready: false, // <-- REQUIRED to satisfy ILobbyPlayer
+          }}
+          isLobby={false}
         />
-      </View>
 
-      <View style={styles.lobbyFilterContainerStyle}>
-        <View style={{ flex: 1 }}>
-          <LobbySearchButton mode={mode} handleCreateLobby={handleSubmit} />
+        <GameModeCarousel setGameMap={setGameMap} setGameMode={setGameMode} />
+
+        <View style={styles.champPosContainerStyle}>
+          <PickChampionButton setChampionId={setChampionId} />
+          <PickPositionDropdown
+            items={["Top", "Jungle", "Middle", "Adc", "Support"]}
+            value={position}
+            onSelect={setPosition}
+          />
         </View>
 
-        <View style={{ width: 55 }}>
-          <RankFilterDropdown value={rankFilter} onSelect={setRankFilter} />
-        </View>
-      </View>
+        <View style={styles.lobbyFilterContainerStyle}>
+          <View style={{ flex: 1 }}>
+            <LobbySearchButton mode={mode} handleCreateLobby={handleSubmit} />
+          </View>
 
-      {/* MODAL */}
-      {!hasRiotLinked && riotModalOpen && (
-        <RiotLinkModal
-          visible={riotModalOpen}
-          onClose={() => setRiotModalOpen(false)}
-        />
-      )}
-    </SafeAreaView>
+          <View style={{ width: 55 }}>
+            <RankFilterDropdown value={rankFilter} onSelect={setRankFilter} />
+          </View>
+        </View>
+
+        {/* MODAL */}
+        {!hasRiotLinked && riotModalOpen && (
+          <RiotLinkModal
+            visible={riotModalOpen}
+            onClose={() => setRiotModalOpen(false)}
+          />
+        )}
+      </SafeAreaView>
+    </>
   );
 }

@@ -1,3 +1,4 @@
+import { overlayColor, surfaceColor, textColor } from "@/utils/colors";
 import { useState } from "react";
 import {
   Pressable,
@@ -61,15 +62,14 @@ const styles = StyleSheet.create({
     position: "relative",
   },
   button: {
-    paddingVertical: 14,
-    backgroundColor: "#1e1e1e",
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: "#333",
+    backgroundColor: surfaceColor,
     alignItems: "center",
+    paddingVertical: 18,
+    borderRadius: 10,
+    elevation: 5,
   },
   buttonText: {
-    color: "#fff",
+    color: textColor,
     fontSize: 16,
   },
   overlay: {
@@ -84,7 +84,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: "100%",
     width: "100%",
-    backgroundColor: "#2a2a2a",
+    backgroundColor: overlayColor,
     borderRadius: 10,
     paddingVertical: 6,
     marginBottom: 8,
@@ -95,7 +95,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
   },
   menuItemText: {
-    color: "white",
+    color: textColor,
     fontSize: 15,
   },
 });

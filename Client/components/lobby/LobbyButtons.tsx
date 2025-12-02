@@ -3,14 +3,12 @@ import { Text, TouchableOpacity, View } from "react-native";
 import { styles } from "./styles/LobbyButtonsStyle";
 
 interface LobbyButtonsProps {
-  style: any;
   onLeave: () => void;
   onReady: () => void;
   status: boolean;
 }
 
 export default function LobbyButtons({
-  style,
   onLeave,
   onReady,
   status,
@@ -35,13 +33,12 @@ export default function LobbyButtons({
   };
 
   return (
-    <View style={[styles.bottomButtonRow, style]}>
+    <View style={[styles.bottomButtonRow]}>
       {/* Ready / Unready Button */}
       <TouchableOpacity
         style={[
           styles.bottomButton,
           {
-            backgroundColor: "#D9D9D9",
             borderWidth: 2,
             borderColor: outlineColor,
             opacity: disabled ? 0.5 : 1,
@@ -54,10 +51,7 @@ export default function LobbyButtons({
       </TouchableOpacity>
 
       {/* Leave Button */}
-      <TouchableOpacity
-        style={[styles.bottomButton, { backgroundColor: "#D9D9D9" }]}
-        onPress={onLeave}
-      >
+      <TouchableOpacity style={[styles.bottomButton]} onPress={onLeave}>
         <Text style={styles.defaultTextStyle}>Leave</Text>
       </TouchableOpacity>
     </View>

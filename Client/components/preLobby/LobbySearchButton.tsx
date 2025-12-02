@@ -18,7 +18,7 @@ export default function LobbySearchButton({
         style={styles.button}
         onPress={() => handleCreateLobby()}
       >
-        <Text>{mode === "host" ? "Create Lobby" : "Join"}</Text>
+        <Text style={styles.text}>{mode === "host" ? "Create Lobby" : "Join"}</Text>
       </TouchableOpacity>
     </View>
   );

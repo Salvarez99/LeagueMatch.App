@@ -1,3 +1,4 @@
+import { surfaceColor, textColor } from "@/utils/colors";
 import { StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
@@ -12,12 +13,12 @@ export const styles = StyleSheet.create({
     elevation: 5,
 
     borderRadius: 10,
-    backgroundColor: "#D9D9D9",
+    backgroundColor: surfaceColor,
     justifyContent: "center",
     alignItems: "center",
   },
   defaultTextStyle: {
     fontSize: 14,
-    color: "#000",
+    color: textColor,
   },
 });

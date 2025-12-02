@@ -1,9 +1,8 @@
+import { surfaceColor, textColor } from "@/utils/colors";
 import { StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
   bottomButtonRow: {
-    backgroundColor: "#C1C1C1",
-    flex: 1.3,
     flexDirection: "row",
     justifyContent: "space-evenly",
     alignItems: "center",
@@ -12,20 +11,22 @@ export const styles = StyleSheet.create({
     borderTopRightRadius: 15,
   },
   bottomButton: {
-    width: "45%",
-    height: "100%",
-    borderRadius: 8,
     justifyContent: "center",
     alignItems: "center",
+    borderRadius: 8,
+    paddingVertical: 18,
+    paddingHorizontal: 70,
     elevation: 5,
+    backgroundColor: surfaceColor,
   },
   bottomButtonText: {
-    color: "white",
+    color: textColor,
+
     fontWeight: "bold",
     fontSize: 16,
   },
   defaultTextStyle: {
     fontSize: 14,
-    color: "#000",
+    color: textColor,
   },
 });

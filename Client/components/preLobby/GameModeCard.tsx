@@ -49,7 +49,7 @@ export default function GameModeCard({
               }}
               style={styles.dropdownItem}
             >
-              <Text>{mode}</Text>
+              <Text style={styles.itemText}>{mode}</Text>
             </TouchableOpacity>
           ))}
         </View>

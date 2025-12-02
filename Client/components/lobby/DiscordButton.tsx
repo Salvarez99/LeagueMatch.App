@@ -10,16 +10,15 @@ import {
   View,
 } from "react-native";
 import { styles } from "./styles/DiscordButtonStyle";
+import { overlayColor, textColor } from "@/utils/colors";
 
 interface DiscordButtonProps {
-  style: any;
   isHost: boolean;
   discordLink: string | null | undefined;
   onUpdateLink: (link: string) => void;
 }
 
 export default function DiscordButton({
-  style,
   isHost,
   discordLink,
   onUpdateLink,
@@ -59,7 +58,7 @@ export default function DiscordButton({
   const isInactive = !discordLink && !isHost;
 
   return (
-    <View style={[styles.discordContainer, style]}>
+    <View style={[styles.discordContainer]}>
       <TouchableOpacity
         style={[
           styles.discordButton,
@@ -72,7 +71,7 @@ export default function DiscordButton({
           colors={
             discordLink
               ? ["rgba(88,101,242,1)", "rgba(224,227,255,1)"]
-              : ["#aaa", "#ccc"] // grey gradient if no link
+              : [overlayColor, "#ccc"] // grey gradient if no link
           }
           start={{ x: 0, y: 1 }}
           end={{ x: 0, y: -1 }}
@@ -97,6 +96,7 @@ export default function DiscordButton({
             <Text style={styles.modalTitle}>Enter Discord Link</Text>
             <TextInput
               placeholder="https://discord.gg/example"
+              placeholderTextColor={textColor}
               value={linkInput}
               onChangeText={setLinkInput}
               style={styles.input}
