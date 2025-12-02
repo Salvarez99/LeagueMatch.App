@@ -27,6 +27,7 @@ interface AuthContextValue {
   appUser: AppUser | null;
   authLoading: boolean;
   appUserLoading: boolean;
+  hasRiotLinked: boolean;
 }
 
 interface AuthProviderProps {
@@ -38,16 +39,17 @@ const AuthContext = createContext<AuthContextValue>({
   appUser: null,
   authLoading: true,
   appUserLoading: true,
+  hasRiotLinked: false,
 });
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
-  const [authUser, setUser] = useState<AuthUser>(null);
+  const [authUser, setAuthUser] = useState<AuthUser>(null);
   const [appUser, setAppUser] = useState<AppUser | null>(null);
   const [authLoading, setAuthLoading] = useState<boolean>(true);
   const [appUserLoading, setAppUserLoading] = useState<boolean>(true);
 
   const [devRedirected, setDevRedirected] = useState<boolean>(false);
-  const [riotLinked, setRiotLinked] = useState<boolean>(false);
+  const [hasRiotLinked, setHasRiotLinked] = useState<boolean>(false);
 
   const lastUserRef = useRef<string | null>(null);
   const lastAppJSON = useRef<string | null>(null);
@@ -65,7 +67,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         }
 
         setAppUserLoading(true);
-        setUser(currentUser);
+        setAuthUser(currentUser);
         setAuthLoading(false);
 
         if (currentUser) {
@@ -91,6 +93,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
               }
 
               setAppUser({ id: snapshot.id, ...data } as AppUser);
+              if(appUser?.riotId)
+                setHasRiotLinked(true);
+              
               setAppUserLoading(false);
             },
             (err) => LOG.error("Firestore authUser error:", err)
@@ -149,13 +154,13 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   useEffect(() => {
     if (!DEV_CONFIG.DEV_MODE) return;
     if (!authUser || !appUser) return;
-    if (riotLinked) return;
+    if (hasRiotLinked) return;
 
     const shouldLink = DEV_CONFIG.AUTO_lINK_RIOT_ID && !appUser.riotId;
 
     if (shouldLink) {
       LOG.dev("Linking Riot ID…");
-      setRiotLinked(true);
+      setHasRiotLinked(true);
 
       userApi.updateUser({
         uid: authUser.uid,
@@ -177,7 +182,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   return (
     <AuthContext.Provider
-      value={{ authUser, appUser, authLoading, appUserLoading }}
+      value={{ authUser, appUser, authLoading, appUserLoading, hasRiotLinked }}
     >
       {children}
     </AuthContext.Provider>
