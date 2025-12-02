@@ -1,3 +1,4 @@
+import { textColor } from "@/utils/colors";
 import { useEffect, useState } from "react";
 import {
   BackHandler,
@@ -10,7 +11,7 @@ import {
   TouchableWithoutFeedback,
   View,
 } from "react-native";
-import { champions, championList, roles } from "../../utils/constants";
+import { championList } from "../../utils/constants";
 import { styles } from "./styles/PickChampionModalStyle";
 
 interface PickChampionModalProps {
@@ -37,6 +38,13 @@ export default function PickChampionModal({
 }: PickChampionModalProps) {
   const [query, setQuery] = useState("");
   const [selectedChamp, setSelectedChamp] = useState("");
+  const roleImages: Record<string, any> = {
+    Top: require("@/assets/sr-positions/Top.png"),
+    Jungle: require("@/assets/sr-positions/Jungle.png"),
+    Middle: require("@/assets/sr-positions/Middle.png"),
+    Bottom: require("@/assets/sr-positions/Bottom.png"),
+    Support: require("@/assets/sr-positions/Support.png"),
+  };
 
   const getChampionIconUrl = (id: string) =>
     `https://ddragon.leagueoflegends.com/cdn/15.20.1/img/champion/${id}.png`;
@@ -51,14 +59,21 @@ export default function PickChampionModal({
         onClose();
       }}
     >
-      <Image source={{ uri: getChampionIconUrl(id) }} style={styles.champIcon} />
+      <Image
+        source={{ uri: getChampionIconUrl(id) }}
+        style={styles.champIcon}
+      />
       <Text style={styles.champName}>{name}</Text>
     </TouchableOpacity>
   );
 
   const RoleButton = ({ role }: RoleButtonProps) => (
     <TouchableOpacity style={styles.roleButton}>
-      <Text>{role}</Text>
+      <Image
+        source={roleImages[role]} 
+        style={{width:25, height:25}}
+      />
+      {/* <Text style={styles.text}>{role}</Text> */}
     </TouchableOpacity>
   );
 
@@ -100,10 +115,11 @@ export default function PickChampionModal({
                 value={query}
                 onChangeText={setQuery}
                 placeholder="Search..."
+                placeholderTextColor={textColor}
               />
 
               <View style={styles.roleButtonContainer}>
-                {roles.map((role) => (
+                {Object.keys(roleImages).map((role) => (
                   <RoleButton key={role} role={role} />
                 ))}
               </View>
