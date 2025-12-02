@@ -10,7 +10,7 @@ import {
 
 interface PickPositionDropdownProps {
   items: string[];
-  value: string | null;
+  value: string;
   onSelect: (pos: string) => void;
 }
 

@@ -32,7 +32,7 @@ export default function PlayerCard({
   let borderWidth: number = 2;
   let borderStyle: "solid" | "dotted" | "dashed" = "solid";
 
-  const isPlayerCurrentUser: boolean = player?.uid === appUser?.uid;
+  const isPlayerCurrentUser: boolean = player?.uid === appUser?.id;
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [championId, setChampionId] = useState<string>(
     player?.championId ?? ""

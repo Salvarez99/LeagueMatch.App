@@ -9,7 +9,7 @@ import { ILobbyPlayer } from "@leaguematch/shared";
 
 interface HostCardProps {
   style?: any;
-  host: ILobbyPlayer | null;
+  host: ILobbyPlayer;
   isLobby: boolean;
   status?: boolean;
   currentUid?: string;

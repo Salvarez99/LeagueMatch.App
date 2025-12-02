@@ -15,6 +15,7 @@ interface RiotLinkModalProps {
   visible: boolean;
   onClose: (open: boolean) => void;
 }
+
 export default function RiotLinkModal({
   visible,
   onClose,
