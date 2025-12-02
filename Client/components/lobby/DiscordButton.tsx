@@ -65,7 +65,7 @@ export default function DiscordButton({
           styles.discordButton,
           !discordLink && !isHost && { opacity: 0.5 },
         ]}
-        disabled={!discordLink && !isHost}
+        disabled={isInactive}
         onPress={handlePress}
       >
         <LinearGradient

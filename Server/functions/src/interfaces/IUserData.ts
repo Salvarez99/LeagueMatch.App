@@ -1,9 +1,4 @@
-export interface IUserData {
-  uid: string;
-  username: string;
-  email: string;
-  puuid?: string | null;
-  riotId?: string | null;
-  rank?: string | null;
-  preferredRoles?: string[];
+import { IUser } from "@leaguematch/shared";
+export interface IUserData extends IUser{
+  id: string;
 }

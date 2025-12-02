@@ -9,10 +9,10 @@ import { ILobbyPlayer } from "@leaguematch/shared";
 
 interface HostCardProps {
   style?: any;
-  host: ILobbyPlayer | null;
+  host: ILobbyPlayer;
   isLobby: boolean;
   status?: boolean;
-  currentUid: string;
+  currentUid?: string;
   onChampionSelect?: (uid: string, championId: string) => void;
 }
 

@@ -16,7 +16,7 @@ import { usePreLobbyActions } from "../../hooks/usePreLobbyActions";
 import { usePreLobbyParams } from "../../hooks/usePreLobbyParams";
 
 export default function PreLobby() {
-  const { uid, mode, hasRiotId, appUser } = usePreLobbyParams();
+  const { mode, hasRiotLinked, appUser } = usePreLobbyParams();
 
   const [gameMap, setGameMap] = useState<string>("Summoner's Rift");
   const [gameMode, setGameMode] = useState<string>("");
@@ -24,24 +24,17 @@ export default function PreLobby() {
   const [championId, setChampionId] = useState<string>("");
   const [rankFilter, setRankFilter] = useState<string[]>([]);
   const [riotModalOpen, setRiotModalOpen] = useState<boolean>(false);
-
-  if (!uid || !mode) {
-    return (
-      <View>
-        <Text>Loading...</Text>
-      </View>
-    );
-  }
+  const currentUid = appUser.id;
 
   const { handleSubmit } = usePreLobbyActions({
-    uid,
+    currentUid,
     mode,
     gameMap,
     gameMode,
     position,
     championId,
     rankFilter,
-    hasRiotId,
+    hasRiotLinked,
     setRiotModalOpen,
   });
 
@@ -51,10 +44,10 @@ export default function PreLobby() {
 
       <HostCard
         host={{
-          uid: uid ?? "",
-          riotId: appUser?.riotId ?? "",
-          championId: championId ?? null,
-          position: position ?? null,
+          uid: currentUid,
+          riotId: appUser!.riotId ?? appUser.username,
+          championId: championId,
+          position: position,
           ready: false, // <-- REQUIRED to satisfy ILobbyPlayer
         }}
         isLobby={false}
@@ -82,7 +75,7 @@ export default function PreLobby() {
       </View>
 
       {/* MODAL */}
-      {!hasRiotId && riotModalOpen && (
+      {!hasRiotLinked && riotModalOpen && (
         <RiotLinkModal
           visible={riotModalOpen}
           onClose={() => setRiotModalOpen(false)}

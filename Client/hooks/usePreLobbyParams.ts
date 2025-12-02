@@ -1,19 +1,23 @@
 import { useLocalSearchParams } from "expo-router";
 import { useAuth } from "../context/authContext";
 
-// Define the expected query params for this screen
-interface PreLobbyQueryParams {
-  mode?: string;
-}
-
 export function usePreLobbyParams() {
-  const { mode } = useLocalSearchParams() as PreLobbyQueryParams;
-  const { user, appUser } = useAuth();
+  const params = useLocalSearchParams();
+  const { appUser, hasRiotLinked } = useAuth();
+
+  if (!appUser) {
+    throw new Error("AppUser must be loaded before entering PreLobby.");
+  }
+
+  const mode = params.mode;
+
+  if (typeof mode !== "string") {
+    throw new Error("Missing or invalid route param: mode");
+  }
 
   return {
-    uid: user?.uid ?? null,
-    mode: mode ?? null,
-    hasRiotId: !!appUser?.riotId,
+    mode,
+    hasRiotLinked,
     appUser,
   };
 }

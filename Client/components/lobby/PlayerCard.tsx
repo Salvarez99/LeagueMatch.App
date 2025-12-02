@@ -1,3 +1,4 @@
+import { ILobbyPlayer } from "@leaguematch/shared";
 import * as Clipboard from "expo-clipboard";
 import { useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
@@ -6,7 +7,6 @@ import { useAuth } from "../../context/authContext";
 import { champions } from "../../utils/constants";
 import PickChampionModal from "../preLobby/PickChampionModal";
 import { styles } from "./styles/PlayerCardStyle";
-import { ILobbyPlayer } from "@leaguematch/shared";
 
 interface PlayerCardProps {
   isHost: boolean;
@@ -32,7 +32,7 @@ export default function PlayerCard({
   let borderWidth: number = 2;
   let borderStyle: "solid" | "dotted" | "dashed" = "solid";
 
-  const isPlayerCurrentUser: boolean = player?.uid === appUser?.uid;
+  const isPlayerCurrentUser: boolean = player?.uid === appUser?.id;
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [championId, setChampionId] = useState<string>(
     player?.championId ?? ""
@@ -66,13 +66,13 @@ export default function PlayerCard({
           //If slot is empty then do nothing
           if (isEmpty) return;
 
-          //If user is not host and is current player then open champ modal
+          //If authUser is not host and is current player then open champ modal
           if (!isHost && isPlayerCurrentUser) {
             setIsOpen(true);
             return;
           }
 
-          //If user is host then toggle selected player to show kick button
+          //If authUser is host then toggle selected player to show kick button
           if (isHost)
             setSelectedPlayerUid(
               selectedPlayerUid === player!.uid ? null : player!.uid
@@ -99,7 +99,9 @@ export default function PlayerCard({
             <Text style={styles.defaultTextStyle}>
               Riot ID: {player?.riotId}
             </Text>
-            <Text style={styles.defaultTextStyle}>Role: {player?.position}</Text>
+            <Text style={styles.defaultTextStyle}>
+              Role: {player?.position}
+            </Text>
             <Text style={styles.defaultTextStyle}>
               Champion: {player?.championId}
             </Text>

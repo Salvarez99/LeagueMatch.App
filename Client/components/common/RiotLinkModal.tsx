@@ -15,11 +15,12 @@ interface RiotLinkModalProps {
   visible: boolean;
   onClose: (open: boolean) => void;
 }
+
 export default function RiotLinkModal({
   visible,
   onClose,
 }: RiotLinkModalProps) {
-  const { user } = useAuth();
+  const { authUser } = useAuth();
   const [riotID, setRiotID] = useState<string>("");
   const [tagLine, setTagLine] = useState<string>("");
 
@@ -29,7 +30,7 @@ export default function RiotLinkModal({
 
   const handleLink = async () => {
     const fullRiotID = `${riotID}#${tagLine}`;
-    const uid = user!.uid;
+    const uid = authUser!.uid;
     if (!riotID || !tagLine) {
       Alert.alert("Please enter both Riot ID and Tagline.");
       return;
@@ -37,7 +38,7 @@ export default function RiotLinkModal({
 
     try {
       await userApi.updateUser({
-        uid: uid,
+        id: uid,
         riotId: fullRiotID,
       });
       onClose(false);

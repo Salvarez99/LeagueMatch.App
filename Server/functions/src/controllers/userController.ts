@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { userService } from "../services/userService";
-import { IUser } from "@leaguematch/shared";
+import { IUserData } from "../interfaces/IUserData";
 
 export class UserController {
   // POST /addUser
@@ -10,7 +10,7 @@ export class UserController {
         return res.status(405).json({ error: "Method Not Allowed" });
       }
 
-      const userDTO: IUser = req.body;
+      const userDTO: IUserData = req.body;
       const createdUser = await userService.addUser(userDTO);
 
       return res.status(200).json({
@@ -38,13 +38,13 @@ export class UserController {
         return res.status(405).json({ error: "Method Not Allowed" });
       }
 
-      const { uid, username, riotId } = req.body as {
-        uid: string | null;
+      const { id, username, riotId } = req.body as {
+        id: string | null;
         username: string | null;
         riotId: string;
       };
 
-      const updatedUser = await userService.updateUser(uid, username, riotId);
+      const updatedUser = await userService.updateUser(id, username, riotId);
 
       return res.status(200).json({
         success: true,

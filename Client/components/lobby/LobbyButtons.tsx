@@ -6,7 +6,7 @@ interface LobbyButtonsProps {
   style: any;
   onLeave: () => void;
   onReady: () => void;
-  status: any;
+  status: boolean;
 }
 
 export default function LobbyButtons({

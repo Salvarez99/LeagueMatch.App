@@ -1,13 +1,14 @@
+import { useAuth } from "@/context/authContext";
+import { styles } from "@/styles/riotLinkStyle";
+import { Update } from "@/types/IUserApiRequest";
+import { userApi } from "@/utils/api/userApi";
 import { router } from "expo-router";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Alert, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useAuth } from "@/context/authContext";
-import { userApi } from "@/utils/api/userApi";
-import { styles } from "@/styles/riotLinkStyle";
 
 export default function Index() {
-  const { user, authLoading } = useAuth();
+  const { authUser } = useAuth();
   const [riotID, setRiotID] = useState("");
   const [tagLine, setTagLine] = useState("");
 
@@ -17,7 +18,7 @@ export default function Index() {
 
   const handleLink = async () => {
     const fullRiotID = `${riotID}#${tagLine}`;
-    const uid = user!.uid;
+    const uid = authUser!.uid;
     if (!riotID || !tagLine) {
       Alert.alert("Please enter both Riot ID and Tagline.");
       return;
@@ -25,9 +26,9 @@ export default function Index() {
 
     try {
       await userApi.updateUser({
-        uid: uid,
+        id: uid,
         riotId: fullRiotID,
-      });
+      } as Update);
       router.push("/menu/menu");
     } catch (err) {
       console.log(err);

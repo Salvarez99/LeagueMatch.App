@@ -1,9 +1,9 @@
 import { router } from "expo-router";
 import {
   createUserWithEmailAndPassword,
+  User as FirebaseUser,
   onAuthStateChanged,
   signInWithEmailAndPassword,
-  User as FirebaseUser,
 } from "firebase/auth";
 import { doc, onSnapshot } from "firebase/firestore";
 import React, {
@@ -14,19 +14,20 @@ import React, {
   useState,
 } from "react";
 
+import { DEV_CONFIG } from "@/devConfig";
 import { auth, db } from "@/firebaseConfig";
 import { userApi } from "@/utils/api/userApi";
-import { DEV_CONFIG } from "@/devConfig";
 import { LOG, logObjectDeep } from "@/utils/logger";
 
-import type { AuthUser } from "@/types/user";
+import type { AppUser, AuthUser } from "@/types/User";
 import type { IUser } from "@leaguematch/shared";
 
 interface AuthContextValue {
-  user: AuthUser;
-  appUser: IUser | null;
+  authUser: AuthUser;
+  appUser: AppUser | null;
   authLoading: boolean;
   appUserLoading: boolean;
+  hasRiotLinked: boolean;
 }
 
 interface AuthProviderProps {
@@ -34,20 +35,21 @@ interface AuthProviderProps {
 }
 
 const AuthContext = createContext<AuthContextValue>({
-  user: null,
+  authUser: null,
   appUser: null,
   authLoading: true,
   appUserLoading: true,
+  hasRiotLinked: false,
 });
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
-  const [user, setUser] = useState<AuthUser>(null);
-  const [appUser, setAppUser] = useState<IUser | null>(null);
+  const [authUser, setAuthUser] = useState<AuthUser>(null);
+  const [appUser, setAppUser] = useState<AppUser | null>(null);
   const [authLoading, setAuthLoading] = useState<boolean>(true);
   const [appUserLoading, setAppUserLoading] = useState<boolean>(true);
 
   const [devRedirected, setDevRedirected] = useState<boolean>(false);
-  const [riotLinked, setRiotLinked] = useState<boolean>(false);
+  const [hasRiotLinked, setHasRiotLinked] = useState<boolean>(false);
 
   const lastUserRef = useRef<string | null>(null);
   const lastAppJSON = useRef<string | null>(null);
@@ -65,7 +67,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         }
 
         setAppUserLoading(true);
-        setUser(currentUser);
+        setAuthUser(currentUser);
         setAuthLoading(false);
 
         if (currentUser) {
@@ -75,21 +77,31 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             userRef,
             (snapshot) => {
               const data = snapshot.data() as IUser | undefined;
+
+              if (!data) {
+                setAppUserLoading(false);
+                setAppUser(null);
+                return;
+              }
+
               const json = JSON.stringify(data);
 
               if (json !== lastAppJSON.current) {
-                LOG.store("Firestore user updated:");
+                LOG.store("Firestore authUser updated:");
                 logObjectDeep("appUser:", data ?? null);
                 lastAppJSON.current = json;
               }
 
-              setAppUser(data ?? null);
+              setAppUser({ id: snapshot.id, ...data } as AppUser);
+              if (data.riotId) setHasRiotLinked(true);
+
               setAppUserLoading(false);
             },
-            (err) => LOG.error("Firestore user error:", err)
+            (err) => LOG.error("Firestore authUser error:", err)
           );
         } else {
           setAppUser(null);
+          setHasRiotLinked(false);
         }
       }
     );
@@ -114,7 +126,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             DEV_CONFIG.TEST_EMAIL,
             DEV_CONFIG.TEST_PASSWORD
           );
-          LOG.dev("Dev mode user signed in");
+          LOG.dev("Dev mode authUser signed in");
         } catch {
           LOG.dev("Creating dev user…");
 
@@ -125,7 +137,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           );
 
           await userApi.createUser({
-            uid: cred.user.uid,
+            id: cred.user.uid,
             email: DEV_CONFIG.TEST_EMAIL,
             username: "DevTester",
           });
@@ -141,36 +153,36 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   // DEV MODE LINK RIOT ID
   useEffect(() => {
     if (!DEV_CONFIG.DEV_MODE) return;
-    if (!user || !appUser) return;
-    if (riotLinked) return;
+    if (!authUser || !appUser) return;
+    if (hasRiotLinked) return;
 
     const shouldLink = DEV_CONFIG.AUTO_lINK_RIOT_ID && !appUser.riotId;
 
     if (shouldLink) {
       LOG.dev("Linking Riot ID…");
-      setRiotLinked(true);
+      setHasRiotLinked(true);
 
       userApi.updateUser({
-        uid: user.uid,
+        id: authUser.uid,
         riotId: DEV_CONFIG.TEST_RIOT_ID,
       });
     }
-  }, [user, appUser]);
+  }, [authUser, appUser]);
 
   // DEV MODE REDIRECT
   useEffect(() => {
     if (!DEV_CONFIG.DEV_MODE) return;
-    if (!user || !appUser) return;
+    if (!authUser || !appUser) return;
     if (devRedirected) return;
 
     LOG.dev("Redirecting → /menu/menu");
     setDevRedirected(true);
     router.replace("/menu/menu");
-  }, [user, appUser]);
+  }, [authUser, appUser]);
 
   return (
     <AuthContext.Provider
-      value={{ user, appUser, authLoading, appUserLoading }}
+      value={{ authUser, appUser, authLoading, appUserLoading, hasRiotLinked }}
     >
       {children}
     </AuthContext.Provider>

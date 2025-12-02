@@ -1,10 +1,10 @@
 export interface Add {
-  uid: string;
+  id: string;
   username: string;
   email: string;
 }
 
 export interface Update {
-  uid: string;
+  id: string;
   riotId: string;
 }

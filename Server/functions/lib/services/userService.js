@@ -45,11 +45,11 @@ class UserService {
     // Add a new user
     async addUser(userData) {
         const user = new User_1.User(userData);
-        if (!user.uid || !user.username || !user.email) {
-            throw new Error.BadRequestError("uid, username, and email are required");
+        if (!user.id || !user.username || !user.email) {
+            throw new Error.BadRequestError("id, username, and email are required");
         }
         const userDoc = user.toJSON();
-        await this.usersRef.doc(user.uid).set(userDoc);
+        await this.usersRef.doc(user.id).set(userDoc);
         return { ...userDoc };
     }
     // Get a user by UID
@@ -60,15 +60,15 @@ class UserService {
         return { id: doc.id, ...doc.data() };
     }
     // Update user with Riot info
-    async updateUser(uid, username, riotId) {
+    async updateUser(id, username, riotId) {
         if (!riotId)
             throw new Error.UnauthorizedError("riotId is required");
-        if (!uid && !username)
-            throw new Error.UnauthorizedError("Either uid or username is required");
+        if (!id && !username)
+            throw new Error.UnauthorizedError("Either id or username is required");
         let userRef;
         // Resolve Firestore reference
-        if (uid) {
-            userRef = this.usersRef.doc(uid);
+        if (id) {
+            userRef = this.usersRef.doc(id);
         }
         else {
             const snapshot = await this.usersRef
