@@ -1,22 +1,36 @@
+import { useAuth } from "@/context/authContext";
 import { useLocalSearchParams } from "expo-router";
-import { useAuth } from "../context/authContext";
 
-interface LobbyParams {
-  id?: string;
-  gameMap?: string;
-  gameMode?: string;
-  justJoined?: string;
-}
 export function useLobbyParams() {
-  const { id, gameMap, gameMode, justJoined } =
-    useLocalSearchParams() as LobbyParams;
-  const { authUser } = useAuth();
+  const params = useLocalSearchParams();
+  const { appUser } = useAuth();
+
+  // 🧱 Guarantee appUser exists
+  if (!appUser) {
+    throw new Error(
+      "AppUser must be loaded before accessing the Lobby screen."
+    );
+  }
+
+  const lobbyId = params.id;
+  const gameMap = params.gameMap;
+  const gameMode = params.gameMode;
+
+  // 🧱 Narrow route params to guaranteed strings
+  if (typeof lobbyId !== "string") {
+    throw new Error("Missing or invalid route param: id");
+  }
+  if (typeof gameMap !== "string") {
+    throw new Error("Missing or invalid route param: gameMap");
+  }
+  if (typeof gameMode !== "string") {
+    throw new Error("Missing or invalid route param: gameMode");
+  }
 
   return {
-    id: id,
+    lobbyId,
     gameMap,
     gameMode,
-    justJoined: !!justJoined,
-    uid: authUser?.uid,
+    currentUid: appUser.id,
   };
 }

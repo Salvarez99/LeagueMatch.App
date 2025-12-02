@@ -1,47 +1,40 @@
-import { SafeAreaView } from "react-native-safe-area-context";
 import GameModeHeader from "@/components/common/GameModeHeader";
 import HostCard from "@/components/common/HostCard";
 import DiscordButton from "@/components/lobby/DiscordButton";
 import LobbyButtons from "@/components/lobby/LobbyButtons";
 import PlayerCards from "@/components/lobby/PlayerCards";
 import { styles } from "@/styles/lobbyStyle";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 // Custom hooks
 import { useLobbyActions } from "@/hooks/useLobbyActions";
 import { useLobbyListener } from "@/hooks/useLobbyListener";
 import { useLobbyParams } from "@/hooks/useLobbyParams";
-import { View, Text } from "react-native";
 import { ILobbyPlayer } from "@leaguematch/shared";
+import { Text, View } from "react-native";
 
 export default function Lobby() {
-  // 1. Page params (id, uid, gameMap, gameMode)
-  const { id, uid, gameMap, gameMode } = useLobbyParams();
+  const { lobbyId, currentUid, gameMap, gameMode } = useLobbyParams();
 
-  // 2. Firestore listener (real-time lobby updates)
-  if (!id || !uid || !gameMap || !gameMode)
-    return (
-      <View>
-        <Text>Loading...</Text>
-      </View>
-    );
-  const { lobby } = useLobbyListener(id, uid);
+  const { lobby } = useLobbyListener(lobbyId, currentUid);
   if (!lobby)
     return (
       <View>
         <Text>Loading...</Text>
       </View>
     );
-  const host: ILobbyPlayer = lobby!.players![0];
-  const players = lobby?.players;
 
-  // 3. All backend actions (leave, kick, ready, discord)
+  const host: ILobbyPlayer = lobby.players[0];
+  const players = lobby.players;
+  const currentPlayer = players.find((p)=> p.uid === currentUid)
+
   const {
     onLeave,
     onReady,
     onKickPlayer,
     updateDiscordLink,
     handleUpdateChampion,
-  } = useLobbyActions(id, uid);
+  } = useLobbyActions(lobbyId, currentUid);
 
   return (
     <SafeAreaView
@@ -55,17 +48,17 @@ export default function Lobby() {
         style={styles.hostCardContainerStyle}
         host={host}
         isLobby={true}
-        status={host?.ready}
+        status={host.ready}
         onChampionSelect={handleUpdateChampion}
-        currentUid={uid}
+        currentUid={currentUid}
       />
 
       {/* OTHER PLAYERS */}
       <PlayerCards
         style={styles.playerCardsContainerStyle}
-        players={players?.slice(1) || []}
-        maxPlayers={lobby!.maxPlayers}
-        isHost={lobby?.hostId === uid}
+        players={players.slice(1) || []}
+        maxPlayers={lobby.maxPlayers}
+        isHost={lobby.hostId === currentUid}
         onKick={onKickPlayer}
         onUpdateChampion={handleUpdateChampion}
       />
@@ -73,8 +66,8 @@ export default function Lobby() {
       {/* DISCORD BUTTON */}
       <DiscordButton
         style={styles.discordButtonContainerStyle}
-        isHost={lobby?.hostId === uid}
-        discordLink={lobby?.discordLink}
+        isHost={lobby.hostId === currentUid}
+        discordLink={lobby.discordLink}
         onUpdateLink={updateDiscordLink}
       />
 
@@ -83,7 +76,7 @@ export default function Lobby() {
         style={styles.lobbyButtonsContainerStyle}
         onLeave={onLeave}
         onReady={onReady}
-        status={players?.find((p) => p.uid === uid)?.ready}
+        status={currentPlayer!.ready}
       />
     </SafeAreaView>
   );

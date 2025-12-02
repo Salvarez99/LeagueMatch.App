@@ -1,35 +1,36 @@
+import * as LobbyRequest from "@/types/ILobbyApiRequest";
+import type { AxiosError } from "axios";
 import { useRouter } from "expo-router";
 import { lobbyApi } from "../utils/api/lobbyApi";
 import { LOG } from "../utils/logger";
-import type { AxiosError } from "axios";
 
 interface PreLobbyActionsParams {
-  uid: string;
+  currentUid: string;
   mode: string;
   gameMap: string;
   gameMode: string;
   position: string;
   championId: string;
   rankFilter: string[];
-  hasRiotId: boolean;
+  hasRiotLinked: boolean;
   setRiotModalOpen: (open: boolean) => void;
 }
 
 export function usePreLobbyActions({
-  uid,
+  currentUid,
   mode,
   gameMap,
   gameMode,
   position,
   championId,
   rankFilter,
-  hasRiotId,
+  hasRiotLinked,
   setRiotModalOpen,
 }: PreLobbyActionsParams) {
   const router = useRouter();
 
   const handleSubmit = async () => {
-    if (!hasRiotId) {
+    if (!hasRiotLinked) {
       setRiotModalOpen(true);
       return;
     }
@@ -44,16 +45,21 @@ export function usePreLobbyActions({
 
   async function createLobby() {
     try {
-      const res = await lobbyApi.createLobby({
-        hostId: uid,
+      const payload: LobbyRequest.Create = {
+        hostId: currentUid,
         hostPosition: position,
         gameMap,
         gameMode,
         championId,
         rankFilter,
-      });
+      };
+      const res = await lobbyApi.createLobby(payload);
 
       const id = res.data.id;
+
+      if (!id) {
+        throw new Error("Lobby response missing id");
+      }
 
       router.push({
         pathname: `/lobby/[id]`,
@@ -73,17 +79,18 @@ export function usePreLobbyActions({
 
   async function joinLobby() {
     try {
-      const findRes = await lobbyApi.findLobby(uid, {
+      const payload: LobbyRequest.Find = {
         gameMap,
         gameMode,
         desiredPosition: position,
         ranks: rankFilter,
-      });
+      };
+      const findRes = await lobbyApi.findLobby(currentUid, payload);
 
       const id = findRes.data.id;
 
       await lobbyApi.joinLobby(id, {
-        uid,
+        uid: currentUid,
         position,
         championId,
       });

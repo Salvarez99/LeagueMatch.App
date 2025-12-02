@@ -1,5 +1,6 @@
 import { useAuth } from "@/context/authContext";
 import { styles } from "@/styles/riotLinkStyle";
+import { Update } from "@/types/IUserApiRequest";
 import { userApi } from "@/utils/api/userApi";
 import { router } from "expo-router";
 import { useState } from "react";
@@ -7,7 +8,7 @@ import { Alert, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Index() {
-  const { authUser, authLoading } = useAuth();
+  const { authUser } = useAuth();
   const [riotID, setRiotID] = useState("");
   const [tagLine, setTagLine] = useState("");
 
@@ -27,7 +28,7 @@ export default function Index() {
       await userApi.updateUser({
         uid: uid,
         riotId: fullRiotID,
-      });
+      } as Update);
       router.push("/menu/menu");
     } catch (err) {
       console.log(err);

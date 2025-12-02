@@ -29,8 +29,8 @@ export default function Index() {
   const [loading, setLoading] = useState<boolean>(false);
 
   // ----- Auth Context -----
-  const { authUser, authLoading, appUser, appUserLoading } = useAuth();
-  const hasRiotId = !!appUser?.riotId;
+  const { authUser, authLoading, appUser, appUserLoading, hasRiotLinked } =
+    useAuth();
 
   const router = useRouter();
 
@@ -83,7 +83,7 @@ export default function Index() {
         // Wait for auth state to propagate
         await new Promise((resolve) => setTimeout(resolve, 300));
 
-        if (hasRiotId) {
+        if (hasRiotLinked) {
           router.replace("/menu/menu");
         } else {
           router.replace("/riotLink");
@@ -104,14 +104,10 @@ export default function Index() {
   useEffect(() => {
     if (authLoading || appUserLoading) return;
 
-    if (authUser) {
-      const hasRiotId = !!appUser?.riotId;
-
-      if (hasRiotId) {
-        router.replace("/menu/menu");
-      } else {
-        router.replace("/riotLink");
-      }
+    if (hasRiotLinked) {
+      router.replace("/menu/menu");
+    } else {
+      router.replace("/riotLink");
     }
   }, [authUser, authLoading, appUserLoading, appUser]);
 
