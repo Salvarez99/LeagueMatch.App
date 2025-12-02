@@ -63,7 +63,7 @@ export default function Index() {
 
         // Create user in Firestore (through your backend API)
         const payload: UserRequest.Add = {
-          uid: firebaseUser.uid,
+          id: firebaseUser.uid,
           email: email,
           username: "Generic Username",
         };

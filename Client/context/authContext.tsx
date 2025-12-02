@@ -93,15 +93,15 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
               }
 
               setAppUser({ id: snapshot.id, ...data } as AppUser);
-              if(appUser?.riotId)
-                setHasRiotLinked(true);
-              
+              if (data.riotId) setHasRiotLinked(true);
+
               setAppUserLoading(false);
             },
             (err) => LOG.error("Firestore authUser error:", err)
           );
         } else {
           setAppUser(null);
+          setHasRiotLinked(false);
         }
       }
     );
@@ -137,7 +137,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           );
 
           await userApi.createUser({
-            uid: cred.user.uid,
+            id: cred.user.uid,
             email: DEV_CONFIG.TEST_EMAIL,
             username: "DevTester",
           });
@@ -163,7 +163,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       setHasRiotLinked(true);
 
       userApi.updateUser({
-        uid: authUser.uid,
+        id: authUser.uid,
         riotId: DEV_CONFIG.TEST_RIOT_ID,
       });
     }

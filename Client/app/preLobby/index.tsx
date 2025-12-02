@@ -45,7 +45,7 @@ export default function PreLobby() {
       <HostCard
         host={{
           uid: currentUid,
-          riotId: appUser!.riotId ?? "",
+          riotId: appUser!.riotId ?? appUser.username,
           championId: championId,
           position: position,
           ready: false, // <-- REQUIRED to satisfy ILobbyPlayer

@@ -26,7 +26,7 @@ export default function Index() {
 
     try {
       await userApi.updateUser({
-        uid: uid,
+        id: uid,
         riotId: fullRiotID,
       } as Update);
       router.push("/menu/menu");
