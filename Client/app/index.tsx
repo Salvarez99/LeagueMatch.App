@@ -24,6 +24,7 @@ export default function Index() {
   // ----- State -----
   const [isLogin, setIsLogin] = useState<boolean>(true);
   const [email, setEmail] = useState<string>("");
+  const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [confirmPassword, setConfirmPassword] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
@@ -64,8 +65,8 @@ export default function Index() {
         // Create user in Firestore (through your backend API)
         const payload: UserRequest.Add = {
           id: firebaseUser.uid,
-          email: email,
-          username: "Generic Username",
+          email,
+          username,
         };
 
         await userApi.createUser(payload);
@@ -128,6 +129,21 @@ export default function Index() {
           <Text style={styles.subtitle}>
             {isLogin ? "Sign in to continue" : "Sign up to get started"}
           </Text>
+
+          {/*Username */}
+          {!isLogin && (
+            <View style={styles.inputContainer}>
+              <Text style={styles.label}>Username</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Enter a username"
+                placeholderTextColor="#999"
+                value={username}
+                onChangeText={setUsername}
+                autoCapitalize="none"
+              />
+            </View>
+          )}
 
           {/* Email */}
           <View style={styles.inputContainer}>

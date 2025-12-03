@@ -11,8 +11,8 @@ interface GameMap {
 }
 
 interface GameModeCarouselProps {
-  setGameMode?: (mode: string) => void;
-  setGameMap?: (mapTitle: string) => void;
+  setGameMode: (mode: string) => void;
+  setGameMap: (mapTitle: string) => void;
 }
 
 export default function GameModeCarousel({
@@ -61,6 +61,7 @@ export default function GameModeCarousel({
         const realIndex = index % DATA.length;
         setFocusedIndex(realIndex);
         setSelectedModes({});
+        setGameMode("");
         setGameMap?.(DATA[realIndex].title);
       }}
       renderItem={({ item, index }) => (

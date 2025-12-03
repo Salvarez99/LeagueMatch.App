@@ -60,11 +60,15 @@ export default function PreLobby() {
         <GameModeCarousel setGameMap={setGameMap} setGameMode={setGameMode} />
 
         <View style={styles.champPosContainerStyle}>
-          <PickChampionButton setChampionId={setChampionId} />
+          <PickChampionButton
+            setChampionId={setChampionId}
+            gameMap={gameMap}
+          />
           <PickPositionDropdown
             items={["Top", "Jungle", "Middle", "Adc", "Support"]}
             value={position}
             onSelect={setPosition}
+            gameMap={gameMap}
           />
         </View>
 
