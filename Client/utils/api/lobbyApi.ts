@@ -1,6 +1,6 @@
-import axiosClient from "./axiosClient";
 import * as ILobbyRequest from "@/types/ILobbyApiRequest";
 import * as ILobbyResponse from "@/types/ILobbyApiResponse";
+import axiosClient from "./axiosClient";
 
 export const lobbyApi = {
   createLobby: (data: ILobbyRequest.Create) =>
@@ -26,6 +26,11 @@ export const lobbyApi = {
   updatePlayerReady: (lobbyId: string, uid: string) =>
     axiosClient.patch<ILobbyResponse.Generic>(
       `/lobby_ready?lobbyId=${lobbyId}&uid=${uid}`
+    ),
+
+  initSearch: (lobbyId: string, uid: string) =>
+    axiosClient.patch<ILobbyResponse.Generic>(
+      `/lobby_initSearch?lobbyId=${lobbyId}&uid=${uid}`
     ),
 
   updateChampion: (

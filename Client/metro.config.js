@@ -1,13 +1,14 @@
+const path = require("path");
 const { getDefaultConfig } = require("expo/metro-config");
 
 const config = getDefaultConfig(__dirname);
 
-// Allow Metro to compile the shared package
-config.resolver.nodeModulesPaths = [
-  "./node_modules",
-  "../packages/shared/node_modules",
-];
+config.resolver.extraNodeModules = {
+  "@leaguematch/shared": path.resolve(__dirname, "../Packages/shared/dist"),
+};
 
-config.watchFolders = ["../packages/shared"];
+config.watchFolders = [
+  path.resolve(__dirname, "../Packages/shared"),
+];
 
 module.exports = config;

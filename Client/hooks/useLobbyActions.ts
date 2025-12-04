@@ -32,6 +32,18 @@ export function useLobbyActions(lobbyId: string, uid: string) {
     }
   };
 
+  // Ready toggle
+  const onSearch = async () => {
+    LOG.debug("Host initiating search", { uid, lobbyId });
+
+    try {
+      await lobbyApi.initSearch(lobbyId, uid);
+    } catch (err:unknown) {
+      const error = err as AxiosError;
+      LOG.error("Ready update failed", error.response?.data);
+    }
+  };
+
   // Kick player
   const onKickPlayer = async (targetUid: string) => {
     LOG.debug("Host kicking player", {
@@ -77,6 +89,7 @@ export function useLobbyActions(lobbyId: string, uid: string) {
   return {
     onLeave,
     onReady,
+    onSearch,
     onKickPlayer,
     updateDiscordLink,
     handleUpdateChampion,

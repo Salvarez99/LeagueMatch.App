@@ -3,14 +3,16 @@ import type { ILobby } from "@leaguematch/shared";
 import type { ILobbyFilter } from "@leaguematch/shared";
 import type { ILobbyPlayer } from "@leaguematch/shared";
 import { Player } from "./Player";
+import { LobbyState } from "@leaguematch/shared";
 
 export class Lobby implements ILobby {
   hostId: string;
   gameMap: string;
   gameMode: string;
   createdAt: string;
+  updatedAt: string;
   currentPlayers: number;
-  isActive: boolean;
+  state: LobbyState;
   kickedPlayers: string[];
   players: ILobbyPlayer[];
   filter: ILobbyFilter;
@@ -22,21 +24,22 @@ export class Lobby implements ILobby {
 
   constructor(
     hostId: string,
-    riotId: string,
+    riotId: string | null,
     gameMap: string,
     gameMode: string | null,
     hostPosition: string | null = null,
     championId: string | null = null,
     ranksFilter: string[] | null = []
   ) {
-    if (!hostId || !gameMap) throw new Error("hostId and gameMap are required");
+    if (!hostId || !gameMap) throw new Error("hostId and gameMap are required21321312");
 
     this.hostId = hostId;
     this.gameMap = gameMap;
     this.gameMode = gameMode ?? "Unknown";
     this.createdAt = new Date().toISOString();
+    this.updatedAt = this.createdAt;
     this.currentPlayers = 1;
-    this.isActive = true;
+    this.state = LobbyState.IDLE;
     this.kickedPlayers = [];
 
     switch (gameMap) {
@@ -91,6 +94,10 @@ export class Lobby implements ILobby {
     ];
   }
 
+  setState(state: LobbyState) {
+    this.state = state;
+  }
+
   // ➤ Add a player
   addPlayer(
     uid: string,
@@ -131,14 +138,13 @@ export class Lobby implements ILobby {
     }
 
     this.currentPlayers++;
-    this.isActive = this.currentPlayers < this.maxPlayers;
   }
 
   // ➤ Remove a player
   removePlayer(uid: string, kicked = false) {
     if (uid === this.hostId) {
-      this.isActive = false;
       this.players = [];
+      this.state = LobbyState.CLOSED;
       this.currentPlayers = 0;
       this.kickedPlayers.push(uid);
       this.filter.positionsNeeded = [];
@@ -158,19 +164,18 @@ export class Lobby implements ILobby {
     }
 
     if (kicked) this.kickedPlayers.push(uid);
-
-    this.isActive = this.currentPlayers < this.maxPlayers;
   }
 
   // ➤ Prepare Firestore object
   toFirestore(): ILobby {
     return {
       createdAt: this.createdAt,
+      updatedAt: this.updatedAt,
       currentPlayers: this.currentPlayers,
       gameMap: this.gameMap,
       gameMode: this.gameMode,
       hostId: this.hostId,
-      isActive: this.isActive,
+      state: this.state,
       kickedPlayers: this.kickedPlayers,
       players: this.players.map((p) =>
         p instanceof Player ? p.toObject() : p
@@ -186,7 +191,7 @@ export class Lobby implements ILobby {
 
     const lobby = new Lobby(
       data.hostId,
-      host?.riotId ?? "Unknown",
+      host?.riotId ?? null,
       data.gameMap,
       data.gameMode,
       host?.position ?? null,
@@ -207,7 +212,7 @@ export class Lobby implements ILobby {
 
     lobby.maxPlayers = data.maxPlayers ?? lobby.maxPlayers;
     lobby.kickedPlayers = data.kickedPlayers ?? [];
-    lobby.isActive = data.isActive ?? true;
+    lobby.state = data.state;
     lobby.filter = data.filter ?? lobby.filter;
 
     return lobby;

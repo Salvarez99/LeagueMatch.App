@@ -18,3 +18,4 @@ __exportStar(require("./types/ILobby"), exports);
 __exportStar(require("./types/ILobbyPlayer"), exports);
 __exportStar(require("./types/IUser"), exports);
 __exportStar(require("./types/ILobbyFilter"), exports);
+__exportStar(require("./types/LobbyState"), exports);
