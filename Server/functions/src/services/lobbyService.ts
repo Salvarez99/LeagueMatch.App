@@ -150,13 +150,15 @@ export class LobbyService {
       if (lobby.hostId !== hostId)
         throw new Error.UnauthorizedError("Only host can kick players");
 
-      if (lobby.state !== LobbyState.IDLE) {
+      if (lobby.state !== LobbyState.IDLE && lobby.state !== LobbyState.FINISHED) {
         throw new Error.BadRequestError(
-          "Players can only be kicked while in IDLE"
+          "Players can only be kicked while in IDLE and FINISHED"
         );
       }
 
       lobby.removePlayer(targetUid, true);
+      this.switchLobbyState(lobby);
+
 
       // Full object write — use set()
       tx.set(lobbyRef, lobby.toFirestore(), { merge: true });
@@ -379,6 +381,8 @@ export class LobbyService {
         if (players.length === lobby.maxPlayers)
           lobby.setState(LobbyState.IDLE);
         break;
+      case LobbyState.FINISHED:
+        if (players.length < lobby.maxPlayers || !lobby.players.every((player)=>player.ready)) lobby.setState(LobbyState.IDLE);
     }
   }
 }
