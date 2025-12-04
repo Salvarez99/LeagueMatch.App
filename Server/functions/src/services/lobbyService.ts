@@ -67,6 +67,7 @@ export class LobbyService {
     // Create lobby instance
     const lobby = new Lobby(
       hostId,
+      host.username,
       host.riotId,
       gameMap,
       gameMode,
@@ -99,6 +100,7 @@ export class LobbyService {
         p.uid === uid
           ? new Player(
               p.uid,
+              p.username,
               p.riotId,
               p.position,
               p.championId,
@@ -268,7 +270,7 @@ export class LobbyService {
       if (lobby.state != LobbyState.SEARCHING)
         throw new Error.BadRequestError("Lobby inactive");
 
-      lobby.addPlayer(uid, user.riotId, position, championId);
+      lobby.addPlayer(uid, user.username, user.riotId, position, championId);
 
       this.switchLobbyState(lobby);
       // Full object write — use set()

@@ -24,6 +24,7 @@ export class Lobby implements ILobby {
 
   constructor(
     hostId: string,
+    username: string,
     riotId: string | null,
     gameMap: string,
     gameMode: string | null,
@@ -31,7 +32,8 @@ export class Lobby implements ILobby {
     championId: string | null = null,
     ranksFilter: string[] | null = []
   ) {
-    if (!hostId || !gameMap) throw new Error("hostId and gameMap are required21321312");
+    if (!hostId || !gameMap)
+      throw new Error("hostId and gameMap are required21321312");
 
     this.hostId = hostId;
     this.gameMap = gameMap;
@@ -90,7 +92,7 @@ export class Lobby implements ILobby {
 
     // Initialize host player
     this.players = [
-      new Player(hostId, riotId, hostPosition, championId, false),
+      new Player(hostId, username, riotId, hostPosition, championId, false),
     ];
   }
 
@@ -101,6 +103,7 @@ export class Lobby implements ILobby {
   // ➤ Add a player
   addPlayer(
     uid: string,
+    username: string,
     riotId: string,
     position: string | null = null,
     championId: string | null = null
@@ -120,20 +123,22 @@ export class Lobby implements ILobby {
           throw new Error(`Position ${position} no longer available`);
         }
 
-        this.players.push(new Player(uid, riotId, position, championId));
+        this.players.push(
+          new Player(uid, username, riotId, position, championId)
+        );
         this.filter.positionsNeeded = this.filter.positionsNeeded.filter(
           (p) => p !== position
         );
         break;
 
       case "Aram":
-        this.players.push(new Player(uid, riotId, null, null));
+        this.players.push(new Player(uid, username, riotId, null, null));
         break;
 
       case "Featured Modes":
         if (!championId)
           throw new Error("championId required for Featured Modes");
-        this.players.push(new Player(uid, riotId, null, championId));
+        this.players.push(new Player(uid, username, riotId, null, championId));
         break;
     }
 
@@ -191,6 +196,7 @@ export class Lobby implements ILobby {
 
     const lobby = new Lobby(
       data.hostId,
+      host?.username,
       host?.riotId ?? null,
       data.gameMap,
       data.gameMode,
@@ -203,6 +209,7 @@ export class Lobby implements ILobby {
       (p: ILobbyPlayer) =>
         new Player(
           p.uid,
+          p.username,
           p.riotId,
           p.position ?? null,
           p.championId ?? null,

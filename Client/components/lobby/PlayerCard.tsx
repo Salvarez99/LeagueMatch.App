@@ -99,7 +99,7 @@ export default function PlayerCard({
         ) : (
           <>
             <Text style={styles.defaultTextStyle}>
-              Player Name: {player?.riotId ?? appUser!.username}
+              Player Name: {player?.riotId ?? player?.username}
             </Text>
             <Text style={styles.defaultTextStyle}>
               Role: {player?.position}
