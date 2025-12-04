@@ -30,10 +30,10 @@ export function usePreLobbyActions({
   const router = useRouter();
 
   const handleSubmit = async () => {
-    if (!hasRiotLinked) {
-      setRiotModalOpen(true);
-      return;
-    }
+    // if (!hasRiotLinked) {
+    //   setRiotModalOpen(true);
+    //   return;
+    // }
 
     if (mode === "host") {
       return createLobby();
@@ -67,11 +67,11 @@ export function usePreLobbyActions({
       });
     } catch (err: unknown) {
       const error = err as AxiosError;
-      const code: string | undefined = error?.code;
+      // const code: string | undefined = error?.code;
 
-      if (code?.includes("Riot ID")) {
-        setRiotModalOpen(true);
-      }
+      // if (code?.includes("Riot ID")) {
+      //   setRiotModalOpen(true);
+      // }
 
       LOG.error("Create lobby failed", error.response?.data);
     }

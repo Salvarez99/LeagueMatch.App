@@ -1,3 +1,4 @@
+import { overlayColor, surfaceColor, textColor } from "@/utils/colors";
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
 import {
@@ -95,18 +96,17 @@ const styles = StyleSheet.create({
     position: "relative",
   },
   button: {
-    width: "100%",
+    backgroundColor: surfaceColor,
     aspectRatio: 1, // ← 🔥 makes it a perfect square
-    backgroundColor: "#1e1e1e",
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: "#333",
+    width: "100%",
     alignItems: "center",
     justifyContent: "center",
     padding: 0,
+    borderRadius: 10,
+    elevation: 5,
   },
   buttonText: {
-    color: "#fff",
+    color: textColor,
     fontSize: 16,
   },
   overlay: {
@@ -122,7 +122,7 @@ const styles = StyleSheet.create({
     bottom: "100%",
     right: 0, // anchor to the button’s right edge
     minWidth: 160, // wide enough for longest rank ("Grandmaster")
-    backgroundColor: "#2a2a2a",
+    backgroundColor: overlayColor,
     borderRadius: 10,
     paddingVertical: 6,
     marginBottom: 8,
@@ -134,7 +134,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
   },
   menuItemText: {
-    color: "white",
+    color: textColor,
     fontSize: 15,
   },
   selectedItem: {

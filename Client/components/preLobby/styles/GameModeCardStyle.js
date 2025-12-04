@@ -1,8 +1,9 @@
+import { overlayColor, surfaceColor, textColor } from "@/utils/colors";
 import { StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
   card: {
-    backgroundColor: "#D9D9D9",
+    backgroundColor: surfaceColor,
     borderRadius: 15,
     alignSelf: "center",
     justifyContent: "center",
@@ -12,24 +13,27 @@ export const styles = StyleSheet.create({
   },
   focused: {
     borderWidth: 2,
-    borderColor: "#00eeffff",
-    backgroundColor: "#8e8e8eff",
+    borderColor: "#0083fdff",
+    backgroundColor: surfaceColor,
   },
   title: {
-    color: "#fff",
+    color: textColor,
     fontSize: 18,
   },
   subTitle: {
-    color: "#fff",
+    color: textColor,
     fontSize: 14,
   },
   dropdown: {
-    backgroundColor: "#C1C1C1",
+    backgroundColor: overlayColor,
     marginTop: 10,
     borderRadius: 8,
     paddingVertical: 5,
   },
   dropdownItem: {
     padding: 8,
+  },
+  itemText: {
+    color: textColor,
   },
 });

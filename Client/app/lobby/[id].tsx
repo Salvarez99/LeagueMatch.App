@@ -4,6 +4,7 @@ import DiscordButton from "@/components/lobby/DiscordButton";
 import LobbyButtons from "@/components/lobby/LobbyButtons";
 import PlayerCards from "@/components/lobby/PlayerCards";
 import { styles } from "@/styles/lobbyStyle";
+import { Stack } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 // Custom hooks
@@ -15,6 +16,7 @@ import { Text, View } from "react-native";
 
 export default function Lobby() {
   const { lobbyId, currentUid, gameMap, gameMode } = useLobbyParams();
+  const title = `Lobby`;
 
   const { lobby } = useLobbyListener(lobbyId, currentUid);
   if (!lobby)
@@ -26,7 +28,7 @@ export default function Lobby() {
 
   const host: ILobbyPlayer = lobby.players[0];
   const players = lobby.players;
-  const currentPlayer = players.find((p)=> p.uid === currentUid)
+  const currentPlayer = players.find((p) => p.uid === currentUid);
 
   const {
     onLeave,
@@ -37,47 +39,47 @@ export default function Lobby() {
   } = useLobbyActions(lobbyId, currentUid);
 
   return (
-    <SafeAreaView
-      style={styles.containerStyle}
-      edges={["left", "right", "bottom"]}
-    >
-      <GameModeHeader gameMap={gameMap} gameMode={gameMode} />
+    <>
+      <Stack.Screen options={{ title }} />
+      <SafeAreaView
+        style={styles.containerStyle}
+        edges={["left", "right", "bottom"]}
+      >
+        <GameModeHeader gameMap={gameMap} gameMode={gameMode} />
 
-      {/* HOST CARD */}
-      <HostCard
-        style={styles.hostCardContainerStyle}
-        host={host}
-        isLobby={true}
-        status={host.ready}
-        onChampionSelect={handleUpdateChampion}
-        currentUid={currentUid}
-      />
+        {/* HOST CARD */}
+        <HostCard
+          host={host}
+          isLobby={true}
+          status={host.ready}
+          onChampionSelect={handleUpdateChampion}
+          currentUid={currentUid}
+        />
 
-      {/* OTHER PLAYERS */}
-      <PlayerCards
-        style={styles.playerCardsContainerStyle}
-        players={players.slice(1) || []}
-        maxPlayers={lobby.maxPlayers}
-        isHost={lobby.hostId === currentUid}
-        onKick={onKickPlayer}
-        onUpdateChampion={handleUpdateChampion}
-      />
+        {/* OTHER PLAYERS */}
+        <PlayerCards
+          style={styles.playerCardsContainerStyle}
+          players={players.slice(1) || []}
+          maxPlayers={lobby.maxPlayers}
+          isHost={lobby.hostId === currentUid}
+          onKick={onKickPlayer}
+          onUpdateChampion={handleUpdateChampion}
+        />
 
-      {/* DISCORD BUTTON */}
-      <DiscordButton
-        style={styles.discordButtonContainerStyle}
-        isHost={lobby.hostId === currentUid}
-        discordLink={lobby.discordLink}
-        onUpdateLink={updateDiscordLink}
-      />
+        {/* DISCORD BUTTON */}
+        <DiscordButton
+          isHost={lobby.hostId === currentUid}
+          discordLink={lobby.discordLink}
+          onUpdateLink={updateDiscordLink}
+        />
 
-      {/* READY & LEAVE BUTTONS */}
-      <LobbyButtons
-        style={styles.lobbyButtonsContainerStyle}
-        onLeave={onLeave}
-        onReady={onReady}
-        status={currentPlayer!.ready}
-      />
-    </SafeAreaView>
+        {/* READY & LEAVE BUTTONS */}
+        <LobbyButtons
+          onLeave={onLeave}
+          onReady={onReady}
+          status={currentPlayer!.ready}
+        />
+      </SafeAreaView>
+    </>
   );
 }

@@ -28,7 +28,7 @@ export default function PlayerCard({
   onChampionSelect,
 }: PlayerCardProps) {
   const { appUser } = useAuth();
-  let borderColor: string = "#ccc";
+  let borderColor: string = "#4e4e4e05";
   let borderWidth: number = 2;
   let borderStyle: "solid" | "dotted" | "dashed" = "solid";
 
@@ -40,6 +40,8 @@ export default function PlayerCard({
   const [championName, setChampionName] = useState<string>(
     champions[championId]
   );
+
+  
 
   if (!isEmpty) {
     borderColor = player?.ready ? "#00C851" : "#ff4444";
@@ -57,7 +59,7 @@ export default function PlayerCard({
             borderWidth,
             borderColor,
             borderStyle,
-            opacity: isEmpty ? 0.5 : 1,
+            opacity: 1,
           },
           isHost && isSelected && styles.playerCardSelected, // shrink if selected
         ]}
@@ -80,7 +82,7 @@ export default function PlayerCard({
         }}
         //OnLongPress copy the players riotId to clipBoard and show toast
         onLongPress={async () => {
-          if (isEmpty) return;
+          if (isEmpty || !player?.riotId) return;
           await Clipboard.setStringAsync(player!.riotId);
           Toast.show({
             type: "success",
@@ -97,7 +99,7 @@ export default function PlayerCard({
         ) : (
           <>
             <Text style={styles.defaultTextStyle}>
-              Riot ID: {player?.riotId}
+              Player Name: {player?.riotId ?? appUser!.username}
             </Text>
             <Text style={styles.defaultTextStyle}>
               Role: {player?.position}

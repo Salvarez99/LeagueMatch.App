@@ -40,13 +40,13 @@ export class LobbyService {
     const host = await userService.getUserById(hostId);
     if (!host) throw new Error.NotFoundError("Host user not found");
 
-    if (!host.riotId) {
-      const err: any = new Error.UnauthorizedError(
-        "Host must link Riot ID before creating a lobby"
-      );
-      err.code = "MISSING_RIOT_ID";
-      throw err;
-    }
+    // if (!host.riotId) {
+    //   const err: any = new Error.UnauthorizedError(
+    //     "Host must link Riot ID before creating a lobby"
+    //   );
+    //   err.code = "MISSING_RIOT_ID";
+    //   throw err;
+    // }
 
     // Check existing active lobby
     const snapshot = await this.lobbiesRef.where("hostId", "==", hostId).get();
@@ -193,11 +193,11 @@ export class LobbyService {
     const user = await userService.getUserById(uid);
 
     if (!user) throw new Error.NotFoundError("User not found");
-    if (!user.riotId) {
-      const err: any = new Error.UnauthorizedError("User must link Riot ID");
-      err.code = "MISSING_RIOT_ID";
-      throw err;
-    }
+    // if (!user.riotId) {
+    //   const err: any = new Error.UnauthorizedError("User must link Riot ID");
+    //   err.code = "MISSING_RIOT_ID";
+    //   throw err;
+    // }
 
     let resultLobby: any = null;
 
@@ -209,7 +209,7 @@ export class LobbyService {
 
       if (!lobby.isActive) throw new Error.BadRequestError("Lobby inactive");
 
-      lobby.addPlayer(uid, user.riotId!, position, championId);
+      lobby.addPlayer(uid, user.riotId, position, championId);
 
       // Full object write — use set()
       tx.set(lobbyRef, lobby.toFirestore(), { merge: true });

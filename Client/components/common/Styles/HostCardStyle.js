@@ -1,3 +1,4 @@
+import { surfaceColor, textColor } from "@/utils/colors";
 import { StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
@@ -8,12 +9,11 @@ export const styles = StyleSheet.create({
     height: "15%",
     alignItems: "center",
     justifyContent: "center",
-    // backgroundColor:"#259155ff"
   },
   hostCardButtonStyle: {
     width: "100%",
     height: "100%",
-    backgroundColor: "#D9D9D9",
+    backgroundColor: surfaceColor,
     borderRadius: 15,
     elevation: 5,
     justifyContent: "center",
@@ -22,6 +22,6 @@ export const styles = StyleSheet.create({
 
   text: {
     fontSize: 14,
-    color: "#000",
+    color: textColor,
   },
 });

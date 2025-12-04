@@ -1,3 +1,4 @@
+import { overlayColor, surfaceColor, textColor } from "@/utils/colors";
 import { StyleSheet } from "react-native";
 import Screen from "../../../utils/dimensions";
 
@@ -10,7 +11,7 @@ export const styles = StyleSheet.create({
   },
   dropdown: {
     flexDirection: "column",
-    backgroundColor: "#fff",
+    backgroundColor: overlayColor,
     borderRadius: 10,
     width: "90%",
     height: Screen.height * 0.7,
@@ -33,16 +34,17 @@ export const styles = StyleSheet.create({
     fontSize: 12,
     textAlign: "center",
     marginTop: 2,
+    color:textColor
   },
   input: {
     paddingVertical: 10,
     paddingHorizontal: 14,
     borderWidth: 1,
-    borderColor: "#ccc",
+    borderColor: surfaceColor,
     borderRadius: 10,
     fontSize: 16,
-    backgroundColor: "#fff",
-    color: "#000",
+    backgroundColor: overlayColor,
+    color: textColor,
     shadowColor: "#000",
     shadowOpacity: 0.1,
     shadowOffset: { width: 0, height: 2 },
@@ -57,7 +59,7 @@ export const styles = StyleSheet.create({
     maxWidth: Screen.width * 0.115,
     height: Screen.height * 0.05,
     borderRadius: 8,
-    backgroundColor: "#D9D9D9",
+    backgroundColor: surfaceColor,
     elevation: 5,
   },
 
@@ -73,4 +75,5 @@ export const styles = StyleSheet.create({
     justifyContent: "flex-start",
   },
   listEmptyStyle: { textAlign: "center", marginTop: 20 },
+  text: { color: textColor },
 });

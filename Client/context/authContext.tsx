@@ -139,7 +139,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           await userApi.createUser({
             id: cred.user.uid,
             email: DEV_CONFIG.TEST_EMAIL,
-            username: "DevTester",
+            username: DEV_CONFIG.TEST_USERNAME,
           });
         }
       } catch (err) {

@@ -1,8 +1,10 @@
+import { screenColor, surfaceColor, textColor } from "@/utils/colors";
 import { StyleSheet } from "react-native";
+
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f8f9fa",
+    backgroundColor: screenColor,
   },
   scrollContainer: {
     flexGrow: 1,
@@ -10,7 +12,7 @@ export const styles = StyleSheet.create({
     padding: 20,
   },
   formContainer: {
-    backgroundColor: "#ffffff",
+    backgroundColor: surfaceColor,
     borderRadius: 20,
     padding: 30,
     shadowColor: "#000",
@@ -25,13 +27,13 @@ export const styles = StyleSheet.create({
   title: {
     fontSize: 32,
     fontWeight: "bold",
-    color: "#333",
+    color: textColor,
     marginBottom: 8,
     textAlign: "center",
   },
   subtitle: {
     fontSize: 16,
-    color: "#666",
+    color: textColor,
     marginBottom: 30,
     textAlign: "center",
   },
@@ -41,7 +43,7 @@ export const styles = StyleSheet.create({
   label: {
     fontSize: 14,
     fontWeight: "600",
-    color: "#333",
+    color: textColor,
     marginBottom: 8,
   },
   input: {
@@ -88,7 +90,7 @@ export const styles = StyleSheet.create({
     marginTop: 25,
   },
   switchText: {
-    color: "#666",
+    color: textColor,
     fontSize: 14,
   },
   switchButtonText: {

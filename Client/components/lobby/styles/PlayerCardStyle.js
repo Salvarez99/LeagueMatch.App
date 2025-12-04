@@ -1,3 +1,4 @@
+import { surfaceColor, textColor } from "@/utils/colors";
 import { StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
@@ -8,7 +9,7 @@ export const styles = StyleSheet.create({
   },
 
   playerCard: {
-    backgroundColor: "#D9D9D9",
+    backgroundColor: surfaceColor,
     width: "100%",
     height: "100%", // default height
     justifyContent: "center",
@@ -25,7 +26,7 @@ export const styles = StyleSheet.create({
 
   defaultTextStyle: {
     fontSize: 14,
-    color: "#000",
+    color: textColor,
   },
 
   kickButton: {
