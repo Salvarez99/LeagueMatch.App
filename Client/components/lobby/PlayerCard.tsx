@@ -41,6 +41,8 @@ export default function PlayerCard({
     champions[championId]
   );
 
+  
+
   if (!isEmpty) {
     borderColor = player?.ready ? "#00C851" : "#ff4444";
   }
@@ -80,7 +82,7 @@ export default function PlayerCard({
         }}
         //OnLongPress copy the players riotId to clipBoard and show toast
         onLongPress={async () => {
-          if (isEmpty) return;
+          if (isEmpty || !player?.riotId) return;
           await Clipboard.setStringAsync(player!.riotId);
           Toast.show({
             type: "success",
@@ -97,7 +99,7 @@ export default function PlayerCard({
         ) : (
           <>
             <Text style={styles.defaultTextStyle}>
-              Riot ID: {player?.riotId}
+              Player Name: {player?.riotId ?? appUser!.username}
             </Text>
             <Text style={styles.defaultTextStyle}>
               Role: {player?.position}

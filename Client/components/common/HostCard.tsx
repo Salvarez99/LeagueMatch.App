@@ -6,6 +6,7 @@ import Toast from "react-native-toast-message";
 import PickChampionModal from "../preLobby/PickChampionModal";
 import { styles } from "./Styles/HostCardStyle";
 import { ILobbyPlayer } from "@leaguematch/shared";
+import { useAuth } from "@/context/authContext";
 
 interface HostCardProps {
   host: ILobbyPlayer;
@@ -29,7 +30,7 @@ export default function HostCard({
       </View>
     );
   }
-
+  const {appUser} = useAuth();
   let borderColor = "transparent";
   let borderWidth = 0;
 
@@ -53,6 +54,7 @@ export default function HostCard({
           setIsOpen(true);
         }}
         onLongPress={async () => {
+          if(!isLobby || !host.riotId) return;
           await Clipboard.setStringAsync(host.riotId);
           Toast.show({
             type: "success",
@@ -61,7 +63,7 @@ export default function HostCard({
           });
         }}
       >
-        <Text style={styles.text}>Host: {host.riotId}</Text>
+        <Text style={styles.text}>Host: {host.riotId ?? appUser!.username}</Text>
         <Text style={styles.text}>Role: {host.position}</Text>
         <Text style={styles.text}>Champion: {host.championId}</Text>
 
