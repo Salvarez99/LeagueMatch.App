@@ -291,8 +291,9 @@ export class LobbyService {
       const snap = await tx.get(lobbyRef);
       if (!snap.exists) throw new Error.NotFoundError("Lobby not found");
 
-      const lobby = Lobby.fromFirestore(snap.data()!);
+      const lobby = Lobby.fromFirestore(snap.data());
       lobby.removePlayer(uid);
+      this.switchLobbyState(lobby);
 
       // Full write — set()
       tx.set(lobbyRef, lobby.toFirestore(), { merge: true });
