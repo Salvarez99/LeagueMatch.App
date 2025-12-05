@@ -13,8 +13,10 @@ import { useLobbyListener } from "@/hooks/useLobbyListener";
 import { useLobbyParams } from "@/hooks/useLobbyParams";
 import { ILobbyPlayer } from "@leaguematch/shared";
 import { Text, View } from "react-native";
+import { useAuth } from "@/context/authContext";
 
 export default function Lobby() {
+  const {appUser} = useAuth();
   const { lobbyId, currentUid, gameMap, gameMode } = useLobbyParams();
   const title = `Lobby`;
 
@@ -29,10 +31,14 @@ export default function Lobby() {
   const host: ILobbyPlayer = lobby.players[0];
   const players = lobby.players;
   const currentPlayer = players.find((p) => p.uid === currentUid);
+  const isHost = host.uid === appUser!.id;
+
+
 
   const {
     onLeave,
     onReady,
+    onSearch,
     onKickPlayer,
     updateDiscordLink,
     handleUpdateChampion,
@@ -75,8 +81,11 @@ export default function Lobby() {
 
         {/* READY & LEAVE BUTTONS */}
         <LobbyButtons
+          isHost={isHost}
+          lobby={lobby}
           onLeave={onLeave}
           onReady={onReady}
+          onSearch={onSearch}
           status={currentPlayer!.ready}
         />
       </SafeAreaView>

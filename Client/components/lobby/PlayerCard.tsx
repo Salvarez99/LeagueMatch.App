@@ -82,7 +82,7 @@ export default function PlayerCard({
         }}
         //OnLongPress copy the players riotId to clipBoard and show toast
         onLongPress={async () => {
-          if (isEmpty || !player?.riotId) return;
+          if (isEmpty || !player?.riotId) {console.log(player?.riotId); return;}
           await Clipboard.setStringAsync(player!.riotId);
           Toast.show({
             type: "success",
@@ -99,7 +99,7 @@ export default function PlayerCard({
         ) : (
           <>
             <Text style={styles.defaultTextStyle}>
-              Player Name: {player?.riotId ?? appUser!.username}
+              Player Name: {player?.riotId ?? player?.username}
             </Text>
             <Text style={styles.defaultTextStyle}>
               Role: {player?.position}

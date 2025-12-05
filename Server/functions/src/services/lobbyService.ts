@@ -14,6 +14,9 @@ import type {
   Query,
   QueryDocumentSnapshot,
 } from "firebase-admin/firestore";
+import { ILobby, ILobbyPlayer, IUser, LobbyState } from "@leaguematch/shared";
+import { Player } from "../models/Player";
+import { read } from "fs";
 
 export class LobbyService {
   private lobbiesRef: CollectionReference<DocumentData>;
@@ -51,13 +54,20 @@ export class LobbyService {
     // Check existing active lobby
     const snapshot = await this.lobbiesRef.where("hostId", "==", hostId).get();
     snapshot.forEach((doc) => {
-      if (doc.data().isActive)
-        throw new Error.BadRequestError(`hostId ${hostId} active lobby already exists`);
+      if (
+        doc.data().state === LobbyState.IDLE ||
+        doc.data().state === LobbyState.SEARCHING ||
+        doc.data().state === LobbyState.FINISHED
+      )
+        throw new Error.BadRequestError(
+          `hostId ${hostId} active lobby already exists`
+        );
     });
 
     // Create lobby instance
     const lobby = new Lobby(
       hostId,
+      host.username,
       host.riotId,
       gameMap,
       gameMode,
@@ -82,14 +92,49 @@ export class LobbyService {
       const snap = await tx.get(lobbyRef);
       if (!snap.exists) throw new Error.NotFoundError("Lobby not found");
 
-      const players = (snap.data()?.players ?? []) as any[];
+      const lobby = Lobby.fromFirestore(snap.data());
+      const players = lobby.players;
 
+      // 1. Toggle ready and ALWAYS convert to plain objects
       const updatedPlayers = players.map((p) =>
-        p.uid === uid ? { ...p, ready: !p.ready } : p
+        p.uid === uid
+          ? new Player(
+              p.uid,
+              p.username,
+              p.riotId,
+              p.position,
+              p.championId,
+              !p.ready
+            ).toObject()
+          : p instanceof Player
+          ? p.toObject()
+          : p
       );
 
-      // Partial update — keep update()
-      tx.update(lobbyRef, { players: updatedPlayers });
+      // 2. Update in-memory lobby
+      lobby.players = updatedPlayers;
+
+      // 3. Apply FSM (switchLobbyState)
+      this.switchLobbyState(lobby);
+
+      // 4. Always use toFirestore() so Firestore sees ONLY plain JSON
+      tx.set(lobbyRef, lobby.toFirestore(), { merge: true });
+    });
+  }
+
+  async initSearch(lobbyId: string, uid: string) {
+    const lobbyRef = this.lobbiesRef.doc(lobbyId);
+
+    await db.runTransaction(async (tx) => {
+      const snap = await tx.get(lobbyRef);
+      if (!snap.exists) throw new Error.NotFoundError("Lobby not found");
+      const lobby = Lobby.fromFirestore(snap.data());
+      if (!(uid === lobby.hostId))
+        throw new Error.UnauthorizedError("Only host can initiate search");
+
+      lobby.setState(LobbyState.SEARCHING);
+
+      tx.set(lobbyRef, lobby.toFirestore(), { merge: true });
     });
   }
 
@@ -100,12 +145,20 @@ export class LobbyService {
       const snap = await tx.get(lobbyRef);
       if (!snap.exists) throw new Error.NotFoundError("Lobby not found");
 
-      const lobby = Lobby.fromFirestore(snap.data()!);
+      const lobby = Lobby.fromFirestore(snap.data());
 
       if (lobby.hostId !== hostId)
         throw new Error.UnauthorizedError("Only host can kick players");
 
+      if (lobby.state !== LobbyState.IDLE && lobby.state !== LobbyState.FINISHED) {
+        throw new Error.BadRequestError(
+          "Players can only be kicked while in IDLE and FINISHED"
+        );
+      }
+
       lobby.removePlayer(targetUid, true);
+      this.switchLobbyState(lobby);
+
 
       // Full object write — use set()
       tx.set(lobbyRef, lobby.toFirestore(), { merge: true });
@@ -147,7 +200,7 @@ export class LobbyService {
 
   async getAvailableLobbies(desiredRole: string) {
     const snapshot = await this.lobbiesRef
-      .where("isActive", "==", true)
+      .where("state", "==", "SEARCHING")
       .get();
 
     if (snapshot.empty) return [];
@@ -160,7 +213,10 @@ export class LobbyService {
     return doc.exists ? { id: doc.id, ...doc.data() } : null;
   }
 
-  private filterKicked(uid: string, docs: QueryDocumentSnapshot<DocumentData>[]) {
+  private filterKicked(
+    uid: string,
+    docs: QueryDocumentSnapshot<DocumentData>[]
+  ) {
     return docs.filter((d) => !d.data().kickedPlayers?.includes(uid));
   }
 
@@ -173,7 +229,13 @@ export class LobbyService {
       case "Summoner's Rift":
         if (!desiredPosition)
           throw new Error.BadRequestError("desiredPosition required");
-        return this.searchForRift(gameMap, gameMode, desiredPosition, ranks ?? [], uid);
+        return this.searchForRift(
+          gameMap,
+          gameMode,
+          desiredPosition,
+          ranks ?? [],
+          uid
+        );
 
       case "Aram":
         return this.searchForAram(gameMap, gameMode, uid);
@@ -205,12 +267,14 @@ export class LobbyService {
       const snap = await tx.get(lobbyRef);
       if (!snap.exists) throw new Error.NotFoundError("Lobby not found");
 
-      const lobby = Lobby.fromFirestore(snap.data()!);
+      const lobby = Lobby.fromFirestore(snap.data());
 
-      if (!lobby.isActive) throw new Error.BadRequestError("Lobby inactive");
+      if (lobby.state != LobbyState.SEARCHING)
+        throw new Error.BadRequestError("Lobby inactive");
 
-      lobby.addPlayer(uid, user.riotId, position, championId);
+      lobby.addPlayer(uid, user.username, user.riotId, position, championId);
 
+      this.switchLobbyState(lobby);
       // Full object write — use set()
       tx.set(lobbyRef, lobby.toFirestore(), { merge: true });
 
@@ -227,8 +291,9 @@ export class LobbyService {
       const snap = await tx.get(lobbyRef);
       if (!snap.exists) throw new Error.NotFoundError("Lobby not found");
 
-      const lobby = Lobby.fromFirestore(snap.data()!);
+      const lobby = Lobby.fromFirestore(snap.data());
       lobby.removePlayer(uid);
+      this.switchLobbyState(lobby);
 
       // Full write — set()
       tx.set(lobbyRef, lobby.toFirestore(), { merge: true });
@@ -239,7 +304,7 @@ export class LobbyService {
     return this.lobbiesRef
       .where("gameMap", "==", gameMap)
       .where("gameMode", "==", gameMode)
-      .where("isActive", "==", true);
+      .where("state", "==", "SEARCHING");
   }
 
   private async searchForRift(
@@ -263,7 +328,9 @@ export class LobbyService {
         : null;
 
     const merged = rankSnap
-      ? rankSnap.docs.filter((d) => new Set(positionSnap.docs.map((p) => p.id)).has(d.id))
+      ? rankSnap.docs.filter((d) =>
+          new Set(positionSnap.docs.map((p) => p.id)).has(d.id)
+        )
       : positionSnap.docs;
 
     const cleaned = this.filterKicked(uid, merged);
@@ -292,6 +359,26 @@ export class LobbyService {
 
     const cleaned = this.filterKicked(uid, snap.docs);
     return cleaned.length ? { id: cleaned[0].id, ...cleaned[0].data() } : null;
+  }
+
+  switchLobbyState(lobby: Lobby): void {
+    const players = lobby.players;
+    switch (lobby.state) {
+      case LobbyState.IDLE:
+        if (
+          players.length === lobby.maxPlayers &&
+          players.every((player) => player.ready)
+        ) {
+          lobby.setState(LobbyState.FINISHED);
+        }
+        break;
+      case LobbyState.SEARCHING:
+        if (players.length === lobby.maxPlayers)
+          lobby.setState(LobbyState.IDLE);
+        break;
+      case LobbyState.FINISHED:
+        if (players.length < lobby.maxPlayers || !lobby.players.every((player)=>player.ready)) lobby.setState(LobbyState.IDLE);
+    }
   }
 }
 

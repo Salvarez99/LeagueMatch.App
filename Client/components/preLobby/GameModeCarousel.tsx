@@ -34,11 +34,11 @@ export default function GameModeCarousel({
       title: "Summoner's Rift",
       modes: ["Swift Play", "Draft Pick", "Ranked Solo/Duo", "Ranked Flex"],
     },
-    { id: "2", title: "Aram", modes: [] },
+    { id: "2", title: "Aram", modes: ["Howling Abyss", "Mayhem"] },
     {
       id: "3",
       title: "Featured Modes",
-      modes: ["Arena", "Brawl", "Doom Bots"],
+      modes: ["Arena", "ARURF"],
     },
   ];
 

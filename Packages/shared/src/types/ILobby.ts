@@ -1,14 +1,16 @@
 import type { ILobbyPlayer } from "./ILobbyPlayer";
 import type { ILobbyFilter } from "./ILobbyFilter";
+import type { LobbyState} from "./LobbyState";
 
 export interface ILobby {
-  //may need to add lobbyId for api response in frontend
   createdAt: string;
+  updatedAt: string;
   currentPlayers: number;
   gameMap: string;
   gameMode: string;
   hostId: string;
-  isActive: boolean;
+  // isActive: boolean;
+  state: LobbyState;
   kickedPlayers: string[];
   players: ILobbyPlayer[];
   filter: ILobbyFilter;

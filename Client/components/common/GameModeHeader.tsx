@@ -13,7 +13,7 @@ export default function GameModeHeader({ gameMap, gameMode }: GameModeHeaderProp
           {gameMap === "" ? "Summoner's Rift" : gameMap}
         </Text>
         <Text style={styles.gameModeStyle}>
-          {gameMap === "Aram" ? "Howling Abyss" : gameMode}
+          {gameMode}
         </Text>
       </View>
       <View style={styles.gameIconStyle}></View>
