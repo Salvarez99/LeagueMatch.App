@@ -38,7 +38,7 @@ export default function GameModeCarousel({
     {
       id: "3",
       title: "Featured Modes",
-      modes: ["Arena", "Brawl", "Doom Bots"],
+      modes: ["Arena", "ARURF"],
     },
   ];
 

@@ -370,12 +370,6 @@ export class LobbyService {
         ) {
           lobby.setState(LobbyState.FINISHED);
         }
-        // else if (
-        //   players.length < lobby.maxPlayers &&
-        //   players.every((player) => player.ready)
-        // ) {
-        //   lobby.setState(LobbyState.SEARCHING);
-        // }
         break;
       case LobbyState.SEARCHING:
         if (players.length === lobby.maxPlayers)
