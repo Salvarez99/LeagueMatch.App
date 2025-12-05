@@ -303,7 +303,7 @@ export class LobbyService {
     return this.lobbiesRef
       .where("gameMap", "==", gameMap)
       .where("gameMode", "==", gameMode)
-      .where("isActive", "==", true);
+      .where("state", "==", "SEARCHING");
   }
 
   private async searchForRift(

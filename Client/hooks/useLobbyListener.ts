@@ -44,13 +44,6 @@ export function useLobbyListener(lobbyId: string, uid: string) {
           return;
         }
 
-        // // Lobby inactive
-        // if (!data.isActive) {
-        //   LOG.debug("Lobby inactive → redirect");
-        //   router.back();
-        //   return;
-        // }
-
         // Join confirmed first time
         if (!joinConfirmed && isInLobby) {
           LOG.debug("Join confirmed");
