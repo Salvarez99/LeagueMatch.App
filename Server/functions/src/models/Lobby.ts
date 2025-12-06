@@ -135,7 +135,8 @@ export class Lobby implements ILobby {
     switch (this.gameMap) {
       case "Summoner's Rift":
         if (!position) throw new Error("position required for SR");
-        if (!championId) throw new Error("championId required for SR");
+
+        if (!isGhost && !championId) throw new Error("championId required for SR");
 
         if (!this.filter.positionsNeeded.includes(position)) {
           throw new Error(`Position ${position} no longer available`);
@@ -164,7 +165,7 @@ export class Lobby implements ILobby {
         break;
 
       case "Featured Modes":
-        if (!championId)
+        if (!isGhost && !championId)
           throw new Error("championId required for Featured Modes");
         this.players.push(
           new Player(uid, username, riotId, null, championId, ready, isGhost)
