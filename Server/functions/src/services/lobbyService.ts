@@ -17,6 +17,7 @@ import type {
 } from "firebase-admin/firestore";
 import { LobbyState } from "@leaguematch/shared";
 import { Player } from "../models/Player";
+import { IUpdateGhost } from "../interfaces/IUpdateGhost";
 
 export class LobbyService {
   private lobbiesRef: CollectionReference<DocumentData>;
@@ -143,6 +144,22 @@ export class LobbyService {
         ghostData.championId,
         true
       );
+
+      tx.set(lobbyRef, lobby.toFirestore(), { merge: true });
+    });
+  }
+
+  async updateGhost(lobbyId: string, hostId: string, ghostData: IUpdateGhost) {
+    const lobbyRef = this.lobbiesRef.doc(lobbyId);
+
+    await db.runTransaction(async (tx) => {
+      const snap = await tx.get(lobbyRef);
+      if (!snap.exists) throw new Error.NotFoundError("Lobby not found");
+      const lobby = Lobby.fromFirestore(snap.data());
+      if (!(hostId === lobby.hostId))
+        throw new Error.UnauthorizedError("Only host can update ghost hostId");
+
+      lobby.updateGhostPosition(ghostData.ghostId, ghostData.position);
 
       tx.set(lobbyRef, lobby.toFirestore(), { merge: true });
     });

@@ -136,7 +136,8 @@ export class Lobby implements ILobby {
       case "Summoner's Rift":
         if (!position) throw new Error("position required for SR");
 
-        if (!isGhost && !championId) throw new Error("championId required for SR");
+        if (!isGhost && !championId)
+          throw new Error("championId required for SR");
 
         if (!this.filter.positionsNeeded.includes(position)) {
           throw new Error(`Position ${position} no longer available`);
@@ -200,6 +201,27 @@ export class Lobby implements ILobby {
 
     if (!removed.isGhost && kicked) this.kickedPlayers.push(uid);
     else this.ghostCount--;
+  }
+
+  updateGhostPosition(ghostId: string, newPostion: string) {
+    const index = this.players.findIndex((p) => p.uid === ghostId);
+    const ghost = this.players[index];
+
+    if (!this.filter.positionsNeeded.includes(newPostion)) {
+      throw new Error(`Position ${newPostion} no longer available`);
+    }
+
+    if (this.gameMap === "Summoner's Rift" && ghost.position) {
+      if (!this.filter.positionsNeeded.includes(ghost.position)) {
+        this.filter.positionsNeeded.push(ghost.position);
+      }
+    }
+
+    this.filter.positionsNeeded = this.filter.positionsNeeded.filter(
+      (p) => p !== newPostion
+    );
+
+    ghost.position = newPostion;
   }
 
   // ➤ Prepare Firestore object
