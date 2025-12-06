@@ -135,6 +135,14 @@ export class LobbyService {
       if (!(hostId === lobby.hostId))
         throw new Error.UnauthorizedError("Only host can add Ghost to lobby");
 
+      if (
+        lobby.state !== LobbyState.IDLE &&
+        lobby.state !== LobbyState.FINISHED
+      )
+        throw new Error.BadRequestError(
+          "Ghost can only be added while lobby is IDLE or FINISHED"
+        );
+        
       const auto = `Ghost-${lobby.ghostCount}`;
       lobby.addPlayer(
         auto,
