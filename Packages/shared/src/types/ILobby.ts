@@ -14,6 +14,7 @@ export interface ILobby {
   kickedPlayers: string[];
   players: ILobbyPlayer[];
   filter: ILobbyFilter;
+  ghostCount:number;
   maxPlayers: number;
   discordLink?: string | null;
 }

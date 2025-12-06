@@ -17,6 +17,7 @@ export class Lobby implements ILobby {
   players: ILobbyPlayer[];
   filter: ILobbyFilter;
   maxPlayers: number;
+  ghostCount: number;
 
   static mapPositions = {
     "Summoner's Rift": ["Top", "Jungle", "Middle", "Adc", "Support"],
@@ -30,7 +31,8 @@ export class Lobby implements ILobby {
     gameMode: string | null,
     hostPosition: string | null = null,
     championId: string | null = null,
-    ranksFilter: string[] | null = []
+    ranksFilter: string[] | null = [],
+    ghostCount: number = 0
   ) {
     if (!hostId || !gameMap)
       throw new Error("hostId and gameMap are required21321312");
@@ -92,7 +94,15 @@ export class Lobby implements ILobby {
 
     // Initialize host player
     this.players = [
-      new Player(hostId, username, riotId, hostPosition, championId, false),
+      new Player(
+        hostId,
+        username,
+        riotId,
+        hostPosition,
+        championId,
+        false,
+        false
+      ),
     ];
   }
 
@@ -106,8 +116,16 @@ export class Lobby implements ILobby {
     username: string,
     riotId: string,
     position: string | null = null,
-    championId: string | null = null
+    championId: string | null = null,
+    isGhost: boolean = false
   ) {
+    let ready = false;
+    if (isGhost) {
+      this.ghostCount++;
+      ready = !ready;
+      ready;
+    }
+
     if (this.players.some((p) => p.uid === uid))
       throw new Error("Player already in lobby");
 
@@ -124,7 +142,15 @@ export class Lobby implements ILobby {
         }
 
         this.players.push(
-          new Player(uid, username, riotId, position, championId)
+          new Player(
+            uid,
+            username,
+            riotId,
+            position,
+            championId,
+            ready,
+            isGhost
+          )
         );
         this.filter.positionsNeeded = this.filter.positionsNeeded.filter(
           (p) => p !== position
@@ -132,16 +158,19 @@ export class Lobby implements ILobby {
         break;
 
       case "Aram":
-        this.players.push(new Player(uid, username, riotId, null, null));
+        this.players.push(
+          new Player(uid, username, riotId, null, null, ready, isGhost)
+        );
         break;
 
       case "Featured Modes":
         if (!championId)
           throw new Error("championId required for Featured Modes");
-        this.players.push(new Player(uid, username, riotId, null, championId));
+        this.players.push(
+          new Player(uid, username, riotId, null, championId, ready, isGhost)
+        );
         break;
     }
-
     this.currentPlayers++;
   }
 
@@ -168,7 +197,8 @@ export class Lobby implements ILobby {
       }
     }
 
-    if (kicked) this.kickedPlayers.push(uid);
+    if (!removed.isGhost && kicked) this.kickedPlayers.push(uid);
+    else this.ghostCount--;
   }
 
   // ➤ Prepare Firestore object
@@ -186,6 +216,7 @@ export class Lobby implements ILobby {
         p instanceof Player ? p.toObject() : p
       ),
       filter: this.filter,
+      ghostCount: this.ghostCount ?? 0,
       maxPlayers: this.maxPlayers,
     };
   }
@@ -213,7 +244,8 @@ export class Lobby implements ILobby {
           p.riotId,
           p.position ?? null,
           p.championId ?? null,
-          p.ready
+          p.ready ?? false,
+          p.isGhost ?? false
         )
     );
 
@@ -221,6 +253,7 @@ export class Lobby implements ILobby {
     lobby.kickedPlayers = data.kickedPlayers ?? [];
     lobby.state = data.state;
     lobby.filter = data.filter ?? lobby.filter;
+    lobby.ghostCount = data.ghostCount;
 
     return lobby;
   }

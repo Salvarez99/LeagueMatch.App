@@ -8,15 +8,15 @@ import {
   IJoinLobbyData,
 } from "../interfaces/ILobby";
 
+import type { IGhostData } from "../interfaces/IGhostData";
 import type {
   CollectionReference,
   DocumentData,
   Query,
   QueryDocumentSnapshot,
 } from "firebase-admin/firestore";
-import { ILobby, ILobbyPlayer, IUser, LobbyState } from "@leaguematch/shared";
+import { LobbyState } from "@leaguematch/shared";
 import { Player } from "../models/Player";
-import { read } from "fs";
 
 export class LobbyService {
   private lobbiesRef: CollectionReference<DocumentData>;
@@ -73,7 +73,8 @@ export class LobbyService {
       gameMode,
       hostPosition,
       championId,
-      rankFilter
+      rankFilter,
+      0
     );
 
     // Save lobby
@@ -104,7 +105,8 @@ export class LobbyService {
               p.riotId,
               p.position,
               p.championId,
-              !p.ready
+              !p.ready,
+              false
             ).toObject()
           : p instanceof Player
           ? p.toObject()
@@ -118,6 +120,30 @@ export class LobbyService {
       this.switchLobbyState(lobby);
 
       // 4. Always use toFirestore() so Firestore sees ONLY plain JSON
+      tx.set(lobbyRef, lobby.toFirestore(), { merge: true });
+    });
+  }
+
+  async addGhost(lobbyId: string, hostId: string, ghostData: IGhostData) {
+    const lobbyRef = this.lobbiesRef.doc(lobbyId);
+
+    await db.runTransaction(async (tx) => {
+      const snap = await tx.get(lobbyRef);
+      if (!snap.exists) throw new Error.NotFoundError("Lobby not found");
+      const lobby = Lobby.fromFirestore(snap.data());
+      if (!(hostId === lobby.hostId))
+        throw new Error.UnauthorizedError("Only host can add Ghost to lobby");
+
+      const auto = `Ghost-${lobby.ghostCount}`;
+      lobby.addPlayer(
+        auto,
+        auto,
+        null,
+        ghostData.position,
+        ghostData.championId,
+        true
+      );
+
       tx.set(lobbyRef, lobby.toFirestore(), { merge: true });
     });
   }
@@ -150,7 +176,10 @@ export class LobbyService {
       if (lobby.hostId !== hostId)
         throw new Error.UnauthorizedError("Only host can kick players");
 
-      if (lobby.state !== LobbyState.IDLE && lobby.state !== LobbyState.FINISHED) {
+      if (
+        lobby.state !== LobbyState.IDLE &&
+        lobby.state !== LobbyState.FINISHED
+      ) {
         throw new Error.BadRequestError(
           "Players can only be kicked while in IDLE and FINISHED"
         );
@@ -158,7 +187,6 @@ export class LobbyService {
 
       lobby.removePlayer(targetUid, true);
       this.switchLobbyState(lobby);
-
 
       // Full object write — use set()
       tx.set(lobbyRef, lobby.toFirestore(), { merge: true });
@@ -377,7 +405,11 @@ export class LobbyService {
           lobby.setState(LobbyState.IDLE);
         break;
       case LobbyState.FINISHED:
-        if (players.length < lobby.maxPlayers || !lobby.players.every((player)=>player.ready)) lobby.setState(LobbyState.IDLE);
+        if (
+          players.length < lobby.maxPlayers ||
+          !lobby.players.every((player) => player.ready)
+        )
+          lobby.setState(LobbyState.IDLE);
     }
   }
 }

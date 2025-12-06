@@ -68,6 +68,38 @@ export class LobbyController {
     }
   }
 
+  async addGhost(req: Request, res: Response) {
+    try {
+      const hostId = req.query.hostId as string;
+      const lobbyId = req.query.lobbyId as string;
+
+      const { ghostId, gameMap, position, championId} = req.body;
+
+      await lobbyService.addGhost(lobbyId, hostId, { ghostId, gameMap, position, championId});
+
+      return res.status(200).json({
+        success: true,
+        message: "Ghost added successfully",
+      });
+    } catch (err: any) {
+      if (err.statusCode) {
+        return res.status(err.statusCode).json({
+          success: false,
+          message: err.message,
+        });
+      }
+      return res.status(500).json({
+        success: false,
+        message: "Error updating lobby state to SEARCHING",
+        error: err.message,
+      });
+    }
+  }
+
+  async removeGhost(req: Request, res: Response) {}
+
+  async updateGhost(req: Request, res: Response) {}
+
   async initSearch(req: Request, res: Response) {
     try {
       const lobbyId = req.query.lobbyId as string;
