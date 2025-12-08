@@ -189,15 +189,17 @@ export class LobbyService {
       lobbyId,
       uid,
       action: (lobby) => {
-        lobby.players.map((p) => (p.uid === uid ? { ...p, championId } : p));
+        lobby.players = lobby.players.map((p) =>
+          p.uid === uid ? { ...p, championId } : p
+        );
       },
       states: [LobbyState.IDLE, LobbyState.FINISHED],
     });
   }
 
-  async getAvailableLobbies(desiredRole: string) {
+  async getAvailableLobbies() {
     const snapshot = await this.lobbiesRef
-      .where("state", "==", "SEARCHING")
+      .where("state", "in", ["SEARCHING", "IDLE"])
       .get();
 
     if (snapshot.empty) return [];

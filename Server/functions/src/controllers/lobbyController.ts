@@ -232,9 +232,8 @@ export class LobbyController {
 
   async getAvailableLobbies(req: Request, res: Response) {
     try {
-      const { desiredRole } = req.body;
 
-      const lobbies = await lobbyService.getAvailableLobbies(desiredRole);
+      const lobbies = await lobbyService.getAvailableLobbies();
 
       return res.status(200).json({
         success: true,
