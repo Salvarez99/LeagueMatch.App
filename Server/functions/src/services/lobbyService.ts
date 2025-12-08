@@ -181,6 +181,7 @@ export class LobbyService {
       action: (lobby) => {
         lobby.updateDiscord(discordLink);
       },
+      states: [LobbyState.IDLE, LobbyState.SEARCHING, LobbyState.FINISHED],
     });
   }
 
@@ -195,6 +196,7 @@ export class LobbyService {
       },
       states: [LobbyState.IDLE, LobbyState.FINISHED],
     });
+    
   }
 
   async getAvailableLobbies() {

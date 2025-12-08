@@ -250,20 +250,22 @@ export class Lobby implements ILobby {
     };
   }
 
-  // ➤ Rehydrate Lobby from Firestore
   static fromFirestore(data: DocumentData): Lobby {
-    const host = data.players?.[0];
+    const lobby = Object.create(Lobby.prototype) as Lobby;
 
-    const lobby = new Lobby(
-      data.hostId,
-      host?.username,
-      host?.riotId ?? null,
-      data.gameMap,
-      data.gameMode,
-      host?.position ?? null,
-      host?.championId ?? null,
-      data.filter?.ranksFilter ?? []
-    );
+    // Assign fields WITHOUT running constructor logic
+    lobby.hostId = data.hostId;
+    lobby.gameMap = data.gameMap;
+    lobby.gameMode = data.gameMode;
+    lobby.createdAt = data.createdAt;
+    lobby.updatedAt = data.updatedAt;
+    lobby.currentPlayers = data.currentPlayers;
+    lobby.state = data.state;
+    lobby.kickedPlayers = data.kickedPlayers ?? [];
+    lobby.filter = data.filter;
+    lobby.maxPlayers = data.maxPlayers;
+    lobby.ghostCount = data.ghostCount ?? 0;
+    lobby.discordLink = data.discordLink ?? null;
 
     lobby.players = (data.players ?? []).map(
       (p: ILobbyPlayer) =>
@@ -277,13 +279,6 @@ export class Lobby implements ILobby {
           p.isGhost ?? false
         )
     );
-
-    lobby.maxPlayers = data.maxPlayers ?? lobby.maxPlayers;
-    lobby.kickedPlayers = data.kickedPlayers ?? [];
-    lobby.state = data.state;
-    lobby.filter = data.filter ?? lobby.filter;
-    lobby.ghostCount = data.ghostCount;
-    lobby.discordLink = data.discordLink ?? null;
 
     return lobby;
   }
