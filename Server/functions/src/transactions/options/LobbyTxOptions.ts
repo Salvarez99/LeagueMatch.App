@@ -1,6 +1,6 @@
 import { LobbyState } from "@leaguematch/shared";
 
-export interface TransactionOptions {
+export interface LobbyTxOptions {
   onlyHost?: boolean;
   onlySelf?: boolean;
   targetUid?: string;
