@@ -18,6 +18,7 @@ export class Lobby implements ILobby {
   filter: ILobbyFilter;
   maxPlayers: number;
   ghostCount: number;
+  discordLink: string | null;
 
   static mapPositions = {
     "Summoner's Rift": ["Top", "Jungle", "Middle", "Adc", "Support"],
@@ -45,6 +46,7 @@ export class Lobby implements ILobby {
     this.currentPlayers = 1;
     this.state = LobbyState.IDLE;
     this.kickedPlayers = [];
+    this.discordLink = null;
 
     switch (gameMap) {
       case "Summoner's Rift": {
@@ -224,6 +226,9 @@ export class Lobby implements ILobby {
     ghost.position = newPostion;
   }
 
+  updateDiscord(link: string) {
+    this.discordLink = link;
+  }
   // ➤ Prepare Firestore object
   toFirestore(): ILobby {
     return {
@@ -241,6 +246,7 @@ export class Lobby implements ILobby {
       filter: this.filter,
       ghostCount: this.ghostCount ?? 0,
       maxPlayers: this.maxPlayers,
+      discordLink: this.discordLink,
     };
   }
 
@@ -277,6 +283,7 @@ export class Lobby implements ILobby {
     lobby.state = data.state;
     lobby.filter = data.filter ?? lobby.filter;
     lobby.ghostCount = data.ghostCount;
+    lobby.discordLink = data.discordLink ?? null;
 
     return lobby;
   }

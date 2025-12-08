@@ -16,5 +16,5 @@ export interface ILobby {
   filter: ILobbyFilter;
   ghostCount:number;
   maxPlayers: number;
-  discordLink?: string | null;
+  discordLink: string | null;
 }
