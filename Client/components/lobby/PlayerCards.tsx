@@ -4,6 +4,7 @@ import { View } from "react-native";
 import PlayerCard from "./PlayerCard";
 import { styles } from "./styles/PlayerCardsStyle";
 import { ILobbyPlayer } from "@leaguematch/shared";
+import { addGhost, updateGhost } from "@/types/ILobbyApiRequest";
 
 interface PlayerCardsProps {
   style: any;
@@ -12,6 +13,8 @@ interface PlayerCardsProps {
   isHost: boolean;
   onKick: (targetUid: string) => void;
   onUpdateChampion: (uid: string, championId: string) => void;
+  onAddGhost: (data: addGhost) => void;
+  onUpdateGhost: (data: updateGhost) => void;
 }
 
 export default function PlayerCards({
@@ -21,6 +24,8 @@ export default function PlayerCards({
   isHost = false,
   onKick,
   onUpdateChampion,
+  onAddGhost,
+  onUpdateGhost,
 }: PlayerCardsProps) {
   const actualMaxPlayers: number = (maxPlayers ?? 5) - 1;
   const [selectedPlayerUid, setSelectedPlayerUid] = useState<string | null>(
@@ -44,6 +49,8 @@ export default function PlayerCards({
             selectedPlayerUid={selectedPlayerUid}
             onKick={onKick}
             onChampionSelect={onUpdateChampion}
+            onAddGhost={onAddGhost}
+            onUpdateGhost={onUpdateGhost}
           />
         );
       })}

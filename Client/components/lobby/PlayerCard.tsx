@@ -7,6 +7,7 @@ import { useAuth } from "../../context/authContext";
 import { champions } from "../../utils/constants";
 import PickChampionModal from "../preLobby/PickChampionModal";
 import { styles } from "./styles/PlayerCardStyle";
+import { addGhost, updateGhost } from "@/types/ILobbyApiRequest";
 
 interface PlayerCardProps {
   isHost: boolean;
@@ -16,6 +17,8 @@ interface PlayerCardProps {
   selectedPlayerUid: string | null;
   onKick: (uid: string) => void;
   onChampionSelect: (uid: string, championId: string) => void;
+  onAddGhost: (data: addGhost) => void;
+  onUpdateGhost: (data: updateGhost) => void;
 }
 
 export default function PlayerCard({
@@ -26,6 +29,8 @@ export default function PlayerCard({
   selectedPlayerUid,
   onKick,
   onChampionSelect,
+  onAddGhost,
+  onUpdateGhost,
 }: PlayerCardProps) {
   const { appUser } = useAuth();
   let borderColor: string = "#4e4e4e05";
@@ -40,8 +45,6 @@ export default function PlayerCard({
   const [championName, setChampionName] = useState<string>(
     champions[championId]
   );
-
-  
 
   if (!isEmpty) {
     borderColor = player?.ready ? "#00C851" : "#ff4444";
@@ -82,7 +85,10 @@ export default function PlayerCard({
         }}
         //OnLongPress copy the players riotId to clipBoard and show toast
         onLongPress={async () => {
-          if (isEmpty || !player?.riotId) {console.log(player?.riotId); return;}
+          if (isEmpty || !player?.riotId) {
+            console.log(player?.riotId);
+            return;
+          }
           await Clipboard.setStringAsync(player!.riotId);
           Toast.show({
             type: "success",

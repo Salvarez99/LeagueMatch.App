@@ -16,7 +16,7 @@ import { Text, View } from "react-native";
 import { useAuth } from "@/context/authContext";
 
 export default function Lobby() {
-  const {appUser} = useAuth();
+  const { appUser } = useAuth();
   const { lobbyId, currentUid, gameMap, gameMode } = useLobbyParams();
   const title = `Lobby`;
 
@@ -33,8 +33,6 @@ export default function Lobby() {
   const currentPlayer = players.find((p) => p.uid === currentUid);
   const isHost = host.uid === appUser!.id;
 
-
-
   const {
     onLeave,
     onReady,
@@ -42,6 +40,8 @@ export default function Lobby() {
     onKickPlayer,
     updateDiscordLink,
     handleUpdateChampion,
+    onAddGhost,
+    onUpdateGhost,
   } = useLobbyActions(lobbyId, currentUid);
 
   return (
@@ -70,6 +70,8 @@ export default function Lobby() {
           isHost={lobby.hostId === currentUid}
           onKick={onKickPlayer}
           onUpdateChampion={handleUpdateChampion}
+          onAddGhost={onAddGhost}
+          onUpdateGhost={onUpdateGhost}
         />
 
         {/* DISCORD BUTTON */}
