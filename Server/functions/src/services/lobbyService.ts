@@ -18,6 +18,7 @@ import type {
 import { LobbyState } from "@leaguematch/shared";
 import { Player } from "../models/Player";
 import { IUpdateGhost } from "../interfaces/IUpdateGhost";
+import { TransactionOptions } from "../interfaces/LobbyTXOptions";
 
 export class LobbyService {
   private lobbiesRef: CollectionReference<DocumentData>;
@@ -88,13 +89,7 @@ export class LobbyService {
     if (!lobbyId) throw new Error.NotFoundError("Invalid lobbyId");
     if (!uid) throw new Error.BadRequestError("uid required");
 
-    const lobbyRef = this.lobbiesRef.doc(lobbyId);
-
-    await db.runTransaction(async (tx) => {
-      const snap = await tx.get(lobbyRef);
-      if (!snap.exists) throw new Error.NotFoundError("Lobby not found");
-
-      const lobby = Lobby.fromFirestore(snap.data());
+    await this.selfAction(lobbyId, uid, (lobby) => {
       const players = lobby.players;
 
       // 1. Toggle ready and ALWAYS convert to plain objects
@@ -119,9 +114,6 @@ export class LobbyService {
 
       // 3. Apply FSM (switchLobbyState)
       this.switchLobbyState(lobby);
-
-      // 4. Always use toFirestore() so Firestore sees ONLY plain JSON
-      tx.set(lobbyRef, lobby.toFirestore(), { merge: true });
     });
   }
 
@@ -142,7 +134,7 @@ export class LobbyService {
         throw new Error.BadRequestError(
           "Ghost can only be added while lobby is IDLE or FINISHED"
         );
-        
+
       const auto = `Ghost-${lobby.ghostCount}`;
       lobby.addPlayer(
         auto,
@@ -322,7 +314,7 @@ export class LobbyService {
 
       const lobby = Lobby.fromFirestore(snap.data());
 
-      if (lobby.state != LobbyState.SEARCHING)
+      if (lobby.state != LobbyState.SEARCHING && lobby.state != LobbyState.IDLE)
         throw new Error.BadRequestError("Lobby inactive");
 
       lobby.addPlayer(uid, user.username, user.riotId, position, championId);
@@ -436,6 +428,105 @@ export class LobbyService {
         )
           lobby.setState(LobbyState.IDLE);
     }
+  }
+
+  private baseTransaction<T>(params: {
+    lobbyId: string;
+    action: (lobby: Lobby) => T | Promise<T>;
+    uid?: string;
+    options?: TransactionOptions;
+  }) {
+    const { lobbyId, uid, options, action } = params;
+    const lobbyRef = this.lobbiesRef.doc(lobbyId);
+
+    return db.runTransaction(async (tx) => {
+      const snap = await tx.get(lobbyRef);
+      if (!snap.exists) throw new Error.NotFoundError("Lobby not found");
+
+      const lobby = Lobby.fromFirestore(snap.data());
+
+      // -------------------------------------
+      // HOST-ONLY ENFORCEMENT
+      // -------------------------------------
+      if (options?.onlyHost) {
+        if (!uid)
+          throw new Error.BadRequestError("uid required for host-only action");
+
+        if (uid !== lobby.hostId)
+          throw new Error.UnauthorizedError("Host only action");
+      }
+
+      // -------------------------------------
+      // SELF-ONLY ENFORCEMENT
+      // -------------------------------------
+      if (options?.onlySelf) {
+        if (!uid)
+          throw new Error.BadRequestError("uid required for self-only action");
+
+        if (!options.targetUid)
+          throw new Error.BadRequestError(
+            "targetUid required for self-only action"
+          );
+
+        if (uid !== options.targetUid)
+          throw new Error.UnauthorizedError("Action can only be done on self");
+      }
+
+      // -------------------------------------
+      // STATE RESTRICTION
+      // -------------------------------------
+      if (options?.stateMustBe && !options.stateMustBe.includes(lobby.state)) {
+        throw new Error.BadRequestError(
+          `Lobby state must be one of: ${options.stateMustBe.join(", ")}`
+        );
+      }
+
+      // -------------------------------------
+      // EXECUTE ACTION
+      // -------------------------------------
+      const result = await action(lobby);
+
+      // -------------------------------------
+      // SAVE CHANGES
+      // -------------------------------------
+      tx.set(lobbyRef, lobby.toFirestore(), { merge: true });
+
+      return result;
+    });
+  }
+
+  private selfAction<T>(
+    lobbyId: string,
+    uid: string,
+    action: (lobby: Lobby) => T | Promise<T>,
+    stateMustBe?: LobbyState[]
+  ) {
+    return this.baseTransaction({
+      lobbyId,
+      uid,
+      action,
+      options: {
+        onlySelf: true,
+        targetUid: uid,
+        stateMustBe,
+      },
+    });
+  }
+  private hostAction<T>(
+    lobbyId: string,
+    uid: string,
+    action: (lobby: Lobby) => T | Promise<T>,
+    stateMustBe?: LobbyState[]
+  ) {
+    return this.baseTransaction({
+      lobbyId,
+      uid,
+      action,
+      options: {
+        onlyHost: true,
+        stateMustBe,
+      },
+    });
   }
 }
 
