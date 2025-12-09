@@ -5,7 +5,6 @@ import { lobbyApi } from "../utils/api/lobbyApi";
 import { LOG } from "../utils/logger";
 import type { AxiosError } from "axios";
 import { addGhost, updateGhost } from "@/types/ILobbyApiRequest";
-import { ILobby } from "Packages/shared/dist";
 
 export function useLobbyActions(lobbyId: string, uid: string) {
   // Leave lobby
@@ -93,7 +92,7 @@ export function useLobbyActions(lobbyId: string, uid: string) {
       console.log("Ghost added");
     } catch (err: unknown) {
       const error = err as AxiosError;
-      console.error("Failed to add ghost:", error);
+      console.error("Failed to add ghost:",  error.response?.data);
     }
   };
 
@@ -103,7 +102,7 @@ export function useLobbyActions(lobbyId: string, uid: string) {
       console.log("Ghost Updated");
     } catch (err: unknown) {
       const error = err as AxiosError;
-      console.error("Failed to update ghost:", error);
+      console.error("Failed to update ghost:", error.response?.data);
     }
   };
 

@@ -30,6 +30,7 @@ export interface Kick {
 
 export interface addGhost {
   ghostId: string;
+  index:number;
   gameMap: string;
   position?: string;
   championId?: string;

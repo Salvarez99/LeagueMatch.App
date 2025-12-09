@@ -133,7 +133,8 @@ export class LobbyService {
           null,
           ghostData.position,
           ghostData.championId,
-          true
+          true,
+          ghostData.index
         );
       },
       states: [LobbyState.IDLE, LobbyState.FINISHED],

@@ -14,7 +14,7 @@ export class Lobby implements ILobby {
   currentPlayers: number;
   state: LobbyState;
   kickedPlayers: string[];
-  players: ILobbyPlayer[];
+  players: (ILobbyPlayer | null)[];
   filter: ILobbyFilter;
   maxPlayers: number;
   ghostCount: number;
@@ -106,6 +106,10 @@ export class Lobby implements ILobby {
         false
       ),
     ];
+
+    for (let i: number = 0; i < this.maxPlayers - 1; i++) {
+      this.players.push(null);
+    }
   }
 
   setState(state: LobbyState) {
@@ -119,16 +123,16 @@ export class Lobby implements ILobby {
     riotId: string,
     position: string | null = null,
     championId: string | null = null,
-    isGhost: boolean = false
+    isGhost: boolean = false,
+    slotIndex?: number
   ) {
     let ready = false;
     if (isGhost) {
       this.ghostCount++;
       ready = !ready;
-      ready;
     }
 
-    if (this.players.some((p) => p.uid === uid))
+    if (this.players.some((p) => p && p.uid === uid))
       throw new Error("Player already in lobby");
 
     if (this.currentPlayers >= this.maxPlayers)
@@ -145,36 +149,42 @@ export class Lobby implements ILobby {
           throw new Error(`Position ${position} no longer available`);
         }
 
-        this.players.push(
-          new Player(
-            uid,
-            username,
-            riotId,
-            position,
-            championId,
-            ready,
-            isGhost
-          )
-        );
         this.filter.positionsNeeded = this.filter.positionsNeeded.filter(
           (p) => p !== position
         );
         break;
 
-      case "Aram":
-        this.players.push(
-          new Player(uid, username, riotId, null, null, ready, isGhost)
-        );
-        break;
+      // case "Aram":
+      //   this.players.push(
+      //     new Player(uid, username, riotId, null, null, ready, isGhost)
+      //   );
+      //   break;
 
       case "Featured Modes":
         if (!isGhost && !championId)
           throw new Error("championId required for Featured Modes");
-        this.players.push(
-          new Player(uid, username, riotId, null, championId, ready, isGhost)
-        );
+        // this.players.push(
+        //   new Player(uid, username, riotId, null, championId, ready, isGhost)
+        // );
         break;
     }
+
+    let index = -1;
+    if (slotIndex) {
+      index = slotIndex;
+    } else index = this.players.findIndex((p) => p === null);
+    
+    console.log(index);
+    if (index === -1) throw new Error("Lobby is full");
+    this.players[index] = new Player(
+      uid,
+      username,
+      riotId,
+      position,
+      championId,
+      ready,
+      isGhost
+    );
     this.currentPlayers++;
   }
 
@@ -184,16 +194,16 @@ export class Lobby implements ILobby {
       this.players = [];
       this.state = LobbyState.CLOSED;
       this.currentPlayers = 0;
-      this.kickedPlayers.push(uid);
+      this.kickedPlayers = [];
       this.filter.positionsNeeded = [];
       return;
     }
-
-    const index = this.players.findIndex((p) => p.uid === uid);
+    const index = this.players.findIndex((p) => p && p.uid === uid);
     if (index === -1) throw new Error("Player not found");
+    const removed = this.players[index];
 
-    const removed = this.players.splice(index, 1)[0];
-    this.currentPlayers = Math.max(0, this.currentPlayers - 1);
+    this.players[index] = null;
+    this.currentPlayers--;
 
     if (this.gameMap === "Summoner's Rift" && removed.position) {
       if (!this.filter.positionsNeeded.includes(removed.position)) {
@@ -201,28 +211,24 @@ export class Lobby implements ILobby {
       }
     }
 
-    if (!removed.isGhost && kicked) this.kickedPlayers.push(uid);
+    if (removed && !removed.isGhost && kicked) this.kickedPlayers.push(uid);
     else this.ghostCount--;
   }
 
   updateGhostPosition(ghostId: string, newPostion: string) {
     const index = this.players.findIndex((p) => p.uid === ghostId);
     const ghost = this.players[index];
-
     if (!this.filter.positionsNeeded.includes(newPostion)) {
       throw new Error(`Position ${newPostion} no longer available`);
     }
-
     if (this.gameMap === "Summoner's Rift" && ghost.position) {
       if (!this.filter.positionsNeeded.includes(ghost.position)) {
         this.filter.positionsNeeded.push(ghost.position);
       }
     }
-
     this.filter.positionsNeeded = this.filter.positionsNeeded.filter(
       (p) => p !== newPostion
     );
-
     ghost.position = newPostion;
   }
 
@@ -267,9 +273,10 @@ export class Lobby implements ILobby {
     lobby.ghostCount = data.ghostCount ?? 0;
     lobby.discordLink = data.discordLink ?? null;
 
-    lobby.players = (data.players ?? []).map(
-      (p: ILobbyPlayer) =>
-        new Player(
+    lobby.players = (data.players ?? []).map((p: ILobbyPlayer) => {
+      if (!p) return null;
+      else
+        return new Player(
           p.uid,
           p.username,
           p.riotId,
@@ -277,8 +284,8 @@ export class Lobby implements ILobby {
           p.championId ?? null,
           p.ready ?? false,
           p.isGhost ?? false
-        )
-    );
+        );
+    });
 
     return lobby;
   }

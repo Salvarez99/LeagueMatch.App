@@ -74,10 +74,11 @@ export class LobbyController {
       const hostId = req.query.hostId as string;
       const lobbyId = req.query.lobbyId as string;
 
-      const { ghostId, gameMap, position, championId } = req.body as IGhostData;
+      const { ghostId, index, gameMap, position, championId } = req.body as IGhostData;
 
       await lobbyService.addGhost(lobbyId, hostId, {
         ghostId,
+        index,
         gameMap,
         position,
         championId,

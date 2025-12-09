@@ -8,13 +8,12 @@ import { addGhost, updateGhost } from "@/types/ILobbyApiRequest";
 
 interface PlayerCardsProps {
   style: any;
-  players: ILobbyPlayer[];
+  players: (ILobbyPlayer | null)[];
   maxPlayers: number;
   isHost: boolean;
   onKick: (targetUid: string) => void;
   onUpdateChampion: (uid: string, championId: string) => void;
-  onAddGhost: (data: addGhost) => void;
-  onUpdateGhost: (data: updateGhost) => void;
+  onAddGhost: (slotNumber: number) => void;
 }
 
 export default function PlayerCards({
@@ -25,7 +24,6 @@ export default function PlayerCards({
   onKick,
   onUpdateChampion,
   onAddGhost,
-  onUpdateGhost,
 }: PlayerCardsProps) {
   const actualMaxPlayers: number = (maxPlayers ?? 5) - 1;
   const [selectedPlayerUid, setSelectedPlayerUid] = useState<string | null>(
@@ -42,6 +40,7 @@ export default function PlayerCards({
         return (
           <PlayerCard
             key={index}
+            slotIndex={index}
             isHost={isHost}
             player={player ?? null}
             isEmpty={!player}
@@ -50,7 +49,6 @@ export default function PlayerCards({
             onKick={onKick}
             onChampionSelect={onUpdateChampion}
             onAddGhost={onAddGhost}
-            onUpdateGhost={onUpdateGhost}
           />
         );
       })}
