@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { useState, useRef, useEffect, JSX } from "react";
 import Screen from "@/utils/dimensions";
+import { Ionicons } from "@expo/vector-icons";
 
 type RenderFn = (props: {
   setSelected: React.Dispatch<React.SetStateAction<string>>;
@@ -99,16 +100,16 @@ export default function BottomSheet({
               style={styles.backButton}
               onPress={() => setSelected(initial)}
             >
-              <Text style={styles.headerText}> Back </Text>
+              <Ionicons name="arrow-back" size={26} color="white" />
             </TouchableOpacity>
           )}
 
           {/*Header Title*/}
-          <Text>{selected}</Text>
+          {/* <Text>{selected}</Text> */}
 
           {/*Close Icon*/}
           <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-            <Text style={styles.headerText}> X </Text>
+            <Ionicons name={"close"} size={26} color="white"></Ionicons>
           </TouchableOpacity>
         </View>
 
@@ -173,7 +174,5 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    paddingHorizontal: 20,
-    paddingTop: 10,
   },
 });

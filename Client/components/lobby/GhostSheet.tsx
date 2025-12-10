@@ -1,82 +1,82 @@
-// components/modals/GhostModal.tsx
-import React, { useState } from "react";
-import { Modal, View, Text, TouchableOpacity, StyleSheet } from "react-native";
+// components/modals/GhostSheet.tsx
+import React, { useState, useEffect } from "react";
+import { View, Text, TouchableOpacity } from "react-native";
 import type { addGhost } from "@/types/ILobbyApiRequest";
 import { styles } from "./styles/GhostModalStyle";
 
-interface GhostModalProps {
-  visible: boolean;
+interface GhostSheetProps {
   gameMap: string;
   slotIndex: number | null;
   onSubmit: (data: addGhost) => void;
-  onClose: () => void;
-
-  // Optional future: editing a ghost
+  onBack: () => void;      // go to base screen
+  onExit: () => void;      // close sheet entirely
   initialGhostData?: addGhost;
 }
 
-export default function GhostModal({
-  visible,
+export default function GhostSheet({
   gameMap,
   slotIndex,
   onSubmit,
-  onClose,
+  onBack,
+  onExit,
   initialGhostData,
-}: GhostModalProps) {
+}: GhostSheetProps) {
   const isEditing = Boolean(initialGhostData);
 
-  // Modal steps:
-  // step 0 = ask if they want to add a ghost
-  // step 1 = show ghost form
+  // step 0 = confirm add
+  // step 1 = ghost form
   const [step, setStep] = useState(0);
 
-  // State for ghost data
   const [position, setPosition] = useState<string | null>(
     initialGhostData?.position ?? null
   );
 
+  // Reset state whenever the sheet is re-opened
+  useEffect(() => {
+    setStep(0);
+    setPosition(initialGhostData?.position ?? null);
+  }, [slotIndex]);
+
   //------------------------------------------------------
   // HANDLERS
   //------------------------------------------------------
+
   const handleConfirm = () => setStep(1);
 
   const handleSubmit = () => {
     if (slotIndex === null) return;
-    console.log(slotIndex)
+
     const ghostPayload: addGhost = {
-      // slotIndex,
       ghostId: "Test Ghost",
       index: slotIndex + 1,
       gameMap,
       position: position ?? undefined,
-      // later you can add championId, name, rank, etc.
     };
 
     onSubmit(ghostPayload);
+    onBack(); // return to the base bottom sheet
   };
 
-  console.log(gameMap);
-
   const handleCancel = () => {
-    setStep(0); // reset steps for next time
+    setStep(0);
     setPosition(null);
-    onClose();
+    onBack(); // Bring user back to base menu
   };
 
   //------------------------------------------------------
-  // UI COMPONENTS
+  // UI STEPS
   //------------------------------------------------------
 
   const renderConfirmationStep = () => (
     <View style={styles.modalBody}>
       <Text style={styles.title}>
-        {isEditing ? "Update Ghost?" : "Add a Ghost to this Slot?"}
+        {isEditing ? "Update Ghost?" : "Add a Ghost?"}
       </Text>
 
       <Text style={styles.text}>
         {isEditing
           ? "Would you like to update this ghost's details?"
-          : "Would you like to add a ghost player to this empty slot?"}
+          : "Would you like to add a ghost player to this slot?"}
       </Text>
 
       <View style={styles.row}>
@@ -96,9 +96,7 @@ export default function GhostModal({
 
     return (
       <View style={styles.modalBody}>
-        <Text style={styles.title}>
-          {isEditing ? "Edit Ghost" : "Ghost Details"}
-        </Text>
+        <Text style={styles.title}>{isEditing ? "Edit Ghost" : "Ghost Details"}</Text>
 
         {/* POSITION (SR ONLY) */}
         {isSR && (
@@ -124,8 +122,6 @@ export default function GhostModal({
           </>
         )}
 
-        {/* LATER: Add champion picker, invite friend, nickname, etc. */}
-
         <View style={[styles.row, { marginTop: 20 }]}>
           <TouchableOpacity style={styles.cancelButton} onPress={handleCancel}>
             <Text style={styles.buttonText}>Cancel</Text>
@@ -148,12 +144,8 @@ export default function GhostModal({
   //------------------------------------------------------
 
   return (
-    <Modal transparent visible={visible} animationType="fade">
-      <View style={styles.overlay}>
-        <View style={styles.modalContainer}>
-          {step === 0 ? renderConfirmationStep() : renderFormStep()}
-        </View>
-      </View>
-    </Modal>
+    <View style={{ flex: 1 }}>
+      {step === 0 ? renderConfirmationStep() : renderFormStep()}
+    </View>
   );
 }

@@ -58,7 +58,7 @@ export default function PlayerCard({
         <TouchableOpacity
           style={[styles.playerCard, styles.emptySlot]}
           onPress={() => {
-            console.log(slotIndex);
+            // console.log(slotIndex);
             if (isHost) onAddGhost(slotIndex);
           }}
         >

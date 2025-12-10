@@ -3,13 +3,14 @@ import HostCard from "@/components/common/HostCard";
 import DiscordButton from "@/components/lobby/DiscordButton";
 import LobbyButtons from "@/components/lobby/LobbyButtons";
 import PlayerCards from "@/components/lobby/PlayerCards";
-import GhostModal from "@/components/lobby/GhostModal";
+import GhostSheet from "@/components/lobby/GhostSheet";
 import BottomSheet from "@/components/common/BottomSheet";
+import SheetOptionButton from "@/components/common/SheetOptionButton";
+import { Image } from "react-native";
 import { styles } from "@/styles/lobbyStyle";
 
 import { Stack } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { TouchableOpacity } from "react-native";
 
 // Custom hooks
 import { useLobbyActions } from "@/hooks/useLobbyActions";
@@ -21,6 +22,7 @@ import { useAuth } from "@/context/authContext";
 import { addGhost, updateGhost } from "@/types/ILobbyApiRequest";
 
 import { useState } from "react";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function Lobby() {
   const { appUser } = useAuth();
@@ -28,8 +30,6 @@ export default function Lobby() {
   const title = `Lobby`;
 
   const [ghostSlotIndex, setGhostSlotIndex] = useState<number | null>(null);
-  const [slotIndex, setSlotIndex] = useState<number | null>(null);
-  const [ghostModalOpen, setGhostModalOpen] = useState<boolean>(false);
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useState<boolean>(false);
 
   const { lobby } = useLobbyListener(lobbyId, currentUid);
@@ -60,7 +60,7 @@ export default function Lobby() {
   function handleRequestAddGhost(slotIndex: number) {
     // if (!slotIndex) return;
     setGhostSlotIndex(slotIndex);
-    setGhostModalOpen(true);
+    setIsBottomSheetOpen(true);
   }
 
   function handleAddGhost(data: addGhost) {
@@ -68,7 +68,7 @@ export default function Lobby() {
     // 2. Apply map logic (SR requires position)
     // 3. Call onAddGhost from useLobbyActions
     onAddGhost(data);
-    setGhostModalOpen(false);
+    setIsBottomSheetOpen(false);
   }
 
   const handleUpdateGhost = (data: updateGhost) => {
@@ -105,32 +105,12 @@ export default function Lobby() {
           onAddGhost={handleRequestAddGhost}
         />
 
-        <GhostModal
-          visible={ghostModalOpen}
-          slotIndex={ghostSlotIndex}
-          gameMap={gameMap}
-          onSubmit={handleAddGhost}
-          onClose={() => setGhostModalOpen(false)}
-        />
-
         {/* DISCORD BUTTON */}
         <DiscordButton
           isHost={lobby.hostId === currentUid}
           discordLink={lobby.discordLink}
           onUpdateLink={updateDiscordLink}
         />
-        <TouchableOpacity
-          style={{
-            padding: 12,
-            backgroundColor: "purple",
-            borderRadius: 6,
-            alignSelf: "center",
-            marginTop: 20,
-          }}
-          onPress={() => setIsBottomSheetOpen(true)}
-        >
-          <Text>Open Bottom Sheet</Text>
-        </TouchableOpacity>
 
         {/* READY & LEAVE BUTTONS */}
         <LobbyButtons
@@ -148,41 +128,52 @@ export default function Lobby() {
           initial="base"
           renders={{
             base: ({ setSelected }) => (
-              <>
-                {/* <TouchableOpacity onPress={() => setSelected("friends")}>
-                  <Text style={{ color: "white", padding: 10 }}>
-                    Invite Friend
-                  </Text>
-                </TouchableOpacity>
+              <View style={{ padding: 16, width: "100%" }}>
+                <SheetOptionButton
+                  onPress={() => setSelected("friends")}
+                  title="Invite Friend"
+                  subtitle="Choose from your friends list"
+                  icon={<Ionicons name="people" size={24} color="white" />}
+                />
 
-                <TouchableOpacity onPress={() => setSelected("recent")}>
-                  <Text style={{ color: "white", padding: 10 }}>
-                    Recent Players
-                  </Text>
-                </TouchableOpacity>
+                <SheetOptionButton
+                  onPress={() => setSelected("recent")}
+                  title="Recent Players"
+                  subtitle="Pick someone you played with"
+                  icon={<Ionicons name="time" size={26} color="white" />}
+                />
 
-                <TouchableOpacity onPress={() => setSelected("ghost")}>
-                  <Text style={{ color: "white", padding: 10 }}>
-                    Add Ghost Player
-                  </Text>
-                </TouchableOpacity> */}
-                <TouchableOpacity onPress={() => setSelected("text")}>
-                  <Text style={{ color: "white", padding: 10 }}>
-                    Go to text
-                  </Text>
-                </TouchableOpacity>
-              </>
+                <SheetOptionButton
+                  onPress={() => setSelected("ghost")}
+                  title="Add Ghost Player"
+                  subtitle="Create a placeholder profile"
+                  icon={
+                    <Image
+                      source={require("@/assets/images/ghost.png")}
+                      style={{
+                        width: 25,
+                        height: 25,
+                        resizeMode: "contain",
+                        alignSelf: "center",
+                        marginVertical: 8,
+                      }}
+                    />
+                  }
+                />
+              </View>
             ),
-            text: () => {
-              return (
-                <View>
-                  <Text>Hello</Text>
-                </View>
-              );
-            },
+
             // friends: () => <FriendList />,
             // recent: () => <RecentPlayers />,
-            // ghost: () => <GhostForm />,
+            ghost: ({ setSelected }) => (
+              <GhostSheet
+                gameMap={gameMap}
+                slotIndex={ghostSlotIndex}
+                onSubmit={handleAddGhost}
+                onBack={() => setSelected("base")}
+                onExit={() => setIsBottomSheetOpen(false)}
+              />
+            ),
           }}
         />
       </SafeAreaView>
