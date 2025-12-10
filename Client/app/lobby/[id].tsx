@@ -4,9 +4,12 @@ import DiscordButton from "@/components/lobby/DiscordButton";
 import LobbyButtons from "@/components/lobby/LobbyButtons";
 import PlayerCards from "@/components/lobby/PlayerCards";
 import GhostModal from "@/components/lobby/GhostModal";
+import BottomSheet from "@/components/common/BottomSheet";
 import { styles } from "@/styles/lobbyStyle";
+
 import { Stack } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { TouchableOpacity } from "react-native";
 
 // Custom hooks
 import { useLobbyActions } from "@/hooks/useLobbyActions";
@@ -23,19 +26,20 @@ export default function Lobby() {
   const { appUser } = useAuth();
   const { lobbyId, currentUid, gameMap, gameMode } = useLobbyParams();
   const title = `Lobby`;
-  
+
   const [ghostSlotIndex, setGhostSlotIndex] = useState<number | null>(null);
   const [slotIndex, setSlotIndex] = useState<number | null>(null);
   const [ghostModalOpen, setGhostModalOpen] = useState<boolean>(false);
-  
+  const [isBottomSheetOpen, setIsBottomSheetOpen] = useState<boolean>(false);
+
   const { lobby } = useLobbyListener(lobbyId, currentUid);
   if (!lobby)
     return (
-  <View>
+      <View>
         <Text>Loading...</Text>
       </View>
     );
-    
+
   const canAddGhost = lobby.state === "IDLE" || lobby.state === "FINISHED";
   const host: ILobbyPlayer = lobby.players[0]!;
   const players = lobby.players;
@@ -52,7 +56,6 @@ export default function Lobby() {
     onAddGhost,
     onUpdateGhost,
   } = useLobbyActions(lobbyId, currentUid);
-
 
   function handleRequestAddGhost(slotIndex: number) {
     // if (!slotIndex) return;
@@ -72,7 +75,6 @@ export default function Lobby() {
     if (!canAddGhost) return console.log("Cannot update ghost right now");
     onUpdateGhost(data);
   };
-
 
   return (
     <>
@@ -117,6 +119,18 @@ export default function Lobby() {
           discordLink={lobby.discordLink}
           onUpdateLink={updateDiscordLink}
         />
+        <TouchableOpacity
+          style={{
+            padding: 12,
+            backgroundColor: "purple",
+            borderRadius: 6,
+            alignSelf: "center",
+            marginTop: 20,
+          }}
+          onPress={() => setIsBottomSheetOpen(true)}
+        >
+          <Text>Open Bottom Sheet</Text>
+        </TouchableOpacity>
 
         {/* READY & LEAVE BUTTONS */}
         <LobbyButtons
@@ -126,6 +140,50 @@ export default function Lobby() {
           onReady={onReady}
           onSearch={onSearch}
           status={currentPlayer!.ready}
+        />
+
+        <BottomSheet
+          isOpen={isBottomSheetOpen}
+          onClose={() => setIsBottomSheetOpen(false)}
+          initial="base"
+          renders={{
+            base: ({ setSelected }) => (
+              <>
+                {/* <TouchableOpacity onPress={() => setSelected("friends")}>
+                  <Text style={{ color: "white", padding: 10 }}>
+                    Invite Friend
+                  </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity onPress={() => setSelected("recent")}>
+                  <Text style={{ color: "white", padding: 10 }}>
+                    Recent Players
+                  </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity onPress={() => setSelected("ghost")}>
+                  <Text style={{ color: "white", padding: 10 }}>
+                    Add Ghost Player
+                  </Text>
+                </TouchableOpacity> */}
+                <TouchableOpacity onPress={() => setSelected("text")}>
+                  <Text style={{ color: "white", padding: 10 }}>
+                    Go to text
+                  </Text>
+                </TouchableOpacity>
+              </>
+            ),
+            text: () => {
+              return (
+                <View>
+                  <Text>Hello</Text>
+                </View>
+              );
+            },
+            // friends: () => <FriendList />,
+            // recent: () => <RecentPlayers />,
+            // ghost: () => <GhostForm />,
+          }}
         />
       </SafeAreaView>
     </>
