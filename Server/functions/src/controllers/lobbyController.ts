@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { lobbyService } from "../services/lobbyService";
+import { IGhostData } from "../interfaces/IGhostData";
 
 export class LobbyController {
   async create(req: Request, res: Response) {
@@ -63,6 +64,71 @@ export class LobbyController {
       return res.status(500).json({
         success: false,
         message: "Error updating ready status",
+        error: err.message,
+      });
+    }
+  }
+
+  async addGhost(req: Request, res: Response) {
+    try {
+      const hostId = req.query.hostId as string;
+      const lobbyId = req.query.lobbyId as string;
+
+      const { ghostId, index, gameMap, position, championId } = req.body as IGhostData;
+
+      await lobbyService.addGhost(lobbyId, hostId, {
+        ghostId,
+        index,
+        gameMap,
+        position,
+        championId,
+      });
+
+      return res.status(200).json({
+        success: true,
+        message: "Ghost added successfully",
+      });
+    } catch (err: any) {
+      if (err.statusCode) {
+        return res.status(err.statusCode).json({
+          success: false,
+          message: err.message,
+        });
+      }
+      return res.status(500).json({
+        success: false,
+        message: "Error updating lobby state to SEARCHING",
+        error: err.message,
+      });
+    }
+  }
+
+  async updateGhost(req: Request, res: Response) {
+    try {
+      const lobbyId = req.query.lobbyId as string;
+      const hostId = req.query.hostId as string;
+      const { ghostId, position, championId } = req.body;
+
+      await lobbyService.updateGhost(lobbyId, hostId, {
+        ghostId,
+        position,
+        championId,
+      });
+
+      return res.status(200).json({
+        success: true,
+        message: "Ghost updated successfully",
+      });
+    } catch (err: any) {
+      if (err.statusCode) {
+        return res.status(err.statusCode).json({
+          success: false,
+          message: err.message,
+        });
+      }
+      return res.status(500).json({
+        success: false,
+        message: "Error updating ghost",
         error: err.message,
       });
     }
@@ -167,9 +233,8 @@ export class LobbyController {
 
   async getAvailableLobbies(req: Request, res: Response) {
     try {
-      const { desiredRole } = req.body;
 
-      const lobbies = await lobbyService.getAvailableLobbies(desiredRole);
+      const lobbies = await lobbyService.getAvailableLobbies();
 
       return res.status(200).json({
         success: true,

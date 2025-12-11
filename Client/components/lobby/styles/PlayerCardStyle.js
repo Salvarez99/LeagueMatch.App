@@ -48,4 +48,20 @@ export const styles = StyleSheet.create({
     fontWeight: "700",
     fontSize: 14,
   },
+  plusIcon: {
+    fontSize: 40,
+    fontWeight: "bold",
+    color: "white",
+  },
+  emptySlot: {
+    justifyContent: "center",
+    alignItems: "center",
+    borderColor: "#555",
+    borderStyle: "dashed",
+  },
+  emptyText: {
+    marginTop: 6,
+    color: "#aaa",
+    fontSize: 14,
+  },
 });

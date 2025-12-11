@@ -48,4 +48,19 @@ export const lobbyApi = {
       `/lobby_kick?lobbyId=${lobbyId}&hostId=${hostId}`,
       data
     ),
+  addGhost: (lobbyId: string, hostId: string, data: ILobbyRequest.addGhost) =>
+    axiosClient.post<ILobbyResponse.Generic>(
+      `/lobby_addGhost?lobbyId=${lobbyId}&hostId=${hostId}`,
+      data
+    ),
+
+  updateGhost: (
+    lobbyId: string,
+    hostId: string,
+    data: ILobbyRequest.updateGhost
+  ) =>
+    axiosClient.patch<ILobbyResponse.Generic>(
+      `/lobby_updateGhost?lobbyId=${lobbyId}&hostId=${hostId}`,
+      data
+    ),
 };

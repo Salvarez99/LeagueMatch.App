@@ -27,3 +27,16 @@ export interface UpdateChampion {
 export interface Kick {
   uid: string;
 }
+
+export interface addGhost {
+  ghostId: string;
+  index:number;
+  gameMap: string;
+  position?: string;
+  championId?: string;
+}
+export interface updateGhost {
+  ghostId: string;
+  position: string | null;
+  championId: string | null;
+}

@@ -5,4 +5,5 @@ export interface ILobbyPlayer {
     position: string | null;
     championId: string | null;
     ready: boolean;
+    isGhost: boolean;
 }

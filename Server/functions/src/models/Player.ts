@@ -3,10 +3,11 @@ export class Player implements ILobbyPlayer {
   constructor(
     public uid: string,
     public username:string,
-    public riotId: string,
+    public riotId: string | null = null,
     public position: string | null = null,
     public championId: string | null = null,
-    public ready: boolean = false
+    public ready: boolean = false,
+    public isGhost: boolean = false,
   ) {}
 
   toObject(): ILobbyPlayer {
@@ -17,6 +18,7 @@ export class Player implements ILobbyPlayer {
       position: this.position,
       championId: this.championId,
       ready: this.ready,
+      isGhost: this.isGhost,
     };
   }
 }

@@ -12,8 +12,9 @@ export interface ILobby {
   // isActive: boolean;
   state: LobbyState;
   kickedPlayers: string[];
-  players: ILobbyPlayer[];
+  players: (ILobbyPlayer | null)[];
   filter: ILobbyFilter;
+  ghostCount:number;
   maxPlayers: number;
-  discordLink?: string | null;
+  discordLink: string | null;
 }
