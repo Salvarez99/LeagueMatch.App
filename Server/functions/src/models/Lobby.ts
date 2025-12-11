@@ -33,7 +33,6 @@ export class Lobby implements ILobby {
     hostPosition: string | null = null,
     championId: string | null = null,
     ranksFilter: string[] | null = [],
-    ghostCount: number = 0
   ) {
     if (!hostId || !gameMap)
       throw new Error("hostId and gameMap are required21321312");
@@ -155,25 +154,20 @@ export class Lobby implements ILobby {
         break;
 
       case "Aram":
-        this.players.push(
-          new Player(uid, username, riotId, null, null, ready, isGhost)
-        );
-        break;
+        position = null;
+        championId = null;
 
       case "Featured Modes":
         if (!isGhost && !championId)
           throw new Error("championId required for Featured Modes");
-        // this.players.push(
-        //   new Player(uid, username, riotId, null, championId, ready, isGhost)
-        // );
         break;
     }
 
     let index = -1;
-    if (slotIndex) {
+    if (slotIndex !== null) {
       index = slotIndex;
     } else index = this.players.findIndex((p) => p === null);
-    
+
     console.log(index);
     if (index === -1) throw new Error("Lobby is full");
     this.players[index] = new Player(

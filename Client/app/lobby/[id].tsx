@@ -144,7 +144,24 @@ export default function Lobby() {
                 />
 
                 <SheetOptionButton
-                  onPress={() => setSelected("ghost")}
+                  onPress={() => {
+                    if (gameMap === "Summoner's Rift") {
+                      setSelected("ghost"); // open the form screen
+                    } else {
+                      console.log(ghostSlotIndex)
+                      if (ghostSlotIndex !== null) {
+                        const ghostPayload: addGhost = {
+                          ghostId: "Test Ghost",
+                          index: ghostSlotIndex + 1,
+                          gameMap,
+                          position: undefined,
+                        };
+                        handleAddGhost(ghostPayload); // auto-submit (ARAM, etc.)
+                        setSelected("Base");
+                        setIsBottomSheetOpen(false);
+                      }
+                    }
+                  }}
                   title="Add Ghost Player"
                   subtitle="Create a placeholder player"
                   icon={
@@ -165,13 +182,12 @@ export default function Lobby() {
 
             // friends: () => <FriendList />,
             // recent: () => <RecentPlayers />,
-            ghost: ({ setSelected }) => (
+            ghost: ({ setSelected, selected }) => (
               <GhostSheet
                 gameMap={gameMap}
                 slotIndex={ghostSlotIndex}
                 onSubmit={handleAddGhost}
                 onBack={() => setSelected("base")}
-                onExit={() => setIsBottomSheetOpen(false)}
               />
             ),
           }}
