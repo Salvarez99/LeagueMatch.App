@@ -146,7 +146,7 @@ export default function Lobby() {
                 <SheetOptionButton
                   onPress={() => setSelected("ghost")}
                   title="Add Ghost Player"
-                  subtitle="Create a placeholder profile"
+                  subtitle="Create a placeholder player"
                   icon={
                     <Image
                       source={require("@/assets/images/ghost.png")}

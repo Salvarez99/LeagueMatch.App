@@ -154,11 +154,11 @@ export class Lobby implements ILobby {
         );
         break;
 
-      // case "Aram":
-      //   this.players.push(
-      //     new Player(uid, username, riotId, null, null, ready, isGhost)
-      //   );
-      //   break;
+      case "Aram":
+        this.players.push(
+          new Player(uid, username, riotId, null, null, ready, isGhost)
+        );
+        break;
 
       case "Featured Modes":
         if (!isGhost && !championId)

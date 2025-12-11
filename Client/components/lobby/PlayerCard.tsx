@@ -106,6 +106,9 @@ export default function PlayerCard({
           >
             {player?.isGhost ? (
               <>
+              <Text style={styles.defaultTextStyle}>
+                  Name: {player?.username}
+                </Text>
                 <Image
                   source={require("@/assets/images/ghost.png")}
                   style={{
