@@ -35,11 +35,7 @@ export class UserService {
   }
 
   // Update user with Riot info
-  async updateUser(
-    id: string | null,
-    username: string | null,
-    riotId: string
-  ) {
+  async updateUser(id: string | null, username: string | null, riotId: string) {
     if (!riotId) throw new Error.UnauthorizedError("riotId is required");
     if (!id && !username)
       throw new Error.UnauthorizedError("Either id or username is required");
@@ -91,6 +87,12 @@ export class UserService {
     return {
       ...updatedUser,
     };
+  }
+  acceptFriendRequest(uid: string, incomingUid: string) {
+    if (!uid || !incomingUid)
+      throw new Error.BadRequestError("Missing uid or incomingUid fields");
+
+    
   }
 }
 

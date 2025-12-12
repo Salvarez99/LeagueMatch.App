@@ -31,6 +31,31 @@ export class UserController {
     }
   }
 
+  async acceptFriendRequest(req: Request, res: Response) {
+    try {
+      const uid = req.query.uid as string;
+      const incomingUid = req.query.incomingUid as string;
+
+      await userService.acceptFriendRequest(uid, incomingUid);
+
+      return res.status(200).json({
+        success: true,
+        message: "Successfully added new friend"
+      });
+    } catch (err: any) {
+      if (err.statusCode) {
+        return res.status(err.statusCode).json({
+          success: false,
+          message: err.message,
+        });
+      }
+      return res.status(400).json({
+        success: false,
+        message: err.message,
+      });
+    }
+  }
+
   // POST /updateUser
   async updateUser(req: Request, res: Response) {
     try {

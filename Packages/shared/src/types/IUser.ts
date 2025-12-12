@@ -10,4 +10,7 @@ export interface IUser {
   friendsList: Friend[];
   incomingRequests: FriendRequest[];
   outgoingRequests: FriendRequest[];
+  availability: "Online" | "Away" | "Offline";
+  statusMessage: string;
+  
 }
