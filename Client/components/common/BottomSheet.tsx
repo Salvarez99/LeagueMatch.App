@@ -4,8 +4,9 @@ import {
   View,
   StyleSheet,
   TouchableOpacity,
-  Text,
   PanResponder,
+  Keyboard,
+  Platform,
 } from "react-native";
 import { useState, useRef, useEffect, JSX } from "react";
 import Screen from "@/utils/dimensions";
@@ -14,6 +15,7 @@ import { Ionicons } from "@expo/vector-icons";
 type RenderFn = (props: {
   setSelected: React.Dispatch<React.SetStateAction<string>>;
   selected: string;
+  registerScrollable?: (ref: any) => void;
 }) => JSX.Element;
 
 interface BottomSheetProps {
@@ -31,27 +33,65 @@ export default function BottomSheet({
   initial = "base",
   height = Screen.height * 0.45,
 }: BottomSheetProps) {
-  /**
-   * currentRender, setCurrentRender = useState(baseRender)
-   * selected, setSelected = useState("base") // pass in setSelected to "base" render in map so
-   * when option is clicked will set to another string and then render that function if in map
-   *
-   */
-  const translateY = useRef(new Animated.Value(height)).current;
+  const sheetTranslateY = useRef(new Animated.Value(height)).current;
+  const keyboardShift = useRef(new Animated.Value(0)).current;
+
   const [selected, setSelected] = useState<string>(initial);
   const CurrentRender = renders[selected];
 
-  // Drag gesture to close sheet
+  const scrollOffset = useRef(0);
+  const scrollRef = useRef<any>(null);
+
+  // Allow children to register FlatList/ScrollView
+  const registerScrollable = (ref: any) => {
+    scrollRef.current = ref;
+  };
+
+  // -------------------------------------------
+  // KEYBOARD LISTENERS (WORKS ON IOS + ANDROID)
+  // -------------------------------------------
+  useEffect(() => {
+    const show = Keyboard.addListener("keyboardDidShow", (e) => {
+      Animated.timing(keyboardShift, {
+        toValue: e.endCoordinates.height - 40, // adjust
+        duration: 220,
+        useNativeDriver: false,
+      }).start();
+    });
+
+    const hide = Keyboard.addListener("keyboardDidHide", () => {
+      Animated.timing(keyboardShift, {
+        toValue: 0,
+        duration: 220,
+        useNativeDriver: false,
+      }).start();
+    });
+
+    return () => {
+      show.remove();
+      hide.remove();
+    };
+  }, []);
+
+  // -------------------------------------------
+  // DRAG HANDLER — ONLY WHEN SCROLLTOP = 0
+  // -------------------------------------------
   const panResponder = useRef(
     PanResponder.create({
-      onMoveShouldSetPanResponder: (_, gesture) => Math.abs(gesture.dy) > 5,
-      onPanResponderMove: (_, gesture) =>
-        gesture.dy > 0 && translateY.setValue(gesture.dy),
+      onMoveShouldSetPanResponder: (_, gesture) => {
+        // Only allow drag if user is dragging DOWN and scroll is at top
+        return gesture.dy > 5 && scrollOffset.current <= 0;
+      },
+      onPanResponderMove: (_, gesture) => {
+        if (gesture.dy > 0) {
+          sheetTranslateY.setValue(gesture.dy);
+        }
+      },
       onPanResponderRelease: (_, gesture) => {
         if (gesture.dy > 120) {
           onClose();
         } else {
-          Animated.timing(translateY, {
+          Animated.timing(sheetTranslateY, {
             toValue: 0,
             duration: 200,
             useNativeDriver: true,
@@ -61,40 +101,50 @@ export default function BottomSheet({
     })
   ).current;
 
-  // Reset selected render when closing
+  // -------------------------------------------
+  // OPEN / CLOSE ANIMATION
+  // -------------------------------------------
   useEffect(() => {
-    if (!isOpen) setSelected(initial);
-  }, [isOpen]);
-
-  // Opening/closing animation
-  useEffect(() => {
-    Animated.timing(translateY, {
+    Animated.timing(sheetTranslateY, {
       toValue: isOpen ? 0 : height,
       duration: 300,
       useNativeDriver: true,
     }).start();
+
+    if (!isOpen) {
+      setSelected(initial);
+    }
   }, [isOpen]);
+
+  // Listen scroll offset from children lists
+  const onScroll = (y: number) => {
+    scrollOffset.current = y;
+  };
 
   return (
     <>
-      {/**Background transparent overlay */}
       {isOpen && (
         <Pressable style={styles.backdrop} onPress={onClose}>
           <View />
         </Pressable>
       )}
 
-      {/**Bottomsheet container */}
       <Animated.View
-        {...panResponder.panHandlers}
-        style={[styles.sheet, { height, transform: [{ translateY }] }]}
+        style={[
+          styles.sheet,
+          {
+            height,
+            transform: [
+              { translateY: sheetTranslateY },
+              { translateY: Animated.multiply(keyboardShift, -1) },
+            ],
+          },
+        ]}
       >
-        {/**Header Container*/}
-        <View style={styles.header}>
-          {/**Handble bar */}
+        {/** HEADER BAR */}
+        <View style={styles.header} {...panResponder.panHandlers}>
           <View style={styles.handle} />
 
-          {/**Back Icon conditional*/}
           {selected !== initial && (
             <TouchableOpacity
               style={styles.backButton}
@@ -104,21 +154,19 @@ export default function BottomSheet({
             </TouchableOpacity>
           )}
 
-          {/*Header Title*/}
-          {/* <Text>{selected}</Text> */}
-
-          {/*Close Icon*/}
           <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-            <Ionicons name={"close"} size={26} color="white"></Ionicons>
+            <Ionicons name="close" size={26} color="white" />
           </TouchableOpacity>
         </View>
 
-        {/**Content container */}
         <View style={styles.content}>
-          {/**Conditionally render content if selected is in the renders map */}
-          {/** {selected in renders && renders[selected]} */}
           {CurrentRender && (
-            <CurrentRender setSelected={setSelected} selected={selected} />
+            <CurrentRender
+              setSelected={setSelected}
+              selected={selected}
+              registerScrollable={registerScrollable}
+              onScroll={onScroll}
+            />
           )}
         </View>
       </Animated.View>
