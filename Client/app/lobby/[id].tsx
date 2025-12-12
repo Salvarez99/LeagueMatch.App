@@ -57,36 +57,36 @@ export const dummyFriends: Friend[] = [
     availability: "Online",
     statusMessage: "Down to queue 🧠💥",
   },
-  // {
-  //   username: "JungleKing",
-  //   availability: "Online",
-  //   statusMessage: "Ganking all lanes 🌿",
-  // },
-  // {
-  //   username: "AFKADC",
-  //   availability: "Away",
-  //   statusMessage: "Be right back!",
-  // },
-  // {
-  //   username: "SupportiveSoul",
-  //   availability: "Offline",
-  //   statusMessage: "Healing IRL 💖",
-  // },
-  // {
-  //   username: "RiftRunner",
-  //   availability: "Online",
-  //   statusMessage: "Let's climb together!",
-  // },
-  // {
-  //   username: "SneakyFox",
-  //   availability: "Away",
-  //   statusMessage: "Lurking in the shadows...",
-  // },
-  // {
-  //   username: "LagMaster",
-  //   availability: "Offline",
-  //   statusMessage: "Disconnected again 📴",
-  // },
+  {
+    username: "JungleKing",
+    availability: "Online",
+    statusMessage: "Ganking all lanes 🌿",
+  },
+  {
+    username: "AFKADC",
+    availability: "Away",
+    statusMessage: "Be right back!",
+  },
+  {
+    username: "SupportiveSoul",
+    availability: "Offline",
+    statusMessage: "Healing IRL 💖",
+  },
+  {
+    username: "RiftRunner",
+    availability: "Online",
+    statusMessage: "Let's climb together!",
+  },
+  {
+    username: "SneakyFox",
+    availability: "Away",
+    statusMessage: "Lurking in the shadows...",
+  },
+  {
+    username: "LagMaster",
+    availability: "Offline",
+    statusMessage: "Disconnected again 📴",
+  },
 ];
 
 export default function Lobby() {
@@ -146,9 +146,6 @@ export default function Lobby() {
   }
 
   function handleAddGhost(data: addGhost) {
-    // 1. Validate lobby state
-    // 2. Apply map logic (SR requires position)
-    // 3. Call onAddGhost from useLobbyActions
     onAddGhost(data);
     setSelected("base");
     // close the sheet imperatively
