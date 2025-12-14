@@ -88,11 +88,30 @@ export class UserService {
       ...updatedUser,
     };
   }
-  acceptFriendRequest(uid: string, incomingUid: string) {
+
+  async acceptFriendRequest(uid: string, incomingUid: string) {
     if (!uid || !incomingUid)
       throw new Error.BadRequestError("Missing uid or incomingUid fields");
 
-    
+    const userDocRef = this.usersRef.doc(uid);
+    const incomingUserDocRef = this.usersRef.doc(incomingUid);
+
+    await db.runTransaction(async (tx) => {
+      const userSnap = await tx.get(userDocRef);
+      const incomingUserSnap = await tx.get(incomingUserDocRef);
+
+      if (!userSnap.exists) throw new Error.NotFoundError("User not found");
+      if (!incomingUserSnap.exists)
+        throw new Error.NotFoundError("Incoming user not found");
+
+      const user = User.fromFirestore(userSnap);
+      const incomingUser = User.fromFirestore(incomingUserSnap);
+
+      User.acceptIncomingRequest(user, incomingUser);
+
+      tx.set(userDocRef, user.toJSON(), { merge: true });
+      tx.set(incomingUserDocRef, incomingUser.toJSON(), { merge: true });
+    });
   }
 }
 

@@ -1,6 +1,6 @@
 import { Friend, FriendRequest, IUser } from "@leaguematch/shared";
 import { IUserData } from "../interfaces/IUserData";
-import { stat } from "fs";
+import type { DocumentData, DocumentSnapshot } from "firebase-admin/firestore";
 
 export class User implements IUserData {
   id: string;
@@ -29,11 +29,13 @@ export class User implements IUserData {
     this.friendsList = [];
     this.incomingRequests = [];
     this.outgoingRequests = [];
+    this.availability = "Online";
+    this.statusMessage = "";
   }
 
   static acceptIncomingRequest(user: User, incomingUser: User) {
     const index = user.incomingRequests.findIndex(
-      (friend) => friend.uid === user.id
+      (friend) => friend.uid === incomingUser.id
     );
     if (index === -1)
       throw new Error("Friend uid not found in incomingRequests");
@@ -42,13 +44,46 @@ export class User implements IUserData {
       (friend) => friend.uid !== incomingUser.id
     );
 
+    incomingUser.outgoingRequests = incomingUser.outgoingRequests.filter(
+      (req) => req.uid !== user.id
+    );
+    
     const newFriend: Friend = {
       username: incomingUser.username,
       uid: incomingUser.id,
       availability: incomingUser.availability,
       statusMessage: incomingUser.statusMessage,
     };
+
+    const userAsFriend: Friend = {
+      username: user.username,
+      uid: user.id,
+      availability: user.availability,
+      statusMessage: user.statusMessage,
+    };
+
     user.friendsList.push(newFriend);
+    incomingUser.friendsList.push(userAsFriend);
+  }
+
+  static fromFirestore(snap: DocumentSnapshot): User {
+    const data = snap.data();
+    const user = Object.create(User.prototype) as User;
+
+    // Assign fields WITHOUT running constructor logic
+    user.id = snap.id;
+    user.username = data.username;
+    user.email = data.email;
+    user.puuid = data.puuid;
+    user.riotId = data.riotId;
+    user.rank = data.rank;
+    user.preferredRoles = data.preferredRoles;
+    user.friendsList = data.friendsList;
+    user.incomingRequests = data.incomingRequests;
+    user.outgoingRequests = data.outgoingRequests;
+    user.statusMessage = data.statusMessage;
+
+    return user;
   }
 
   toJSON() {
