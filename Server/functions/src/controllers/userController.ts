@@ -40,7 +40,7 @@ export class UserController {
 
       return res.status(200).json({
         success: true,
-        message: "Successfully added new friend"
+        message: "Successfully added new friend",
       });
     } catch (err: any) {
       if (err.statusCode) {
@@ -63,13 +63,12 @@ export class UserController {
         return res.status(405).json({ error: "Method Not Allowed" });
       }
 
-      const { id, username, riotId } = req.body as {
-        id: string | null;
-        username: string | null;
+      const { id, riotId } = req.body as {
+        id: string;
         riotId: string;
       };
 
-      const updatedUser = await userService.updateUser(id, username, riotId);
+      const updatedUser = await userService.updateUser(id, riotId);
 
       return res.status(200).json({
         success: true,

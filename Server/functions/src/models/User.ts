@@ -33,6 +33,18 @@ export class User implements IUserData {
     this.statusMessage = "";
   }
 
+  setRiotId(riotId: string) {
+    this.riotId = riotId;
+  }
+
+  setPuuid(puuid: string) {
+    this.puuid = puuid;
+  }
+
+  setRank(rank: string) {
+    this.rank = rank;
+  }
+
   static acceptIncomingRequest(user: User, incomingUser: User) {
     const index = user.incomingRequests.findIndex(
       (friend) => friend.uid === incomingUser.id
@@ -81,6 +93,7 @@ export class User implements IUserData {
     user.friendsList = data.friendsList;
     user.incomingRequests = data.incomingRequests;
     user.outgoingRequests = data.outgoingRequests;
+    user.availability = data.availability;
     user.statusMessage = data.statusMessage;
 
     return user;
