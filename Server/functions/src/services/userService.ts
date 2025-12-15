@@ -7,6 +7,7 @@ import { IUserData } from "../interfaces/IUserData";
 
 import { db } from "../firebaseConfig";
 import { UserAction } from "../transactions/actions/userAction";
+import { UserPairAction } from "../transactions/actions/userPairAction";
 
 export class UserService {
   private usersRef = db.collection("users");
@@ -80,24 +81,12 @@ export class UserService {
     if (!uid || !incomingUid)
       throw new Error.BadRequestError("Missing uid or incomingUid fields");
 
-    const userDocRef = this.usersRef.doc(uid);
-    const incomingUserDocRef = this.usersRef.doc(incomingUid);
-
-    await db.runTransaction(async (tx) => {
-      const userSnap = await tx.get(userDocRef);
-      const incomingUserSnap = await tx.get(incomingUserDocRef);
-
-      if (!userSnap.exists) throw new Error.NotFoundError("User not found");
-      if (!incomingUserSnap.exists)
-        throw new Error.NotFoundError("Incoming user not found");
-
-      const user = User.fromFirestore(userSnap);
-      const incomingUser = User.fromFirestore(incomingUserSnap);
-
-      User.acceptIncomingRequest(user, incomingUser);
-
-      tx.set(userDocRef, user.toFirestore(), { merge: true });
-      tx.set(incomingUserDocRef, incomingUser.toFirestore(), { merge: true });
+    UserPairAction({
+      uid,
+      targetUid: incomingUid,
+      action: (user, target) => {
+        User.acceptIncomingRequest(user, target);
+      },
     });
   }
 }
