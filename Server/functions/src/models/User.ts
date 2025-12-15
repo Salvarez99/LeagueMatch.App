@@ -45,20 +45,79 @@ export class User implements IUserData {
     this.rank = rank;
   }
 
-  static acceptIncomingRequest(user: User, incomingUser: User) {
-    const index = user.incomingRequests.findIndex(
-      (friend) => friend.uid === incomingUser.id
+  static sendFriendRequest(user: User, target: User) {
+    const alreadyFriends = user.friendsList.some(
+      (friend) => target.id === friend.uid
     );
-    if (index === -1)
-      throw new Error("Friend uid not found in incomingRequests");
+
+    const outgoingExists = user.outgoingRequests.some(
+      (request) => target.id === request.uid
+    );
+
+    const incomingExists = user.incomingRequests.some(
+      (request) => request.uid === target.id
+    );
+
+    const targetIncomingExists = target.incomingRequests.some(
+      (request) => request.uid === user.id
+    );
+
+    const targetOutgoingExists = target.outgoingRequests.some(
+      (request) => request.uid === user.id
+    );
+
+    if (
+      alreadyFriends ||
+      outgoingExists ||
+      incomingExists ||
+      targetIncomingExists ||
+      targetOutgoingExists
+    )
+      return;
+
+    target.incomingRequests.push({
+      uid: user.id,
+      username: user.username,
+    } as FriendRequest);
+
+    user.outgoingRequests.push({
+      uid: target.id,
+      username: target.username,
+    } as FriendRequest);
+  }
+
+  static respondFriendRequest(
+    user: User,
+    incomingUser: User,
+    accepted: boolean
+  ) {
+    const hasIncoming = user.incomingRequests.some(
+      (req) => req.uid === incomingUser.id
+    );
+
+    if (!hasIncoming) {
+      return;
+    }
 
     user.incomingRequests = user.incomingRequests.filter(
-      (friend) => friend.uid !== incomingUser.id
+      (req) => req.uid !== incomingUser.id
     );
 
     incomingUser.outgoingRequests = incomingUser.outgoingRequests.filter(
       (req) => req.uid !== user.id
     );
+
+    if (!accepted) {
+      return;
+    }
+
+    const alreadyFriends = user.friendsList.some(
+      (friend) => friend.uid === incomingUser.id
+    );
+
+    if (alreadyFriends) {
+      return;
+    }
 
     const newFriend: Friend = {
       username: incomingUser.username,

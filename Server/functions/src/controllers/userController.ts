@@ -31,12 +31,39 @@ export class UserController {
     }
   }
 
-  async acceptFriendRequest(req: Request, res: Response) {
+  async sendFriendRequest(req: Request, res: Response) {
+    try {
+      const uid = req.query.uid as string;
+      const targetUid = req.query.targetUid as string;
+
+      await userService.sendFriendRequest(uid, targetUid);
+
+      return res.status(200).json({
+        success: true,
+        message: "Successfully sent friend request",
+      });
+    } catch (err: any) {
+      if (err.statusCode) {
+        return res.status(err.statusCode).json({
+          success: false,
+          message: err.message,
+        });
+      }
+      return res.status(400).json({
+        success: false,
+        message: err.message,
+      });
+    }
+  }
+
+  async respondFriendRequest(req: Request, res: Response) {
     try {
       const uid = req.query.uid as string;
       const incomingUid = req.query.incomingUid as string;
+      const accepted = req.query.accepted === "true";
 
-      await userService.acceptFriendRequest(uid, incomingUid);
+
+      await userService.respondFriendRequest(uid, incomingUid, accepted);
 
       return res.status(200).json({
         success: true,

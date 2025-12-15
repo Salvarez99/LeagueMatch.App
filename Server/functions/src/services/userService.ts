@@ -77,7 +77,15 @@ export class UserService {
     return updatedUser.toFirestore();
   }
 
-  async acceptFriendRequest(uid: string, incomingUid: string) {
+  async sendFriendRequest(uid: string, targetUid: string) {
+    if (!uid || !targetUid)
+      throw new Error.BadRequestError("Missing uid or targetUid fields");
+    UserPairAction({uid, targetUid, action:(user,target) => {
+      User.sendFriendRequest(user,target);
+    }})
+  }
+
+  async respondFriendRequest(uid: string, incomingUid: string, accepted:boolean) {
     if (!uid || !incomingUid)
       throw new Error.BadRequestError("Missing uid or incomingUid fields");
 
@@ -85,7 +93,7 @@ export class UserService {
       uid,
       targetUid: incomingUid,
       action: (user, target) => {
-        User.acceptIncomingRequest(user, target);
+        User.respondFriendRequest(user, target, accepted);
       },
     });
   }
