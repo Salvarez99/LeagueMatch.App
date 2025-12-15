@@ -20,7 +20,7 @@ export class UserService {
       throw new Error.BadRequestError("id, username, and email are required");
     }
 
-    const userDoc = user.toJSON();
+    const userDoc = user.toFirestore();
     await this.usersRef.doc(user.id).set(userDoc);
 
     return { ...userDoc };
@@ -109,8 +109,8 @@ export class UserService {
 
       User.acceptIncomingRequest(user, incomingUser);
 
-      tx.set(userDocRef, user.toJSON(), { merge: true });
-      tx.set(incomingUserDocRef, incomingUser.toJSON(), { merge: true });
+      tx.set(userDocRef, user.toFirestore(), { merge: true });
+      tx.set(incomingUserDocRef, incomingUser.toFirestore(), { merge: true });
     });
   }
 }

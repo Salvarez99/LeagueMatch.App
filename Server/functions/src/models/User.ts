@@ -47,7 +47,7 @@ export class User implements IUserData {
     incomingUser.outgoingRequests = incomingUser.outgoingRequests.filter(
       (req) => req.uid !== user.id
     );
-    
+
     const newFriend: Friend = {
       username: incomingUser.username,
       uid: incomingUser.id,
@@ -86,7 +86,7 @@ export class User implements IUserData {
     return user;
   }
 
-  toJSON() {
+  toFirestore(): IUser {
     return {
       username: this.username,
       email: this.email,

@@ -1,11 +1,11 @@
 import { db } from "../firebaseConfig";
 import * as Error from "../utils/AppError";
-import type { DocumentReference, DocumentData } from "firebase-admin/firestore";
+import type { DocumentReference, DocumentData, DocumentSnapshot } from "firebase-admin/firestore";
 
 export class BaseTransaction {
   async run<TData, TResult>(
     ref: DocumentReference<DocumentData>,
-    load: (raw: DocumentData) => TData,
+    load: (raw: DocumentSnapshot<DocumentData>) => TData,
     save: (data: TData) => DocumentData,
     action: (data: TData) => TResult | Promise<TResult>
   ): Promise<TResult> {
@@ -13,8 +13,7 @@ export class BaseTransaction {
       const snap = await tx.get(ref);
       if (!snap.exists) throw new Error.NotFoundError("Document not found");
 
-      const raw = snap.data()!;
-      const data = load(raw); 
+      const data = load(snap); 
 
       const result = await action(data); 
 

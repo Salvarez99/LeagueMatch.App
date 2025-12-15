@@ -16,7 +16,7 @@ export async function LobbyTransaction<TResult>(
 
   return baseTx.run<Lobby, TResult>(
     lobbyRef,
-    (raw) => Lobby.fromFirestore(raw),
+    (snap) => Lobby.fromFirestore(snap.data()),
     (lobby) => lobby.toFirestore(),
     async (lobby) => {
       // --- Guards ---
