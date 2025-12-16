@@ -137,6 +137,10 @@ export class User implements IUserData {
     incomingUser.friendsList.push(userAsFriend);
   }
 
+  removeFriend(uid: string) {
+    this.friendsList = this.friendsList.filter((friend) => uid !== friend.uid);
+  }
+
   static fromFirestore(snap: DocumentSnapshot): User {
     const data = snap.data();
     const user = Object.create(User.prototype) as User;

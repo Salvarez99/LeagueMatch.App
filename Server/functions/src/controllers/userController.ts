@@ -31,6 +31,38 @@ export class UserController {
     }
   }
 
+  // POST /updateUser
+  async updateUser(req: Request, res: Response) {
+    try {
+      if (req.method !== "POST") {
+        return res.status(405).json({ error: "Method Not Allowed" });
+      }
+
+      const { id, riotId } = req.body as {
+        id: string;
+        riotId: string;
+      };
+
+      const updatedUser = await userService.updateUser(id, riotId);
+
+      return res.status(200).json({
+        success: true,
+        updatedUser,
+      });
+    } catch (err: any) {
+      if (err.statusCode) {
+        return res.status(err.statusCode).json({
+          success: false,
+          message: err.message,
+        });
+      }
+      return res.status(500).json({
+        success: false,
+        message: err.message,
+      });
+    }
+  }
+
   async sendFriendRequest(req: Request, res: Response) {
     try {
       const uid = req.query.uid as string;
@@ -62,7 +94,6 @@ export class UserController {
       const incomingUid = req.query.incomingUid as string;
       const accepted = req.query.accepted === "true";
 
-
       await userService.respondFriendRequest(uid, incomingUid, accepted);
 
       return res.status(200).json({
@@ -83,23 +114,16 @@ export class UserController {
     }
   }
 
-  // POST /updateUser
-  async updateUser(req: Request, res: Response) {
+  async removeFriend(req: Request, res: Response) {
     try {
-      if (req.method !== "POST") {
-        return res.status(405).json({ error: "Method Not Allowed" });
-      }
+      const uid = req.query.uid as string;
+      const targetUid = req.query.targetUid as string;
 
-      const { id, riotId } = req.body as {
-        id: string;
-        riotId: string;
-      };
-
-      const updatedUser = await userService.updateUser(id, riotId);
+      await userService.removeFriend(uid, targetUid);
 
       return res.status(200).json({
         success: true,
-        updatedUser,
+        message: "Successfully removed friend",
       });
     } catch (err: any) {
       if (err.statusCode) {
@@ -108,7 +132,7 @@ export class UserController {
           message: err.message,
         });
       }
-      return res.status(500).json({
+      return res.status(400).json({
         success: false,
         message: err.message,
       });

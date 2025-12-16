@@ -80,12 +80,20 @@ export class UserService {
   async sendFriendRequest(uid: string, targetUid: string) {
     if (!uid || !targetUid)
       throw new Error.BadRequestError("Missing uid or targetUid fields");
-    UserPairAction({uid, targetUid, action:(user,target) => {
-      User.sendFriendRequest(user,target);
-    }})
+    UserPairAction({
+      uid,
+      targetUid,
+      action: (user, target) => {
+        User.sendFriendRequest(user, target);
+      },
+    });
   }
 
-  async respondFriendRequest(uid: string, incomingUid: string, accepted:boolean) {
+  async respondFriendRequest(
+    uid: string,
+    incomingUid: string,
+    accepted: boolean
+  ) {
     if (!uid || !incomingUid)
       throw new Error.BadRequestError("Missing uid or incomingUid fields");
 
@@ -96,6 +104,16 @@ export class UserService {
         User.respondFriendRequest(user, target, accepted);
       },
     });
+  }
+
+  async removeFriend(uid: string, targetUid: string) {
+    if (!uid || !targetUid)
+      throw new Error.BadRequestError("Missing uid or targetUid fields");
+
+    UserPairAction({uid, targetUid, action: (user, target) =>{
+      user.removeFriend(target.id);
+      target.removeFriend(user.id);
+    }});
   }
 }
 
