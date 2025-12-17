@@ -1,9 +1,8 @@
 import express from "express";
+import { lobbyRouter } from "./routes/lobby.routes";
+import { userRouter } from "./routes/user.routes";
 
 export const app = express();
 
-app.use(express.json());
-
-app.get("/health", (_req, res) => {
-  res.json({ ok: true });
-});
+app.use("/lobby", lobbyRouter);
+app.use("/user", userRouter);
