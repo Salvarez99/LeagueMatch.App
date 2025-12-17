@@ -19,3 +19,5 @@ __exportStar(require("./types/ILobbyPlayer"), exports);
 __exportStar(require("./types/IUser"), exports);
 __exportStar(require("./types/ILobbyFilter"), exports);
 __exportStar(require("./types/LobbyState"), exports);
+__exportStar(require("./types/Friend"), exports);
+__exportStar(require("./types/FriendRequest"), exports);

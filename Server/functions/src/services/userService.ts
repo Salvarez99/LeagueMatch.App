@@ -6,6 +6,8 @@ import * as Error from "../utils/AppError";
 import { IUserData } from "../interfaces/IUserData";
 
 import { db } from "../firebaseConfig";
+import { UserAction } from "../transactions/actions/userAction";
+import { UserPairAction } from "../transactions/actions/userPairAction";
 
 export class UserService {
   private usersRef = db.collection("users");
@@ -20,7 +22,7 @@ export class UserService {
       throw new Error.BadRequestError("id, username, and email are required");
     }
 
-    const userDoc = user.toJSON();
+    const userDoc = user.toFirestore();
     await this.usersRef.doc(user.id).set(userDoc);
 
     return { ...userDoc };
@@ -35,62 +37,107 @@ export class UserService {
   }
 
   // Update user with Riot info
-  async updateUser(
-    id: string | null,
-    username: string | null,
-    riotId: string
-  ) {
-    if (!riotId) throw new Error.UnauthorizedError("riotId is required");
-    if (!id && !username)
-      throw new Error.UnauthorizedError("Either id or username is required");
-
-    let userRef;
-
-    // Resolve Firestore reference
-    if (id) {
-      userRef = this.usersRef.doc(id);
-    } else {
-      const snapshot = await this.usersRef
-        .where("username", "==", username)
-        .limit(1)
-        .get();
-
-      if (snapshot.empty) throw new Error.NotFoundError("User not found");
-      userRef = snapshot.docs[0].ref;
+  async updateUser(uid: string, riotId: string) {
+    if (!uid) {
+      throw new Error.UnauthorizedError("uid is required");
     }
 
-    // Riot API calls
+    if (!riotId) {
+      throw new Error.BadRequestError("riotId is required");
+    }
+
+    // 1️⃣ Resolve Riot data OUTSIDE the transaction
     const [gameName, tag] = riotId.split("#");
 
-    const account: IRiotAccount = await riotService.getAccountByRiotId(
-      gameName,
-      tag
-    );
+    if (!gameName || !tag) {
+      throw new Error.BadRequestError("riotId must be in the format name#tag");
+    }
 
-    const puuid = account.puuid;
+    const account = await riotService.getAccountByRiotId(gameName, tag);
+    const rankData = await riotService.getRankByPuuid(account.puuid);
 
-    const rankData: IRiotRankEntry[] = await riotService.getRankByPuuid(puuid);
-
-    // Riot API returns an array of entries, sometimes empty for unranked
     const soloQueue = rankData.find(
       (entry) => entry.queueType === "RANKED_SOLO_5x5"
     );
 
     const rank = soloQueue ? `${soloQueue.tier} ${soloQueue.rank}` : "Unranked";
 
-    await userRef.set({ riotId, puuid, rank }, { merge: true });
+    // 2️⃣ Transactionally update the user
+    const updatedUser = await UserAction({
+      uid,
+      action: (user) => {
+        user.setRiotId(riotId);
+        user.setPuuid(account.puuid);
+        user.setRank(rank);
+        return user;
+      },
+    });
 
-    const updatedSnap = await userRef.get();
+    // 3️⃣ Return canonical data
+    return updatedUser.toFirestore();
+  }
 
-    if (!updatedSnap.exists) {
-      throw new Error.NotFoundError("User not found after update");
-    }
+  async sendFriendRequest(uid: string, targetUid: string) {
+    if (!uid || !targetUid)
+      throw new Error.BadRequestError("Missing uid or targetUid fields");
+    await UserPairAction({
+      uid,
+      targetUid,
+      action: (user, target) => {
+        const isBlocked = target.blockedUsers.some((u) => u === user.id);
+        console.log(isBlocked)
+        if (!isBlocked) User.sendFriendRequest(user, target);
+        else throw new Error.BadRequestError("Target has user blocked");
+      },
+    });
+  }
 
-    const updatedUser = updatedSnap.data();
+  async respondFriendRequest(
+    uid: string,
+    incomingUid: string,
+    accepted: boolean
+  ) {
+    if (!uid || !incomingUid)
+      throw new Error.BadRequestError("Missing uid or incomingUid fields");
 
-    return {
-      ...updatedUser,
-    };
+    await UserPairAction({
+      uid,
+      targetUid: incomingUid,
+      action: (user, target) => {
+        User.respondFriendRequest(user, target, accepted);
+      },
+    });
+  }
+
+  async removeFriend(uid: string, targetUid: string) {
+    if (!uid || !targetUid)
+      throw new Error.BadRequestError("Missing uid or targetUid fields");
+
+    await UserPairAction({
+      uid,
+      targetUid,
+      action: (user, target) => {
+        user.removeFriend(target.id);
+        target.removeFriend(user.id);
+      },
+    });
+  }
+
+  async toggleBlock(uid: string, targetUid: string) {
+    await UserPairAction({
+      uid,
+      targetUid,
+      action: (user, target) => {
+        //Target is block: undo block
+        if (user.blockedUsers.some((u) => u === targetUid)) {
+          user.blockedUsers = user.blockedUsers.filter((u) => u !== targetUid);
+        } else {
+          user.blockedUsers.push(targetUid);
+          user.removeFriend(target.id);
+          target.removeFriend(user.id);
+        }
+      },
+    });
   }
 }
 

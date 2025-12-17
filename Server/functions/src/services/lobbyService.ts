@@ -80,7 +80,6 @@ export class LobbyService {
       hostPosition,
       championId,
       rankFilter,
-      0
     );
 
     // Save lobby

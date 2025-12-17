@@ -38,13 +38,12 @@ export class UserController {
         return res.status(405).json({ error: "Method Not Allowed" });
       }
 
-      const { id, username, riotId } = req.body as {
-        id: string | null;
-        username: string | null;
+      const { id, riotId } = req.body as {
+        id: string;
         riotId: string;
       };
 
-      const updatedUser = await userService.updateUser(id, username, riotId);
+      const updatedUser = await userService.updateUser(id, riotId);
 
       return res.status(200).json({
         success: true,
@@ -58,6 +57,106 @@ export class UserController {
         });
       }
       return res.status(500).json({
+        success: false,
+        message: err.message,
+      });
+    }
+  }
+
+  async sendFriendRequest(req: Request, res: Response) {
+    try {
+      const uid = req.query.uid as string;
+      const targetUid = req.query.targetUid as string;
+
+      await userService.sendFriendRequest(uid, targetUid);
+
+      return res.status(200).json({
+        success: true,
+        message: "Successfully sent friend request",
+      });
+    } catch (err: any) {
+      if (err.statusCode) {
+        return res.status(err.statusCode).json({
+          success: false,
+          message: err.message,
+        });
+      }
+      return res.status(400).json({
+        success: false,
+        message: err.message,
+      });
+    }
+  }
+
+  async respondFriendRequest(req: Request, res: Response) {
+    try {
+      const uid = req.query.uid as string;
+      const incomingUid = req.query.incomingUid as string;
+      const accepted = req.query.accepted === "true";
+
+      await userService.respondFriendRequest(uid, incomingUid, accepted);
+
+      return res.status(200).json({
+        success: true,
+        message: "Successfully added new friend",
+      });
+    } catch (err: any) {
+      if (err.statusCode) {
+        return res.status(err.statusCode).json({
+          success: false,
+          message: err.message,
+        });
+      }
+      return res.status(400).json({
+        success: false,
+        message: err.message,
+      });
+    }
+  }
+
+  async removeFriend(req: Request, res: Response) {
+    try {
+      const uid = req.query.uid as string;
+      const targetUid = req.query.targetUid as string;
+
+      await userService.removeFriend(uid, targetUid);
+
+      return res.status(200).json({
+        success: true,
+        message: "Successfully removed friend",
+      });
+    } catch (err: any) {
+      if (err.statusCode) {
+        return res.status(err.statusCode).json({
+          success: false,
+          message: err.message,
+        });
+      }
+      return res.status(400).json({
+        success: false,
+        message: err.message,
+      });
+    }
+  }
+  async toggleBlock(req: Request, res: Response) {
+    try {
+      const uid = req.query.uid as string;
+      const targetUid = req.query.targetUid as string;
+
+      await userService.toggleBlock(uid, targetUid);
+
+      return res.status(200).json({
+        success: true,
+        message: "Successfully blocked user",
+      });
+    } catch (err: any) {
+      if (err.statusCode) {
+        return res.status(err.statusCode).json({
+          success: false,
+          message: err.message,
+        });
+      }
+      return res.status(400).json({
         success: false,
         message: err.message,
       });
