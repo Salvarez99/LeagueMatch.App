@@ -80,11 +80,14 @@ export class UserService {
   async sendFriendRequest(uid: string, targetUid: string) {
     if (!uid || !targetUid)
       throw new Error.BadRequestError("Missing uid or targetUid fields");
-    UserPairAction({
+    await UserPairAction({
       uid,
       targetUid,
       action: (user, target) => {
-        User.sendFriendRequest(user, target);
+        const isBlocked = target.blockedUsers.some((u) => u === user.id);
+        console.log(isBlocked)
+        if (!isBlocked) User.sendFriendRequest(user, target);
+        else throw new Error.BadRequestError("Target has user blocked");
       },
     });
   }
@@ -97,7 +100,7 @@ export class UserService {
     if (!uid || !incomingUid)
       throw new Error.BadRequestError("Missing uid or incomingUid fields");
 
-    UserPairAction({
+    await UserPairAction({
       uid,
       targetUid: incomingUid,
       action: (user, target) => {
@@ -110,10 +113,31 @@ export class UserService {
     if (!uid || !targetUid)
       throw new Error.BadRequestError("Missing uid or targetUid fields");
 
-    UserPairAction({uid, targetUid, action: (user, target) =>{
-      user.removeFriend(target.id);
-      target.removeFriend(user.id);
-    }});
+    await UserPairAction({
+      uid,
+      targetUid,
+      action: (user, target) => {
+        user.removeFriend(target.id);
+        target.removeFriend(user.id);
+      },
+    });
+  }
+
+  async toggleBlock(uid: string, targetUid: string) {
+    await UserPairAction({
+      uid,
+      targetUid,
+      action: (user, target) => {
+        //Target is block: undo block
+        if (user.blockedUsers.some((u) => u === targetUid)) {
+          user.blockedUsers = user.blockedUsers.filter((u) => u !== targetUid);
+        } else {
+          user.blockedUsers.push(targetUid);
+          user.removeFriend(target.id);
+          target.removeFriend(user.id);
+        }
+      },
+    });
   }
 }
 

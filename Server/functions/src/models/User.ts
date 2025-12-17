@@ -13,6 +13,7 @@ export class User implements IUserData {
   friendsList: Friend[];
   incomingRequests: FriendRequest[];
   outgoingRequests: FriendRequest[];
+  blockedUsers:string[];
   availability: "Online" | "Away" | "Offline";
   statusMessage: string;
 
@@ -29,6 +30,7 @@ export class User implements IUserData {
     this.friendsList = [];
     this.incomingRequests = [];
     this.outgoingRequests = [];
+    this.blockedUsers = [];
     this.availability = "Online";
     this.statusMessage = "";
   }
@@ -156,6 +158,7 @@ export class User implements IUserData {
     user.friendsList = data.friendsList;
     user.incomingRequests = data.incomingRequests;
     user.outgoingRequests = data.outgoingRequests;
+    user.blockedUsers = data.blockedUsers;
     user.availability = data.availability;
     user.statusMessage = data.statusMessage;
 
@@ -173,6 +176,7 @@ export class User implements IUserData {
       friendsList: this.friendsList,
       incomingRequests: this.incomingRequests,
       outgoingRequests: this.outgoingRequests,
+      blockedUsers: this.blockedUsers,
       availability: this.availability,
       statusMessage: this.statusMessage,
     };

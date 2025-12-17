@@ -138,6 +138,30 @@ export class UserController {
       });
     }
   }
+  async toggleBlock(req: Request, res: Response) {
+    try {
+      const uid = req.query.uid as string;
+      const targetUid = req.query.targetUid as string;
+
+      await userService.toggleBlock(uid, targetUid);
+
+      return res.status(200).json({
+        success: true,
+        message: "Successfully blocked user",
+      });
+    } catch (err: any) {
+      if (err.statusCode) {
+        return res.status(err.statusCode).json({
+          success: false,
+          message: err.message,
+        });
+      }
+      return res.status(400).json({
+        success: false,
+        message: err.message,
+      });
+    }
+  }
 }
 
 // Singleton export
