@@ -8,6 +8,7 @@ import { IUserData } from "../interfaces/IUserData";
 import { db } from "../firebaseConfig";
 import { UserAction } from "../transactions/actions/userAction";
 import { UserPairAction } from "../transactions/actions/userPairAction";
+import { AddUserRequestDTO } from "../controllers/dtos/user.dto";
 
 export class UserService {
   private usersRef = db.collection("users");
@@ -15,7 +16,7 @@ export class UserService {
   constructor() {}
 
   // Add a new user
-  async addUser(userData: IUserData) {
+  async addUser(userData: AddUserRequestDTO) {
     const user = new User(userData);
 
     if (!user.id || !user.username || !user.email) {
@@ -85,7 +86,7 @@ export class UserService {
       targetUid,
       action: (user, target) => {
         const isBlocked = target.blockedUsers.some((u) => u === user.id);
-        console.log(isBlocked)
+        console.log(isBlocked);
         if (!isBlocked) User.sendFriendRequest(user, target);
         else throw new Error.BadRequestError("Target has user blocked");
       },

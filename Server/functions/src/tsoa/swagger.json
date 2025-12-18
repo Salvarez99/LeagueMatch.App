@@ -1,0 +1,202 @@
+{
+	"openapi": "3.0.0",
+	"components": {
+		"examples": {},
+		"headers": {},
+		"parameters": {},
+		"requestBodies": {},
+		"responses": {},
+		"schemas": {
+			"Friend": {
+				"properties": {
+					"username": {
+						"type": "string"
+					},
+					"uid": {
+						"type": "string"
+					},
+					"availability": {
+						"type": "string",
+						"enum": [
+							"Online",
+							"Away",
+							"Offline"
+						]
+					},
+					"statusMessage": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"username",
+					"uid",
+					"availability",
+					"statusMessage"
+				],
+				"type": "object",
+				"additionalProperties": true
+			},
+			"FriendRequest": {
+				"properties": {
+					"username": {
+						"type": "string"
+					},
+					"uid": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"username",
+					"uid"
+				],
+				"type": "object",
+				"additionalProperties": true
+			},
+			"AddUserRequestDTO": {
+				"properties": {
+					"email": {
+						"type": "string"
+					},
+					"username": {
+						"type": "string"
+					},
+					"id": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"email",
+					"username",
+					"id"
+				],
+				"type": "object"
+			}
+		},
+		"securitySchemes": {}
+	},
+	"info": {
+		"title": "functions",
+		"description": "Cloud Functions for Firebase",
+		"contact": {}
+	},
+	"paths": {
+		"/user/add": {
+			"post": {
+				"operationId": "AddUser",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"createdUser": {
+											"properties": {
+												"statusMessage": {
+													"type": "string"
+												},
+												"availability": {
+													"type": "string",
+													"enum": [
+														"Online",
+														"Away",
+														"Offline"
+													]
+												},
+												"blockedUsers": {
+													"items": {
+														"type": "string"
+													},
+													"type": "array"
+												},
+												"outgoingRequests": {
+													"items": {
+														"$ref": "#/components/schemas/FriendRequest"
+													},
+													"type": "array"
+												},
+												"incomingRequests": {
+													"items": {
+														"$ref": "#/components/schemas/FriendRequest"
+													},
+													"type": "array"
+												},
+												"friendsList": {
+													"items": {
+														"$ref": "#/components/schemas/Friend"
+													},
+													"type": "array"
+												},
+												"preferredRoles": {
+													"items": {
+														"type": "string"
+													},
+													"type": "array"
+												},
+												"rank": {
+													"type": "string"
+												},
+												"riotId": {
+													"type": "string"
+												},
+												"puuid": {
+													"type": "string"
+												},
+												"email": {
+													"type": "string"
+												},
+												"username": {
+													"type": "string"
+												}
+											},
+											"required": [
+												"statusMessage",
+												"availability",
+												"blockedUsers",
+												"outgoingRequests",
+												"incomingRequests",
+												"friendsList",
+												"preferredRoles",
+												"rank",
+												"riotId",
+												"puuid",
+												"email",
+												"username"
+											],
+											"type": "object"
+										},
+										"success": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"createdUser",
+										"success"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/AddUserRequestDTO"
+							}
+						}
+					}
+				}
+			}
+		}
+	},
+	"servers": [
+		{
+			"url": "https://[object Object]/"
+		}
+	]
+}

@@ -1,6 +1,9 @@
 import { Friend, FriendRequest, IUser } from "@leaguematch/shared";
 import { IUserData } from "../interfaces/IUserData";
 import type { DocumentData, DocumentSnapshot } from "firebase-admin/firestore";
+import { AddUserRequestDTO } from "../controllers/dtos/user.dto";
+
+
 
 export class User implements IUserData {
   id: string;
@@ -13,20 +16,20 @@ export class User implements IUserData {
   friendsList: Friend[];
   incomingRequests: FriendRequest[];
   outgoingRequests: FriendRequest[];
-  blockedUsers:string[];
+  blockedUsers: string[];
   availability: "Online" | "Away" | "Offline";
   statusMessage: string;
 
-  constructor(data: IUserData) {
+  constructor(data: AddUserRequestDTO) {
     this.id = data.id;
     this.username = data.username;
     this.email = data.email;
 
     // Use nullish coalescing to avoid undefined overwriting defaults
-    this.puuid = data.puuid ?? null;
-    this.riotId = data.riotId ?? null;
-    this.rank = data.rank ?? null;
-    this.preferredRoles = data.preferredRoles ?? [];
+    this.puuid = null;
+    this.riotId = null;
+    this.rank = null;
+    this.preferredRoles = [];
     this.friendsList = [];
     this.incomingRequests = [];
     this.outgoingRequests = [];
