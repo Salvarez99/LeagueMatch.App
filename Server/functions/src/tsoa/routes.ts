@@ -78,6 +78,21 @@ const models: TsoaRoute.Models = {
         "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"championId":{"dataType":"string"},"position":{"dataType":"string","required":true},"ghostId":{"dataType":"string","required":true}},"validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "updateDiscordDTO": {
+        "dataType": "refAlias",
+        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"discordLink":{"dataType":"string","required":true}},"validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "findLobbyDTO": {
+        "dataType": "refAlias",
+        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"ranks":{"dataType":"array","array":{"dataType":"string"},"required":true},"desiredPosition":{"dataType":"string","required":true},"gameMode":{"dataType":"string","required":true},"gameMap":{"dataType":"string","required":true}},"validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "joinLobbyDTO": {
+        "dataType": "refAlias",
+        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"championId":{"dataType":"string"},"position":{"dataType":"string"},"uid":{"dataType":"string","required":true}},"validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 };
 const templateService = new ExpressTemplateService(models, {"noImplicitAdditionalProperties":"ignore","bodyCoercion":true});
 
@@ -425,6 +440,254 @@ export function RegisterRoutes(app: Router) {
 
               await templateService.apiHandler({
                 methodName: 'initSearch',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: undefined,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsLobbyController_kick: Record<string, TsoaRoute.ParameterSchema> = {
+                hostId: {"in":"query","name":"hostId","required":true,"dataType":"string"},
+                lobbyId: {"in":"query","name":"lobbyId","required":true,"dataType":"string"},
+                targetUid: {"in":"query","name":"targetUid","required":true,"dataType":"string"},
+        };
+        app.delete('/lobby/kick',
+            ...(fetchMiddlewares<RequestHandler>(LobbyController)),
+            ...(fetchMiddlewares<RequestHandler>(LobbyController.prototype.kick)),
+
+            async function LobbyController_kick(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsLobbyController_kick, request, response });
+
+                const controller = new LobbyController();
+
+              await templateService.apiHandler({
+                methodName: 'kick',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: undefined,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsLobbyController_updateDiscord: Record<string, TsoaRoute.ParameterSchema> = {
+                hostId: {"in":"query","name":"hostId","required":true,"dataType":"string"},
+                lobbyId: {"in":"query","name":"lobbyId","required":true,"dataType":"string"},
+                body: {"in":"body","name":"body","required":true,"ref":"updateDiscordDTO"},
+        };
+        app.patch('/lobby/updateDiscord',
+            ...(fetchMiddlewares<RequestHandler>(LobbyController)),
+            ...(fetchMiddlewares<RequestHandler>(LobbyController.prototype.updateDiscord)),
+
+            async function LobbyController_updateDiscord(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsLobbyController_updateDiscord, request, response });
+
+                const controller = new LobbyController();
+
+              await templateService.apiHandler({
+                methodName: 'updateDiscord',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: undefined,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsLobbyController_updateChampion: Record<string, TsoaRoute.ParameterSchema> = {
+                uid: {"in":"query","name":"uid","required":true,"dataType":"string"},
+                lobbyId: {"in":"query","name":"lobbyId","required":true,"dataType":"string"},
+                championId: {"in":"query","name":"championId","required":true,"dataType":"string"},
+        };
+        app.patch('/lobby/updateChampion',
+            ...(fetchMiddlewares<RequestHandler>(LobbyController)),
+            ...(fetchMiddlewares<RequestHandler>(LobbyController.prototype.updateChampion)),
+
+            async function LobbyController_updateChampion(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsLobbyController_updateChampion, request, response });
+
+                const controller = new LobbyController();
+
+              await templateService.apiHandler({
+                methodName: 'updateChampion',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: undefined,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsLobbyController_getAvailableLobbies: Record<string, TsoaRoute.ParameterSchema> = {
+        };
+        app.get('/lobby/getAvailableLobbies',
+            ...(fetchMiddlewares<RequestHandler>(LobbyController)),
+            ...(fetchMiddlewares<RequestHandler>(LobbyController.prototype.getAvailableLobbies)),
+
+            async function LobbyController_getAvailableLobbies(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsLobbyController_getAvailableLobbies, request, response });
+
+                const controller = new LobbyController();
+
+              await templateService.apiHandler({
+                methodName: 'getAvailableLobbies',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: undefined,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsLobbyController_get: Record<string, TsoaRoute.ParameterSchema> = {
+                lobbyId: {"in":"query","name":"lobbyId","required":true,"dataType":"string"},
+        };
+        app.get('/lobby/get',
+            ...(fetchMiddlewares<RequestHandler>(LobbyController)),
+            ...(fetchMiddlewares<RequestHandler>(LobbyController.prototype.get)),
+
+            async function LobbyController_get(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsLobbyController_get, request, response });
+
+                const controller = new LobbyController();
+
+              await templateService.apiHandler({
+                methodName: 'get',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: undefined,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsLobbyController_find: Record<string, TsoaRoute.ParameterSchema> = {
+                uid: {"in":"query","name":"uid","required":true,"dataType":"string"},
+                body: {"in":"body","name":"body","required":true,"ref":"findLobbyDTO"},
+        };
+        app.post('/lobby/find',
+            ...(fetchMiddlewares<RequestHandler>(LobbyController)),
+            ...(fetchMiddlewares<RequestHandler>(LobbyController.prototype.find)),
+
+            async function LobbyController_find(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsLobbyController_find, request, response });
+
+                const controller = new LobbyController();
+
+              await templateService.apiHandler({
+                methodName: 'find',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: undefined,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsLobbyController_join: Record<string, TsoaRoute.ParameterSchema> = {
+                lobbyId: {"in":"query","name":"lobbyId","required":true,"dataType":"string"},
+                body: {"in":"body","name":"body","required":true,"ref":"joinLobbyDTO"},
+        };
+        app.patch('/lobby/join',
+            ...(fetchMiddlewares<RequestHandler>(LobbyController)),
+            ...(fetchMiddlewares<RequestHandler>(LobbyController.prototype.join)),
+
+            async function LobbyController_join(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsLobbyController_join, request, response });
+
+                const controller = new LobbyController();
+
+              await templateService.apiHandler({
+                methodName: 'join',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: undefined,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsLobbyController_leave: Record<string, TsoaRoute.ParameterSchema> = {
+                uid: {"in":"query","name":"uid","required":true,"dataType":"string"},
+                lobbyId: {"in":"query","name":"lobbyId","required":true,"dataType":"string"},
+        };
+        app.delete('/lobby/leave',
+            ...(fetchMiddlewares<RequestHandler>(LobbyController)),
+            ...(fetchMiddlewares<RequestHandler>(LobbyController.prototype.leave)),
+
+            async function LobbyController_leave(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsLobbyController_leave, request, response });
+
+                const controller = new LobbyController();
+
+              await templateService.apiHandler({
+                methodName: 'leave',
                 controller,
                 response,
                 next,
