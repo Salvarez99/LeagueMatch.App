@@ -12,18 +12,18 @@ swaggerDocument.servers= [{url:"/league-match-app/us-central1/api"}];
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 RegisterRoutes(app);
 
-// app.use(function errorHandler(
-//   err: unknown,
-//   req: express.Request,
-//   res: express.Response,
-//   next: express.NextFunction
-// ) {
-//   if (err instanceof ValidateError) {
-//     return res.status(422).json({
-//       message: "Validation Failed",
-//       details: err.fields,
-//     });
-//   }
+app.use(function errorHandler(
+  err: unknown,
+  req: express.Request,
+  res: express.Response,
+  next: express.NextFunction
+) {
+  if (err instanceof ValidateError) {
+    return res.status(422).json({
+      message: "Validation Failed",
+      details: err.fields,
+    });
+  }
 
-//   next(err);
-// });
+  next(err);
+});
