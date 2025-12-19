@@ -4,3 +4,8 @@ export type AddUserRequestDTO = {
   username: string;
   email: string;
 };
+
+export type updateUserRequestDTO = {
+  id: string;
+  riotId: string;
+};

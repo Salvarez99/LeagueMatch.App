@@ -70,6 +70,100 @@
 					"id"
 				],
 				"type": "object"
+			},
+			"IUser": {
+				"properties": {
+					"username": {
+						"type": "string"
+					},
+					"email": {
+						"type": "string"
+					},
+					"puuid": {
+						"type": "string",
+						"nullable": true
+					},
+					"riotId": {
+						"type": "string",
+						"nullable": true
+					},
+					"rank": {
+						"type": "string",
+						"nullable": true
+					},
+					"preferredRoles": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array"
+					},
+					"friendsList": {
+						"items": {
+							"$ref": "#/components/schemas/Friend"
+						},
+						"type": "array"
+					},
+					"incomingRequests": {
+						"items": {
+							"$ref": "#/components/schemas/FriendRequest"
+						},
+						"type": "array"
+					},
+					"outgoingRequests": {
+						"items": {
+							"$ref": "#/components/schemas/FriendRequest"
+						},
+						"type": "array"
+					},
+					"blockedUsers": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array"
+					},
+					"availability": {
+						"type": "string",
+						"enum": [
+							"Online",
+							"Away",
+							"Offline"
+						]
+					},
+					"statusMessage": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"username",
+					"email",
+					"puuid",
+					"riotId",
+					"rank",
+					"preferredRoles",
+					"friendsList",
+					"incomingRequests",
+					"outgoingRequests",
+					"blockedUsers",
+					"availability",
+					"statusMessage"
+				],
+				"type": "object",
+				"additionalProperties": true
+			},
+			"updateUserRequestDTO": {
+				"properties": {
+					"riotId": {
+						"type": "string"
+					},
+					"id": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"riotId",
+					"id"
+				],
+				"type": "object"
 			}
 		},
 		"securitySchemes": {}
@@ -187,6 +281,47 @@
 						"application/json": {
 							"schema": {
 								"$ref": "#/components/schemas/AddUserRequestDTO"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/user/update": {
+			"post": {
+				"operationId": "UpdateUser",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"updatedUser": {
+											"$ref": "#/components/schemas/IUser"
+										},
+										"success": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"updatedUser",
+										"success"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/updateUserRequestDTO"
 							}
 						}
 					}

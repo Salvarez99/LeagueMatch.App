@@ -1,52 +1,20 @@
-import { Request, Response } from "express";
 import { userService } from "../services/userService";
-import { IUserData } from "../interfaces/IUserData";
 import { Body, Controller, Post, Route } from "tsoa";
-import { AddUserRequestDTO } from "./dtos/user.dto";
+import { AddUserRequestDTO, updateUserRequestDTO } from "./dtos/user.dto";
 
 @Route("user")
 export class UserController extends Controller {
-
   @Post("add")
   async addUser(@Body() body: AddUserRequestDTO) {
-
     const createdUser = await userService.addUser(body);
     return { success: true, createdUser };
-
-
   }
 
-  // // POST /updateUser
-  // async updateUser(req: Request, res: Response) {
-  //   try {
-  //     if (req.method !== "POST") {
-  //       return res.status(405).json({ error: "Method Not Allowed" });
-  //     }
-
-  //     const { id, riotId } = req.body as {
-  //       id: string;
-  //       riotId: string;
-  //     };
-
-  //     const updatedUser = await userService.updateUser(id, riotId);
-
-  //     return res.status(200).json({
-  //       success: true,
-  //       updatedUser,
-  //     });
-  //   } catch (err: any) {
-  //     if (err.statusCode) {
-  //       return res.status(err.statusCode).json({
-  //         success: false,
-  //         message: err.message,
-  //       });
-  //     }
-  //     return res.status(500).json({
-  //       success: false,
-  //       message: err.message,
-  //     });
-  //   }
-  // }
+  @Post("update")
+  async updateUser(@Body() body: updateUserRequestDTO) {
+    const updatedUser = await userService.updateUser(body);
+    return { success: true, updatedUser };
+  }
 
   // async sendFriendRequest(req: Request, res: Response) {
   //   try {
