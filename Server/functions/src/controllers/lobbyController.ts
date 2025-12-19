@@ -64,7 +64,7 @@ export class LobbyController extends Controller {
     };
   }
 
-  //Only updates ghost position 
+  //Only updates ghost position
   @Patch("updateGhost")
   async updateGhost(
     @Query("hostId") hostId: string,
@@ -85,30 +85,18 @@ export class LobbyController extends Controller {
     };
   }
 
-  // async initSearch(req: Request, res: Response) {
-  //   try {
-  //     const lobbyId = req.query.lobbyId as string;
-  //     const uid = req.query.uid as string;
-  //     await lobbyService.initSearch(lobbyId, uid);
+  @Patch("initSearch")
+  async initSearch(
+    @Query("uid") uid: string,
+    @Query("lobbyId") lobbyId: string
+  ) {
+    await lobbyService.initSearch(lobbyId, uid);
 
-  //     return res.status(200).json({
-  //       success: true,
-  //       message: "Lobby is in SEARCHING state",
-  //     });
-  //   } catch (err: any) {
-  //     if (err.statusCode) {
-  //       return res.status(err.statusCode).json({
-  //         success: false,
-  //         message: err.message,
-  //       });
-  //     }
-  //     return res.status(500).json({
-  //       success: false,
-  //       message: "Error updating lobby state to SEARCHING",
-  //       error: err.message,
-  //     });
-  //   }
-  // }
+    return {
+      success: true,
+      message: "Lobby is in SEARCHING state",
+    };
+  }
 
   // async kick(req: Request, res: Response) {
   //   try {

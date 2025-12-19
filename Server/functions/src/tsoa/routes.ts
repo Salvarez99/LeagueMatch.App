@@ -405,6 +405,37 @@ export function RegisterRoutes(app: Router) {
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsLobbyController_initSearch: Record<string, TsoaRoute.ParameterSchema> = {
+                uid: {"in":"query","name":"uid","required":true,"dataType":"string"},
+                lobbyId: {"in":"query","name":"lobbyId","required":true,"dataType":"string"},
+        };
+        app.patch('/lobby/initSearch',
+            ...(fetchMiddlewares<RequestHandler>(LobbyController)),
+            ...(fetchMiddlewares<RequestHandler>(LobbyController.prototype.initSearch)),
+
+            async function LobbyController_initSearch(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsLobbyController_initSearch, request, response });
+
+                const controller = new LobbyController();
+
+              await templateService.apiHandler({
+                methodName: 'initSearch',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: undefined,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
