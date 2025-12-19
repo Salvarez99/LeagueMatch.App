@@ -79,7 +79,7 @@ export class LobbyService {
       gameMode,
       hostPosition,
       championId,
-      rankFilter,
+      rankFilter
     );
 
     // Save lobby
@@ -96,21 +96,26 @@ export class LobbyService {
       lobbyId,
       uid,
       action: (lobby) => {
-        const updatedPlayers = lobby.players.map((p) =>
-          p.uid === uid
-            ? new Player(
-                p.uid,
-                p.username,
-                p.riotId,
-                p.position,
-                p.championId,
-                !p.ready,
-                false
-              ).toObject()
-            : p instanceof Player
-            ? p.toObject()
-            : p
+        console.log(
+          "RAW players snapshot:",
+          JSON.stringify(lobby.players, null, 2)
         );
+        const updatedPlayers = lobby.players.map((p) => {
+          if (!p) return p;
+
+          if (p.uid === uid) {
+            return new Player(
+              p.uid,
+              p.username,
+              p.riotId,
+              p.position,
+              p.championId,
+              !Boolean(p.ready),
+              false
+            ).toObject();
+          }
+          return p instanceof Player ? p.toObject() : p;
+        });
 
         lobby.players = updatedPlayers;
 
@@ -196,7 +201,6 @@ export class LobbyService {
       },
       states: [LobbyState.IDLE, LobbyState.FINISHED],
     });
-    
   }
 
   async getAvailableLobbies() {
@@ -343,23 +347,24 @@ export class LobbyService {
 
   switchLobbyState(lobby: Lobby): void {
     const players = lobby.players;
+    const currentPlayers = lobby.currentPlayers;
     switch (lobby.state) {
       case LobbyState.IDLE:
         if (
-          players.length === lobby.maxPlayers &&
-          players.every((player) => player.ready)
+          currentPlayers === lobby.maxPlayers &&
+          players.every((player) => player && player.ready)
         ) {
           lobby.setState(LobbyState.FINISHED);
         }
         break;
       case LobbyState.SEARCHING:
-        if (players.length === lobby.maxPlayers)
+        if (currentPlayers === lobby.maxPlayers)
           lobby.setState(LobbyState.IDLE);
         break;
       case LobbyState.FINISHED:
         if (
-          players.length < lobby.maxPlayers ||
-          !lobby.players.every((player) => player.ready)
+          currentPlayers < lobby.maxPlayers ||
+          !lobby.players.every((player) => player && player.ready)
         )
           lobby.setState(LobbyState.IDLE);
     }

@@ -38,7 +38,7 @@ export class LobbyController extends Controller {
 
     return {
       success: true,
-      message: "Ready status updated successfully",
+      message: "Ready status updated successfully"
     };
   }
 
