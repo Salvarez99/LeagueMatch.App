@@ -1,7 +1,7 @@
 import { lobbyService } from "../services/lobbyService";
 import { Body, Controller, Delete, Patch, Post, Query, Route } from "tsoa";
 import { IGhostData } from "../interfaces/IGhostData";
-import { createLobbyRequestDTO } from "./dtos/lobby.dto";
+import { createLobbyRequestDTO, updateGhostDTO } from "./dtos/lobby.dto";
 
 @Route("lobby")
 export class LobbyController extends Controller {
@@ -38,75 +38,52 @@ export class LobbyController extends Controller {
 
     return {
       success: true,
-      message: "Ready status updated successfully"
+      message: "Ready status updated successfully",
     };
   }
 
-  // async addGhost(req: Request, res: Response) {
-  //   try {
-  //     const hostId = req.query.hostId as string;
-  //     const lobbyId = req.query.lobbyId as string;
+  @Post("addGhost")
+  async addGhost(
+    @Query("hostId") hostId: string,
+    @Query("lobbyId") lobbyId: string,
+    @Body() body: IGhostData
+  ) {
+    const { ghostId, index, gameMap, position, championId } = body;
 
-  //     const { ghostId, index, gameMap, position, championId } =
-  //       req.body as IGhostData;
+    await lobbyService.addGhost(lobbyId, hostId, {
+      ghostId,
+      index,
+      gameMap,
+      position,
+      championId,
+    });
 
-  //     await lobbyService.addGhost(lobbyId, hostId, {
-  //       ghostId,
-  //       index,
-  //       gameMap,
-  //       position,
-  //       championId,
-  //     });
+    return {
+      success: true,
+      message: "Ghost added successfully",
+    };
+  }
 
-  //     return res.status(200).json({
-  //       success: true,
-  //       message: "Ghost added successfully",
-  //     });
-  //   } catch (err: any) {
-  //     if (err.statusCode) {
-  //       return res.status(err.statusCode).json({
-  //         success: false,
-  //         message: err.message,
-  //       });
-  //     }
-  //     return res.status(500).json({
-  //       success: false,
-  //       message: "Error updating lobby state to SEARCHING",
-  //       error: err.message,
-  //     });
-  //   }
-  // }
+  //Only updates ghost position 
+  @Patch("updateGhost")
+  async updateGhost(
+    @Query("hostId") hostId: string,
+    @Query("lobbyId") lobbyId: string,
+    @Body() body: updateGhostDTO
+  ) {
+    const { ghostId, position, championId } = body;
 
-  // async updateGhost(req: Request, res: Response) {
-  //   try {
-  //     const lobbyId = req.query.lobbyId as string;
-  //     const hostId = req.query.hostId as string;
-  //     const { ghostId, position, championId } = req.body;
+    await lobbyService.updateGhost(lobbyId, hostId, {
+      ghostId,
+      position,
+      championId,
+    });
 
-  //     await lobbyService.updateGhost(lobbyId, hostId, {
-  //       ghostId,
-  //       position,
-  //       championId,
-  //     });
-
-  //     return res.status(200).json({
-  //       success: true,
-  //       message: "Ghost updated successfully",
-  //     });
-  //   } catch (err: any) {
-  //     if (err.statusCode) {
-  //       return res.status(err.statusCode).json({
-  //         success: false,
-  //         message: err.message,
-  //       });
-  //     }
-  //     return res.status(500).json({
-  //       success: false,
-  //       message: "Error updating ghost",
-  //       error: err.message,
-  //     });
-  //   }
-  // }
+    return {
+      success: true,
+      message: "Ghost updated successfully",
+    };
+  }
 
   // async initSearch(req: Request, res: Response) {
   //   try {

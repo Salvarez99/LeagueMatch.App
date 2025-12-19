@@ -96,10 +96,6 @@ export class LobbyService {
       lobbyId,
       uid,
       action: (lobby) => {
-        console.log(
-          "RAW players snapshot:",
-          JSON.stringify(lobby.players, null, 2)
-        );
         const updatedPlayers = lobby.players.map((p) => {
           if (!p) return p;
 

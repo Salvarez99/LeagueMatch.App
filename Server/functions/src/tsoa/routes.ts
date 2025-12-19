@@ -68,6 +68,16 @@ const models: TsoaRoute.Models = {
         "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"rankFilter":{"dataType":"array","array":{"dataType":"string"}},"championId":{"dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"enum","enums":[null]}]},"hostPosition":{"dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"enum","enums":[null]}]},"gameMode":{"dataType":"string"},"gameMap":{"dataType":"string","required":true},"hostId":{"dataType":"string","required":true}},"validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "IGhostData": {
+        "dataType": "refAlias",
+        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"championId":{"dataType":"string"},"position":{"dataType":"string"},"gameMap":{"dataType":"string","required":true},"index":{"dataType":"double","required":true},"ghostId":{"dataType":"string","required":true}},"validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "updateGhostDTO": {
+        "dataType": "refAlias",
+        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"championId":{"dataType":"string"},"position":{"dataType":"string","required":true},"ghostId":{"dataType":"string","required":true}},"validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 };
 const templateService = new ExpressTemplateService(models, {"noImplicitAdditionalProperties":"ignore","bodyCoercion":true});
 
@@ -320,6 +330,70 @@ export function RegisterRoutes(app: Router) {
 
               await templateService.apiHandler({
                 methodName: 'ready',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: undefined,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsLobbyController_addGhost: Record<string, TsoaRoute.ParameterSchema> = {
+                hostId: {"in":"query","name":"hostId","required":true,"dataType":"string"},
+                lobbyId: {"in":"query","name":"lobbyId","required":true,"dataType":"string"},
+                body: {"in":"body","name":"body","required":true,"ref":"IGhostData"},
+        };
+        app.post('/lobby/addGhost',
+            ...(fetchMiddlewares<RequestHandler>(LobbyController)),
+            ...(fetchMiddlewares<RequestHandler>(LobbyController.prototype.addGhost)),
+
+            async function LobbyController_addGhost(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsLobbyController_addGhost, request, response });
+
+                const controller = new LobbyController();
+
+              await templateService.apiHandler({
+                methodName: 'addGhost',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: undefined,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsLobbyController_updateGhost: Record<string, TsoaRoute.ParameterSchema> = {
+                hostId: {"in":"query","name":"hostId","required":true,"dataType":"string"},
+                lobbyId: {"in":"query","name":"lobbyId","required":true,"dataType":"string"},
+                body: {"in":"body","name":"body","required":true,"ref":"updateGhostDTO"},
+        };
+        app.patch('/lobby/updateGhost',
+            ...(fetchMiddlewares<RequestHandler>(LobbyController)),
+            ...(fetchMiddlewares<RequestHandler>(LobbyController.prototype.updateGhost)),
+
+            async function LobbyController_updateGhost(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsLobbyController_updateGhost, request, response });
+
+                const controller = new LobbyController();
+
+              await templateService.apiHandler({
+                methodName: 'updateGhost',
                 controller,
                 response,
                 next,
