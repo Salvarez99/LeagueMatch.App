@@ -4,6 +4,7 @@ import swaggerUi from "swagger-ui-express";
 import { ValidateError } from "tsoa";
 import { RegisterRoutes } from "./tsoa/routes";
 import swaggerDocument from "./tsoa/swagger.json";
+import {errorHandler} from "./middleware/errorHandler";
 
 export const app = express();
 app.use(express.json());
@@ -12,18 +13,4 @@ swaggerDocument.servers= [{url:"/league-match-app/us-central1/api"}];
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 RegisterRoutes(app);
 
-app.use(function errorHandler(
-  err: unknown,
-  req: express.Request,
-  res: express.Response,
-  next: express.NextFunction
-) {
-  if (err instanceof ValidateError) {
-    return res.status(422).json({
-      message: "Validation Failed",
-      details: err.fields,
-    });
-  }
-
-  next(err);
-});
+app.use(errorHandler);

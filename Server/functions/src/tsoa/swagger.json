@@ -164,6 +164,38 @@
 					"id"
 				],
 				"type": "object"
+			},
+			"createLobbyRequestDTO": {
+				"properties": {
+					"rankFilter": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array"
+					},
+					"championId": {
+						"type": "string",
+						"nullable": true
+					},
+					"hostPosition": {
+						"type": "string",
+						"nullable": true
+					},
+					"gameMode": {
+						"type": "string"
+					},
+					"gameMap": {
+						"type": "string"
+					},
+					"hostId": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"gameMap",
+					"hostId"
+				],
+				"type": "object"
 			}
 		},
 		"securitySchemes": {}
@@ -520,6 +552,99 @@
 					{
 						"in": "query",
 						"name": "targetUid",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/lobby/create": {
+			"post": {
+				"operationId": "Create",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"id": {
+											"type": "string"
+										},
+										"message": {
+											"type": "string"
+										},
+										"success": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"id",
+										"message",
+										"success"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/createLobbyRequestDTO"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/lobby/ready": {
+			"patch": {
+				"operationId": "Ready",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"message": {
+											"type": "string"
+										},
+										"success": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"message",
+										"success"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "lobbyId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
+						"name": "uid",
 						"required": true,
 						"schema": {
 							"type": "string"
