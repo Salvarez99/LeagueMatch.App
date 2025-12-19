@@ -138,6 +138,131 @@ export function RegisterRoutes(app: Router) {
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsUserController_sendFriendRequest: Record<string, TsoaRoute.ParameterSchema> = {
+                uid: {"in":"query","name":"uid","required":true,"dataType":"string"},
+                targetUid: {"in":"query","name":"targetUid","required":true,"dataType":"string"},
+        };
+        app.post('/user/sendFriendRequest',
+            ...(fetchMiddlewares<RequestHandler>(UserController)),
+            ...(fetchMiddlewares<RequestHandler>(UserController.prototype.sendFriendRequest)),
+
+            async function UserController_sendFriendRequest(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsUserController_sendFriendRequest, request, response });
+
+                const controller = new UserController();
+
+              await templateService.apiHandler({
+                methodName: 'sendFriendRequest',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: undefined,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsUserController_respondFriendRequest: Record<string, TsoaRoute.ParameterSchema> = {
+                uid: {"in":"query","name":"uid","required":true,"dataType":"string"},
+                incomingUid: {"in":"query","name":"incomingUid","required":true,"dataType":"string"},
+                accepted: {"in":"query","name":"accepted","required":true,"dataType":"boolean"},
+        };
+        app.patch('/user/respondFriendRequest',
+            ...(fetchMiddlewares<RequestHandler>(UserController)),
+            ...(fetchMiddlewares<RequestHandler>(UserController.prototype.respondFriendRequest)),
+
+            async function UserController_respondFriendRequest(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsUserController_respondFriendRequest, request, response });
+
+                const controller = new UserController();
+
+              await templateService.apiHandler({
+                methodName: 'respondFriendRequest',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: undefined,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsUserController_removeFriend: Record<string, TsoaRoute.ParameterSchema> = {
+                uid: {"in":"query","name":"uid","required":true,"dataType":"string"},
+                targetUid: {"in":"query","name":"targetUid","required":true,"dataType":"string"},
+        };
+        app.delete('/user/removeFriend',
+            ...(fetchMiddlewares<RequestHandler>(UserController)),
+            ...(fetchMiddlewares<RequestHandler>(UserController.prototype.removeFriend)),
+
+            async function UserController_removeFriend(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsUserController_removeFriend, request, response });
+
+                const controller = new UserController();
+
+              await templateService.apiHandler({
+                methodName: 'removeFriend',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: undefined,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsUserController_toggleBlock: Record<string, TsoaRoute.ParameterSchema> = {
+                uid: {"in":"query","name":"uid","required":true,"dataType":"string"},
+                targetUid: {"in":"query","name":"targetUid","required":true,"dataType":"string"},
+        };
+        app.patch('/user/toggleBlock',
+            ...(fetchMiddlewares<RequestHandler>(UserController)),
+            ...(fetchMiddlewares<RequestHandler>(UserController.prototype.toggleBlock)),
+
+            async function UserController_toggleBlock(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsUserController_toggleBlock, request, response });
+
+                const controller = new UserController();
+
+              await templateService.apiHandler({
+                methodName: 'toggleBlock',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: undefined,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 

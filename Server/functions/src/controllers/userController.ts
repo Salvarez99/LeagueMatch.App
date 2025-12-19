@@ -1,9 +1,10 @@
 import { userService } from "../services/userService";
-import { Body, Controller, Post, Route } from "tsoa";
+import { Body, Controller, Delete, Patch, Post, Query, Route } from "tsoa";
 import { AddUserRequestDTO, updateUserRequestDTO } from "./dtos/user.dto";
 
 @Route("user")
 export class UserController extends Controller {
+  
   @Post("add")
   async addUser(@Body() body: AddUserRequestDTO) {
     const createdUser = await userService.addUser(body);
@@ -16,105 +17,58 @@ export class UserController extends Controller {
     return { success: true, updatedUser };
   }
 
-  // async sendFriendRequest(req: Request, res: Response) {
-  //   try {
-  //     const uid = req.query.uid as string;
-  //     const targetUid = req.query.targetUid as string;
+  @Post("sendFriendRequest")
+  async sendFriendRequest(
+    @Query("uid") uid: string,
+    @Query("targetUid") targetUid: string
+  ) {
+    await userService.sendFriendRequest(uid, targetUid);
 
-  //     await userService.sendFriendRequest(uid, targetUid);
+    return {
+      success: true,
+      message: "Successfully sent friend request",
+    };
+  }
 
-  //     return res.status(200).json({
-  //       success: true,
-  //       message: "Successfully sent friend request",
-  //     });
-  //   } catch (err: any) {
-  //     if (err.statusCode) {
-  //       return res.status(err.statusCode).json({
-  //         success: false,
-  //         message: err.message,
-  //       });
-  //     }
-  //     return res.status(400).json({
-  //       success: false,
-  //       message: err.message,
-  //     });
-  //   }
-  // }
+  @Patch("respondFriendRequest")
+  async respondFriendRequest(
+    @Query("uid") uid: string,
+    @Query("incomingUid") incomingUid: string,
+    @Query("accepted") accepted: boolean
+  ) {
+    await userService.respondFriendRequest(uid, incomingUid, accepted);
 
-  // async respondFriendRequest(req: Request, res: Response) {
-  //   try {
-  //     const uid = req.query.uid as string;
-  //     const incomingUid = req.query.incomingUid as string;
-  //     const accepted = req.query.accepted === "true";
+    return {
+      success: true,
+      message: "Successfully added new friend",
+    };
+  }
 
-  //     await userService.respondFriendRequest(uid, incomingUid, accepted);
+  @Delete("removeFriend")
+  async removeFriend(
+    @Query("uid") uid: string,
+    @Query("targetUid") targetUid: string
+  ) {
+    await userService.removeFriend(uid, targetUid);
 
-  //     return res.status(200).json({
-  //       success: true,
-  //       message: "Successfully added new friend",
-  //     });
-  //   } catch (err: any) {
-  //     if (err.statusCode) {
-  //       return res.status(err.statusCode).json({
-  //         success: false,
-  //         message: err.message,
-  //       });
-  //     }
-  //     return res.status(400).json({
-  //       success: false,
-  //       message: err.message,
-  //     });
-  //   }
-  // }
+    return {
+      success: true,
+      message: "Successfully removed friend",
+    };
+  }
 
-  // async removeFriend(req: Request, res: Response) {
-  //   try {
-  //     const uid = req.query.uid as string;
-  //     const targetUid = req.query.targetUid as string;
+  @Patch("toggleBlock")
+  async toggleBlock(
+    @Query("uid") uid: string,
+    @Query("targetUid") targetUid: string
+  ) {
+    await userService.toggleBlock(uid, targetUid);
 
-  //     await userService.removeFriend(uid, targetUid);
-
-  //     return res.status(200).json({
-  //       success: true,
-  //       message: "Successfully removed friend",
-  //     });
-  //   } catch (err: any) {
-  //     if (err.statusCode) {
-  //       return res.status(err.statusCode).json({
-  //         success: false,
-  //         message: err.message,
-  //       });
-  //     }
-  //     return res.status(400).json({
-  //       success: false,
-  //       message: err.message,
-  //     });
-  //   }
-  // }
-  // async toggleBlock(req: Request, res: Response) {
-  //   try {
-  //     const uid = req.query.uid as string;
-  //     const targetUid = req.query.targetUid as string;
-
-  //     await userService.toggleBlock(uid, targetUid);
-
-  //     return res.status(200).json({
-  //       success: true,
-  //       message: "Successfully blocked user",
-  //     });
-  //   } catch (err: any) {
-  //     if (err.statusCode) {
-  //       return res.status(err.statusCode).json({
-  //         success: false,
-  //         message: err.message,
-  //       });
-  //     }
-  //     return res.status(400).json({
-  //       success: false,
-  //       message: err.message,
-  //     });
-  //   }
-  // }
+    return {
+      success: true,
+      message: "Successfully blocked user",
+    };
+  }
 }
 
 // Singleton export
