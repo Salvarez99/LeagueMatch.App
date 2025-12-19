@@ -5,7 +5,7 @@
     "tsoa:spec": "tsoa spec",
     "tsoa:routes": "tsoa routes",
     "tsoa:gen": "npm run tsoa:spec && npm run tsoa:routes",
-    "build": "tsc && npm run tsoa:gen && copyfiles -u 1 src/tsoa/swagger.json lib/tsoa",
+    "build": "tsc",
     "watch": "tsc --watch",
     "emus": "concurrently \"npm run watch\"  \"firebase emulators:start\"",
     "serve": "npm run build && firebase emulators:start --only functions",

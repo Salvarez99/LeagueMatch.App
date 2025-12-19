@@ -3,12 +3,7 @@
   "controllerPathGlobs": ["src/controllers/**/*.ts"],
   "spec": {
     "outputDirectory": "src/tsoa",
-    "specVersion": 3,
-    "servers": [
-      {
-        "url": "/league-match-app/us-central1/api"
-      }
-    ]
+    "specVersion": 3
   },
   "routes": {
     "routesDir": "src/tsoa"
