@@ -164,11 +164,11 @@ export class Lobby implements ILobby {
     }
 
     let index = -1;
-    if (slotIndex !== null) {
+    if (slotIndex != null ) {
       index = slotIndex;
     } else index = this.players.findIndex((p) => p === null);
 
-    console.log(index);
+    console.log(`index: ${index}`);
     if (index === -1) throw new Error("Lobby is full");
     this.players[index] = new Player(
       uid,
