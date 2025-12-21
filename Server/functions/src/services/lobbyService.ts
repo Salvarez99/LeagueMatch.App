@@ -192,7 +192,7 @@ export class LobbyService {
       uid,
       action: (lobby) => {
         lobby.players = lobby.players.map((p) =>
-          p.uid === uid ? { ...p, championId } : p
+          p && p.uid === uid ? { ...p, championId } : p
         );
       },
       states: [LobbyState.IDLE, LobbyState.FINISHED],
