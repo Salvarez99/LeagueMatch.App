@@ -23,7 +23,9 @@ export default function LobbyButtons({
   const [disabled, setDisabled] = useState(false);
 
   const isLobbyFull = lobby.currentPlayers === lobby.maxPlayers;
-  const playersReady = lobby.players.every((p) => p.ready);
+  const playersReady = lobby.players.every(
+    (p) => p === null || p.ready === true
+  );
 
   const isIdle = lobby.state === LobbyState.IDLE;
   const isSearching = lobby.state === LobbyState.SEARCHING;

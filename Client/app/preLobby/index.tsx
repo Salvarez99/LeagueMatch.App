@@ -49,11 +49,12 @@ export default function PreLobby() {
         <HostCard
           host={{
             uid: currentUid,
-            username:appUser.username,
+            username: appUser.username,
             riotId: appUser?.riotId,
             championId: championId,
             position: position,
             ready: false, // <-- REQUIRED to satisfy ILobbyPlayer
+            isGhost: false,
           }}
           isLobby={false}
         />
@@ -61,10 +62,7 @@ export default function PreLobby() {
         <GameModeCarousel setGameMap={setGameMap} setGameMode={setGameMode} />
 
         <View style={styles.champPosContainerStyle}>
-          <PickChampionButton
-            setChampionId={setChampionId}
-            gameMap={gameMap}
-          />
+          <PickChampionButton setChampionId={setChampionId} gameMap={gameMap} />
           <PickPositionDropdown
             items={["Top", "Jungle", "Middle", "Adc", "Support"]}
             value={position}

@@ -53,7 +53,7 @@ export function useLobbyActions(lobbyId: string, uid: string) {
     });
 
     try {
-      await lobbyApi.kickPlayer(lobbyId, uid, { uid: targetUid });
+      await lobbyApi.kickPlayer(lobbyId, uid, targetUid);
     } catch (err: unknown) {
       const error = err as AxiosError;
       LOG.error("Kick failed", error.response?.data);
@@ -78,7 +78,7 @@ export function useLobbyActions(lobbyId: string, uid: string) {
     championId: string
   ) => {
     try {
-      await lobbyApi.updateChampion(lobbyId, playerUid, { championId });
+      await lobbyApi.updateChampion(lobbyId, playerUid, championId);
       console.log("Champion updated", playerUid, championId);
     } catch (err: unknown) {
       const error = err as AxiosError;
@@ -92,7 +92,7 @@ export function useLobbyActions(lobbyId: string, uid: string) {
       console.log("Ghost added");
     } catch (err: unknown) {
       const error = err as AxiosError;
-      console.error("Failed to add ghost:",  error.response?.data);
+      console.error("Failed to add ghost:", error.response?.data);
     }
   };
 

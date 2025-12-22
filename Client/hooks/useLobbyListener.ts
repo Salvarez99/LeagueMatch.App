@@ -34,7 +34,7 @@ export function useLobbyListener(lobbyId: string, uid: string) {
 
         setLobby(data);
 
-        const isInLobby = players.some((p) => p.uid === uid);
+        const isInLobby = players.some((p) => p && p.uid === uid);
         const isKicked = kicked.includes(uid);
 
         // Kicked
