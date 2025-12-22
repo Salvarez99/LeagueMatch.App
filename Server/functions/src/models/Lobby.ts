@@ -32,7 +32,7 @@ export class Lobby implements ILobby {
     gameMode: string | null,
     hostPosition: string | null = null,
     championId: string | null = null,
-    ranksFilter: string[] | null = [],
+    ranksFilter: string[] | null = []
   ) {
     if (!hostId || !gameMap)
       throw new Error("hostId and gameMap are required21321312");
@@ -164,11 +164,11 @@ export class Lobby implements ILobby {
     }
 
     let index = -1;
-    if (slotIndex !== null) {
+    if (slotIndex != null ) {
       index = slotIndex;
     } else index = this.players.findIndex((p) => p === null);
 
-    console.log(index);
+    console.log(`index: ${index}`);
     if (index === -1) throw new Error("Lobby is full");
     this.players[index] = new Player(
       uid,
@@ -211,7 +211,17 @@ export class Lobby implements ILobby {
 
   updateGhostPosition(ghostId: string, newPostion: string) {
     const index = this.players.findIndex((p) => p.uid === ghostId);
+
+    if (index === -1) {
+      throw new Error(`Ghost player ${ghostId} not found in lobby`);
+    }
+
     const ghost = this.players[index];
+
+    if (!ghost || !ghost.isGhost) {
+      throw new Error(`Player ${ghostId} is not a ghost`);
+    }
+
     if (!this.filter.positionsNeeded.includes(newPostion)) {
       throw new Error(`Position ${newPostion} no longer available`);
     }

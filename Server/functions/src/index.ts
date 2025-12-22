@@ -1,6 +1,5 @@
-import { lobbyController } from "./controllers/lobbyController";
-import { userController } from "./controllers/userController";
-import { exportFunctions } from "./utils/exportFunctions";
+import "reflect-metadata";
+import * as functions from "firebase-functions";
+import { app } from "./app";
 
-Object.assign(exports, exportFunctions(lobbyController, "lobby"));
-Object.assign(exports, exportFunctions(userController, "user"));
+export const api = functions.https.onRequest(app);

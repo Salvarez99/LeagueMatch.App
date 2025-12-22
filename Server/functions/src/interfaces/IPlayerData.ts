@@ -1,4 +1,4 @@
-export interface IPlayerData {
+export type IPlayerData = {
   uid: string;
   riotId: string;
   position? : string | null;

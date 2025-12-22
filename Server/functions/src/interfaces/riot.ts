@@ -1,10 +1,10 @@
-export interface IRiotAccount {
+export type IRiotAccount = {
   puuid: string;
   gameName: string;
   tagLine: string;
-}
+};
 
-export interface IRiotRankEntry {
+export type IRiotRankEntry = {
   leagueId: string;
   queueType: string;
   tier: string;
@@ -13,4 +13,4 @@ export interface IRiotRankEntry {
   wins: number;
   losses: number;
   hotStreak: boolean;
-}
+};

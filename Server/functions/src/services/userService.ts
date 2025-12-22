@@ -8,6 +8,10 @@ import { IUserData } from "../interfaces/IUserData";
 import { db } from "../firebaseConfig";
 import { UserAction } from "../transactions/actions/userAction";
 import { UserPairAction } from "../transactions/actions/userPairAction";
+import {
+  AddUserRequestDTO,
+  updateUserRequestDTO,
+} from "../controllers/dtos/user.dto";
 
 export class UserService {
   private usersRef = db.collection("users");
@@ -15,7 +19,7 @@ export class UserService {
   constructor() {}
 
   // Add a new user
-  async addUser(userData: IUserData) {
+  async addUser(userData: AddUserRequestDTO) {
     const user = new User(userData);
 
     if (!user.id || !user.username || !user.email) {
@@ -37,17 +41,17 @@ export class UserService {
   }
 
   // Update user with Riot info
-  async updateUser(uid: string, riotId: string) {
-    if (!uid) {
+  async updateUser(updateData: updateUserRequestDTO) {
+    if (!updateData.id) {
       throw new Error.UnauthorizedError("uid is required");
     }
 
-    if (!riotId) {
+    if (!updateData.riotId) {
       throw new Error.BadRequestError("riotId is required");
     }
 
     // 1️⃣ Resolve Riot data OUTSIDE the transaction
-    const [gameName, tag] = riotId.split("#");
+    const [gameName, tag] = updateData.riotId.split("#");
 
     if (!gameName || !tag) {
       throw new Error.BadRequestError("riotId must be in the format name#tag");
@@ -64,9 +68,9 @@ export class UserService {
 
     // 2️⃣ Transactionally update the user
     const updatedUser = await UserAction({
-      uid,
+      uid: updateData.id,
       action: (user) => {
-        user.setRiotId(riotId);
+        user.setRiotId(updateData.riotId);
         user.setPuuid(account.puuid);
         user.setRank(rank);
         return user;
@@ -85,7 +89,7 @@ export class UserService {
       targetUid,
       action: (user, target) => {
         const isBlocked = target.blockedUsers.some((u) => u === user.id);
-        console.log(isBlocked)
+        console.log(isBlocked);
         if (!isBlocked) User.sendFriendRequest(user, target);
         else throw new Error.BadRequestError("Target has user blocked");
       },

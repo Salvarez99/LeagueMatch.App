@@ -1,4 +1,4 @@
-export interface IGhostData {
+export type IGhostData = {
   ghostId: string;
   index: number;
   gameMap: string;
