@@ -1,5 +1,5 @@
 // interfaces/ILobbyCreateData.ts
-export interface ILobbyCreateData {
+export type ILobbyCreateData = {
   hostId: string;
   gameMap: string;
   gameMode?: string | null;
@@ -9,7 +9,7 @@ export interface ILobbyCreateData {
 }
 
 // interfaces/IFindLobbyData.ts
-export interface IFindLobbyData {
+export type IFindLobbyData = {
   gameMap: string;
   gameMode: string;
   desiredPosition?: string;
@@ -18,7 +18,7 @@ export interface IFindLobbyData {
 }
 
 // interfaces/IJoinLobbyData.ts
-export interface IJoinLobbyData {
+export type IJoinLobbyData = {
   uid: string;
   position?: string | null;
   championId?: string | null;

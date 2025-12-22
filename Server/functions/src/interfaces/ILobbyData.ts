@@ -1,7 +1,7 @@
 import { IPlayerData } from "./IPlayerData";
 import { ILobbyFilter } from "./ILobbyFilter";
 
-export interface ILobbyData {
+export type ILobbyData ={
   // id:string;
   hostId: string;
   riotId: string;
