@@ -1,4 +1,4 @@
-import { db } from "../firebaseConfig";
+import { db } from "./../firebaseConfig";
 import { User } from "../models/User";
 import * as Error from "../utils/AppError";
 
