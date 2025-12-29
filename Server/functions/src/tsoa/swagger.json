@@ -154,14 +154,10 @@
 				"properties": {
 					"riotId": {
 						"type": "string"
-					},
-					"id": {
-						"type": "string"
 					}
 				},
 				"required": [
-					"riotId",
-					"id"
+					"riotId"
 				],
 				"type": "object"
 			},
@@ -296,7 +292,12 @@
 				"type": "object"
 			}
 		},
-		"securitySchemes": {}
+		"securitySchemes": {
+			"firebaseAuth": {
+				"type": "http",
+				"scheme": "bearer"
+			}
+		}
 	},
 	"info": {
 		"title": "functions",
@@ -444,7 +445,11 @@
 						}
 					}
 				},
-				"security": [],
+				"security": [
+					{
+						"firebaseAuth": []
+					}
+				],
 				"parameters": [],
 				"requestBody": {
 					"required": true,

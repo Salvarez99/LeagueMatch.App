@@ -3,9 +3,16 @@
   "controllerPathGlobs": ["src/controllers/**/*.ts"],
   "spec": {
     "outputDirectory": "src/tsoa",
-    "specVersion": 3
+    "specVersion": 3,
+    "securityDefinitions": {
+      "firebaseAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    }
   },
   "routes": {
-    "routesDir": "src/tsoa"
+    "routesDir": "src/tsoa",
+    "authenticationModule": "src/auth/expressAuth.ts"
   }
 }

@@ -6,6 +6,5 @@ export type AddUserRequestDTO = {
 };
 
 export type updateUserRequestDTO = {
-  id: string;
   riotId: string;
 };
