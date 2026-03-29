@@ -7,6 +7,7 @@ import {
   Post,
   Query,
   Route,
+  Security,
   Get,
   Path,
 } from "tsoa";
@@ -21,6 +22,7 @@ import {
 
 @Route("lobby")
 export class LobbyController extends Controller {
+  @Security("firebaseAuth")
   @Post("create")
   async create(@Body() body: createLobbyRequestDTO) {
     const {
@@ -48,6 +50,7 @@ export class LobbyController extends Controller {
     };
   }
 
+  @Security("firebaseAuth")
   @Patch("ready")
   async ready(@Query("lobbyId") lobbyId: string, @Query("uid") uid: string) {
     await lobbyService.updateReadyStatus(lobbyId, uid);
@@ -58,11 +61,12 @@ export class LobbyController extends Controller {
     };
   }
 
+  @Security("firebaseAuth")
   @Post("addGhost")
   async addGhost(
     @Query("hostId") hostId: string,
     @Query("lobbyId") lobbyId: string,
-    @Body() body: IGhostData
+    @Body() body: IGhostData,
   ) {
     const { ghostId, index, gameMap, position, championId } = body;
 
@@ -81,11 +85,12 @@ export class LobbyController extends Controller {
   }
 
   //Only updates ghost position
+  @Security("firebaseAuth")
   @Patch("updateGhost")
   async updateGhost(
     @Query("hostId") hostId: string,
     @Query("lobbyId") lobbyId: string,
-    @Body() body: updateGhostDTO
+    @Body() body: updateGhostDTO,
   ) {
     const { ghostId, position, championId } = body;
 
@@ -101,10 +106,11 @@ export class LobbyController extends Controller {
     };
   }
 
+  @Security("firebaseAuth")
   @Patch("initSearch")
   async initSearch(
     @Query("uid") uid: string,
-    @Query("lobbyId") lobbyId: string
+    @Query("lobbyId") lobbyId: string,
   ) {
     await lobbyService.initSearch(lobbyId, uid);
 
@@ -114,11 +120,12 @@ export class LobbyController extends Controller {
     };
   }
 
+  @Security("firebaseAuth")
   @Delete("kick")
   async kick(
     @Query("hostId") hostId: string,
     @Query("lobbyId") lobbyId: string,
-    @Query("targetUid") targetUid: string
+    @Query("targetUid") targetUid: string,
   ) {
     await lobbyService.kickPlayer(lobbyId, hostId, targetUid);
 
@@ -128,11 +135,12 @@ export class LobbyController extends Controller {
     };
   }
 
+  @Security("firebaseAuth")
   @Patch("updateDiscord")
   async updateDiscord(
     @Query("hostId") hostId: string,
     @Query("lobbyId") lobbyId: string,
-    @Body() body: updateDiscordDTO
+    @Body() body: updateDiscordDTO,
   ) {
     const { discordLink } = body;
 
@@ -141,11 +149,12 @@ export class LobbyController extends Controller {
     return { success: true };
   }
 
+  @Security("firebaseAuth")
   @Patch("updateChampion")
   async updateChampion(
     @Query("uid") uid: string,
     @Query("lobbyId") lobbyId: string,
-    @Query("championId") championId: string
+    @Query("championId") championId: string,
   ) {
     await lobbyService.updateChampion(lobbyId, uid, championId);
 
@@ -155,6 +164,7 @@ export class LobbyController extends Controller {
     };
   }
 
+  @Security("firebaseAuth")
   @Get("getAvailableLobbies")
   async getAvailableLobbies() {
     const lobbies = await lobbyService.getAvailableLobbies();
@@ -166,6 +176,7 @@ export class LobbyController extends Controller {
     };
   }
 
+  @Security("firebaseAuth")
   @Get("get")
   async get(@Query("lobbyId") lobbyId: string) {
     const lobby = await lobbyService.getLobbyById(lobbyId);
@@ -177,6 +188,7 @@ export class LobbyController extends Controller {
     };
   }
 
+  @Security("firebaseAuth")
   @Post("find")
   async find(@Query("uid") uid: string, @Body() body: findLobbyDTO) {
     const { gameMap, gameMode, desiredPosition = null, ranks = [] } = body;
@@ -196,6 +208,7 @@ export class LobbyController extends Controller {
     };
   }
 
+  @Security("firebaseAuth")
   @Patch("join")
   async join(@Query("lobbyId") lobbyId: string, @Body() body: joinLobbyDTO) {
     const { uid, position = null, championId = null } = body;
@@ -213,6 +226,7 @@ export class LobbyController extends Controller {
     };
   }
 
+  @Security("firebaseAuth")
   @Delete("leave")
   async leave(@Query("uid") uid: string, @Query("lobbyId") lobbyId: string) {
     await lobbyService.leaveById(lobbyId, uid);

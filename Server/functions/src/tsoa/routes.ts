@@ -180,6 +180,7 @@ export function RegisterRoutes(app: Router) {
                 targetUid: {"in":"query","name":"targetUid","required":true,"dataType":"string"},
         };
         app.post('/user/sendFriendRequest',
+            authenticateMiddleware([{"firebaseAuth":[]}]),
             ...(fetchMiddlewares<RequestHandler>(UserController)),
             ...(fetchMiddlewares<RequestHandler>(UserController.prototype.sendFriendRequest)),
 
@@ -212,6 +213,7 @@ export function RegisterRoutes(app: Router) {
                 accepted: {"in":"query","name":"accepted","required":true,"dataType":"boolean"},
         };
         app.patch('/user/respondFriendRequest',
+            authenticateMiddleware([{"firebaseAuth":[]}]),
             ...(fetchMiddlewares<RequestHandler>(UserController)),
             ...(fetchMiddlewares<RequestHandler>(UserController.prototype.respondFriendRequest)),
 
@@ -243,6 +245,7 @@ export function RegisterRoutes(app: Router) {
                 targetUid: {"in":"query","name":"targetUid","required":true,"dataType":"string"},
         };
         app.delete('/user/removeFriend',
+            authenticateMiddleware([{"firebaseAuth":[]}]),
             ...(fetchMiddlewares<RequestHandler>(UserController)),
             ...(fetchMiddlewares<RequestHandler>(UserController.prototype.removeFriend)),
 
@@ -274,6 +277,7 @@ export function RegisterRoutes(app: Router) {
                 targetUid: {"in":"query","name":"targetUid","required":true,"dataType":"string"},
         };
         app.patch('/user/toggleBlock',
+            authenticateMiddleware([{"firebaseAuth":[]}]),
             ...(fetchMiddlewares<RequestHandler>(UserController)),
             ...(fetchMiddlewares<RequestHandler>(UserController.prototype.toggleBlock)),
 
@@ -304,6 +308,7 @@ export function RegisterRoutes(app: Router) {
                 body: {"in":"body","name":"body","required":true,"ref":"createLobbyRequestDTO"},
         };
         app.post('/lobby/create',
+            authenticateMiddleware([{"firebaseAuth":[]}]),
             ...(fetchMiddlewares<RequestHandler>(LobbyController)),
             ...(fetchMiddlewares<RequestHandler>(LobbyController.prototype.create)),
 
@@ -335,6 +340,7 @@ export function RegisterRoutes(app: Router) {
                 uid: {"in":"query","name":"uid","required":true,"dataType":"string"},
         };
         app.patch('/lobby/ready',
+            authenticateMiddleware([{"firebaseAuth":[]}]),
             ...(fetchMiddlewares<RequestHandler>(LobbyController)),
             ...(fetchMiddlewares<RequestHandler>(LobbyController.prototype.ready)),
 
@@ -367,6 +373,7 @@ export function RegisterRoutes(app: Router) {
                 body: {"in":"body","name":"body","required":true,"ref":"IGhostData"},
         };
         app.post('/lobby/addGhost',
+            authenticateMiddleware([{"firebaseAuth":[]}]),
             ...(fetchMiddlewares<RequestHandler>(LobbyController)),
             ...(fetchMiddlewares<RequestHandler>(LobbyController.prototype.addGhost)),
 
@@ -399,6 +406,7 @@ export function RegisterRoutes(app: Router) {
                 body: {"in":"body","name":"body","required":true,"ref":"updateGhostDTO"},
         };
         app.patch('/lobby/updateGhost',
+            authenticateMiddleware([{"firebaseAuth":[]}]),
             ...(fetchMiddlewares<RequestHandler>(LobbyController)),
             ...(fetchMiddlewares<RequestHandler>(LobbyController.prototype.updateGhost)),
 
@@ -430,6 +438,7 @@ export function RegisterRoutes(app: Router) {
                 lobbyId: {"in":"query","name":"lobbyId","required":true,"dataType":"string"},
         };
         app.patch('/lobby/initSearch',
+            authenticateMiddleware([{"firebaseAuth":[]}]),
             ...(fetchMiddlewares<RequestHandler>(LobbyController)),
             ...(fetchMiddlewares<RequestHandler>(LobbyController.prototype.initSearch)),
 
@@ -462,6 +471,7 @@ export function RegisterRoutes(app: Router) {
                 targetUid: {"in":"query","name":"targetUid","required":true,"dataType":"string"},
         };
         app.delete('/lobby/kick',
+            authenticateMiddleware([{"firebaseAuth":[]}]),
             ...(fetchMiddlewares<RequestHandler>(LobbyController)),
             ...(fetchMiddlewares<RequestHandler>(LobbyController.prototype.kick)),
 
@@ -494,6 +504,7 @@ export function RegisterRoutes(app: Router) {
                 body: {"in":"body","name":"body","required":true,"ref":"updateDiscordDTO"},
         };
         app.patch('/lobby/updateDiscord',
+            authenticateMiddleware([{"firebaseAuth":[]}]),
             ...(fetchMiddlewares<RequestHandler>(LobbyController)),
             ...(fetchMiddlewares<RequestHandler>(LobbyController.prototype.updateDiscord)),
 
@@ -526,6 +537,7 @@ export function RegisterRoutes(app: Router) {
                 championId: {"in":"query","name":"championId","required":true,"dataType":"string"},
         };
         app.patch('/lobby/updateChampion',
+            authenticateMiddleware([{"firebaseAuth":[]}]),
             ...(fetchMiddlewares<RequestHandler>(LobbyController)),
             ...(fetchMiddlewares<RequestHandler>(LobbyController.prototype.updateChampion)),
 
@@ -555,6 +567,7 @@ export function RegisterRoutes(app: Router) {
         const argsLobbyController_getAvailableLobbies: Record<string, TsoaRoute.ParameterSchema> = {
         };
         app.get('/lobby/getAvailableLobbies',
+            authenticateMiddleware([{"firebaseAuth":[]}]),
             ...(fetchMiddlewares<RequestHandler>(LobbyController)),
             ...(fetchMiddlewares<RequestHandler>(LobbyController.prototype.getAvailableLobbies)),
 
@@ -585,6 +598,7 @@ export function RegisterRoutes(app: Router) {
                 lobbyId: {"in":"query","name":"lobbyId","required":true,"dataType":"string"},
         };
         app.get('/lobby/get',
+            authenticateMiddleware([{"firebaseAuth":[]}]),
             ...(fetchMiddlewares<RequestHandler>(LobbyController)),
             ...(fetchMiddlewares<RequestHandler>(LobbyController.prototype.get)),
 
@@ -616,6 +630,7 @@ export function RegisterRoutes(app: Router) {
                 body: {"in":"body","name":"body","required":true,"ref":"findLobbyDTO"},
         };
         app.post('/lobby/find',
+            authenticateMiddleware([{"firebaseAuth":[]}]),
             ...(fetchMiddlewares<RequestHandler>(LobbyController)),
             ...(fetchMiddlewares<RequestHandler>(LobbyController.prototype.find)),
 
@@ -647,6 +662,7 @@ export function RegisterRoutes(app: Router) {
                 body: {"in":"body","name":"body","required":true,"ref":"joinLobbyDTO"},
         };
         app.patch('/lobby/join',
+            authenticateMiddleware([{"firebaseAuth":[]}]),
             ...(fetchMiddlewares<RequestHandler>(LobbyController)),
             ...(fetchMiddlewares<RequestHandler>(LobbyController.prototype.join)),
 
@@ -678,6 +694,7 @@ export function RegisterRoutes(app: Router) {
                 lobbyId: {"in":"query","name":"lobbyId","required":true,"dataType":"string"},
         };
         app.delete('/lobby/leave',
+            authenticateMiddleware([{"firebaseAuth":[]}]),
             ...(fetchMiddlewares<RequestHandler>(LobbyController)),
             ...(fetchMiddlewares<RequestHandler>(LobbyController.prototype.leave)),
 
