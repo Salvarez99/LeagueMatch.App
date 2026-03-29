@@ -25,16 +25,17 @@ export class UserController extends Controller {
   @Post("update")
   async updateUser(
     @Request() req: ExpressRequest,
-    @Body() body: updateUserRequestDTO
+    @Body() body: updateUserRequestDTO,
   ) {
     const updatedUser = await userService.updateUser(req.user!.uid, body);
     return { success: true, updatedUser };
   }
 
+  @Security("firebaseAuth")
   @Post("sendFriendRequest")
   async sendFriendRequest(
     @Query("uid") uid: string,
-    @Query("targetUid") targetUid: string
+    @Query("targetUid") targetUid: string,
   ) {
     await userService.sendFriendRequest(uid, targetUid);
 
@@ -43,12 +44,12 @@ export class UserController extends Controller {
       message: "Successfully sent friend request",
     };
   }
-
+  @Security("firebaseAuth")
   @Patch("respondFriendRequest")
   async respondFriendRequest(
     @Query("uid") uid: string,
     @Query("incomingUid") incomingUid: string,
-    @Query("accepted") accepted: boolean
+    @Query("accepted") accepted: boolean,
   ) {
     await userService.respondFriendRequest(uid, incomingUid, accepted);
 
@@ -57,11 +58,11 @@ export class UserController extends Controller {
       message: "Successfully added new friend",
     };
   }
-
+  @Security("firebaseAuth")
   @Delete("removeFriend")
   async removeFriend(
     @Query("uid") uid: string,
-    @Query("targetUid") targetUid: string
+    @Query("targetUid") targetUid: string,
   ) {
     await userService.removeFriend(uid, targetUid);
 
@@ -70,11 +71,11 @@ export class UserController extends Controller {
       message: "Successfully removed friend",
     };
   }
-
+  @Security("firebaseAuth")
   @Patch("toggleBlock")
   async toggleBlock(
     @Query("uid") uid: string,
-    @Query("targetUid") targetUid: string
+    @Query("targetUid") targetUid: string,
   ) {
     await userService.toggleBlock(uid, targetUid);
 
