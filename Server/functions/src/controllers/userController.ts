@@ -1,19 +1,33 @@
 import { userService } from "../services/userService";
-import { Body, Controller, Delete, Patch, Post, Query, Route } from "tsoa";
+import {
+  Body,
+  Controller,
+  Delete,
+  Patch,
+  Post,
+  Query,
+  Route,
+  Security,
+  Request,
+} from "tsoa";
+import { Request as ExpressRequest } from "express";
 import { AddUserRequestDTO, updateUserRequestDTO } from "./dtos/user.dto";
 
 @Route("user")
 export class UserController extends Controller {
-  
   @Post("add")
   async addUser(@Body() body: AddUserRequestDTO) {
     const createdUser = await userService.addUser(body);
     return { success: true, createdUser };
   }
 
+  @Security("firebaseAuth")
   @Post("update")
-  async updateUser(@Body() body: updateUserRequestDTO) {
-    const updatedUser = await userService.updateUser(body);
+  async updateUser(
+    @Request() req: ExpressRequest,
+    @Body() body: updateUserRequestDTO
+  ) {
+    const updatedUser = await userService.updateUser(req.user!.uid, body);
     return { success: true, updatedUser };
   }
 

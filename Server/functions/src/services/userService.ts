@@ -41,8 +41,8 @@ export class UserService {
   }
 
   // Update user with Riot info
-  async updateUser(updateData: updateUserRequestDTO) {
-    if (!updateData.id) {
+  async updateUser(uid: string, updateData: updateUserRequestDTO) {
+    if (!uid) {
       throw new Error.UnauthorizedError("uid is required");
     }
 
@@ -68,7 +68,7 @@ export class UserService {
 
     // 2️⃣ Transactionally update the user
     const updatedUser = await UserAction({
-      uid: updateData.id,
+      uid,
       action: (user) => {
         user.setRiotId(updateData.riotId);
         user.setPuuid(account.puuid);

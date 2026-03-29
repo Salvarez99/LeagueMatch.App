@@ -1,6 +1,6 @@
 export const DEV_CONFIG = {
   DEV_MODE: true,
-  AUTO_lINK_RIOT_ID: false,
+  AUTO_lINK_RIOT_ID: true,
   TEST_USERNAME: "Scarose",
   TEST_EMAIL: "test@email.com",
   TEST_PASSWORD: "123456",

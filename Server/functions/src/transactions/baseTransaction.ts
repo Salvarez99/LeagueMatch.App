@@ -1,4 +1,4 @@
-import { db } from "../firebaseConfig";
+import { db } from "./../firebaseConfig";
 import * as Error from "../utils/AppError";
 import type { DocumentReference, DocumentData, DocumentSnapshot } from "firebase-admin/firestore";
 
