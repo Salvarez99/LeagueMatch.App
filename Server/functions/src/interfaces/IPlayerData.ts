@@ -1,17 +1,3 @@
-export type IPlayerData = {
-  uid: string;
-  riotId: string;
-  position? : string | null;
-  championId?: string | null;
-  ready: boolean;
-}
+import type { ILobbyPlayer } from "@leaguematch/shared";
 
-/*
-{
-  "uid": "1",
-  "riotId": "ピーチ#NA01",
-  "position": "Middle",
-  "championId": "Nidalee",
-  "ready": false
-}
-*/
+export type IPlayerData = ILobbyPlayer;

@@ -1,30 +1,45 @@
-import { lobbyService } from "../services/lobbyService";
 import {
-  Body,
   Controller,
-  Delete,
-  Patch,
   Post,
-  Query,
-  Route,
-  Security,
+  Patch,
+  Delete,
   Get,
-  Path,
-} from "tsoa";
-import { IGhostData } from "../interfaces/IGhostData";
+  Body,
+  Query,
+  UseGuards,
+  HttpCode,
+  HttpStatus,
+} from "@nestjs/common";
 import {
-  createLobbyRequestDTO,
-  findLobbyDTO,
-  joinLobbyDTO,
-  updateDiscordDTO,
-  updateGhostDTO,
-} from "./dtos/lobby.dto";
+  ApiBearerAuth,
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+} from "@nestjs/swagger";
+import { FirebaseAuthGuard } from "../../common/guards/firebase-auth.guard";
+import { LobbyService } from "./lobby.service";
+import {
+  CreateLobbyRequestDto,
+  UpdateGhostDto,
+  UpdateDiscordDto,
+  FindLobbyDto,
+  JoinLobbyDto,
+} from "../../common/dtos/lobby.dto";
 
-@Route("lobby")
-export class LobbyController extends Controller {
-  @Security("firebaseAuth")
+@ApiTags("lobby")
+@Controller("lobby")
+@ApiBearerAuth("firebaseAuth")
+export class LobbyController {
+  constructor(private readonly lobbyService: LobbyService) {}
+
   @Post("create")
-  async create(@Body() body: createLobbyRequestDTO) {
+  @UseGuards(FirebaseAuthGuard)
+  @ApiOperation({ summary: "Create a new lobby" })
+  @ApiResponse({
+    status: 201,
+    description: "Lobby created successfully",
+  })
+  async create(@Body() body: CreateLobbyRequestDto) {
     const {
       hostId,
       gameMap,
@@ -34,7 +49,7 @@ export class LobbyController extends Controller {
       rankFilter = [],
     } = body;
 
-    const newLobby = await lobbyService.create({
+    const newLobby = await this.lobbyService.create({
       hostId,
       gameMap,
       gameMode,
@@ -50,10 +65,11 @@ export class LobbyController extends Controller {
     };
   }
 
-  @Security("firebaseAuth")
   @Patch("ready")
+  @UseGuards(FirebaseAuthGuard)
+  @ApiOperation({ summary: "Update ready status" })
   async ready(@Query("lobbyId") lobbyId: string, @Query("uid") uid: string) {
-    await lobbyService.updateReadyStatus(lobbyId, uid);
+    await this.lobbyService.updateReadyStatus(lobbyId, uid);
 
     return {
       success: true,
@@ -61,16 +77,17 @@ export class LobbyController extends Controller {
     };
   }
 
-  @Security("firebaseAuth")
   @Post("addGhost")
+  @UseGuards(FirebaseAuthGuard)
+  @ApiOperation({ summary: "Add ghost player to lobby" })
   async addGhost(
     @Query("hostId") hostId: string,
     @Query("lobbyId") lobbyId: string,
-    @Body() body: IGhostData,
+    @Body() body: any,
   ) {
     const { ghostId, index, gameMap, position, championId } = body;
 
-    await lobbyService.addGhost(lobbyId, hostId, {
+    await this.lobbyService.addGhost(lobbyId, hostId, {
       ghostId,
       index,
       gameMap,
@@ -84,17 +101,17 @@ export class LobbyController extends Controller {
     };
   }
 
-  //Only updates ghost position
-  @Security("firebaseAuth")
   @Patch("updateGhost")
+  @UseGuards(FirebaseAuthGuard)
+  @ApiOperation({ summary: "Update ghost player" })
   async updateGhost(
     @Query("hostId") hostId: string,
     @Query("lobbyId") lobbyId: string,
-    @Body() body: updateGhostDTO,
+    @Body() body: UpdateGhostDto,
   ) {
     const { ghostId, position, championId } = body;
 
-    await lobbyService.updateGhost(lobbyId, hostId, {
+    await this.lobbyService.updateGhost(lobbyId, hostId, {
       ghostId,
       position,
       championId,
@@ -106,13 +123,14 @@ export class LobbyController extends Controller {
     };
   }
 
-  @Security("firebaseAuth")
   @Patch("initSearch")
+  @UseGuards(FirebaseAuthGuard)
+  @ApiOperation({ summary: "Initialize lobby search" })
   async initSearch(
     @Query("uid") uid: string,
     @Query("lobbyId") lobbyId: string,
   ) {
-    await lobbyService.initSearch(lobbyId, uid);
+    await this.lobbyService.initSearch(lobbyId, uid);
 
     return {
       success: true,
@@ -120,14 +138,15 @@ export class LobbyController extends Controller {
     };
   }
 
-  @Security("firebaseAuth")
   @Delete("kick")
+  @UseGuards(FirebaseAuthGuard)
+  @ApiOperation({ summary: "Kick player from lobby" })
   async kick(
     @Query("hostId") hostId: string,
     @Query("lobbyId") lobbyId: string,
     @Query("targetUid") targetUid: string,
   ) {
-    await lobbyService.kickPlayer(lobbyId, hostId, targetUid);
+    await this.lobbyService.kickPlayer(lobbyId, hostId, targetUid);
 
     return {
       success: true,
@@ -135,28 +154,30 @@ export class LobbyController extends Controller {
     };
   }
 
-  @Security("firebaseAuth")
   @Patch("updateDiscord")
+  @UseGuards(FirebaseAuthGuard)
+  @ApiOperation({ summary: "Update Discord link" })
   async updateDiscord(
     @Query("hostId") hostId: string,
     @Query("lobbyId") lobbyId: string,
-    @Body() body: updateDiscordDTO,
+    @Body() body: UpdateDiscordDto,
   ) {
     const { discordLink } = body;
 
-    await lobbyService.updateDiscord(lobbyId, hostId, discordLink);
+    await this.lobbyService.updateDiscord(lobbyId, hostId, discordLink);
 
     return { success: true };
   }
 
-  @Security("firebaseAuth")
   @Patch("updateChampion")
+  @UseGuards(FirebaseAuthGuard)
+  @ApiOperation({ summary: "Update champion" })
   async updateChampion(
     @Query("uid") uid: string,
     @Query("lobbyId") lobbyId: string,
     @Query("championId") championId: string,
   ) {
-    await lobbyService.updateChampion(lobbyId, uid, championId);
+    await this.lobbyService.updateChampion(lobbyId, uid, championId);
 
     return {
       success: true,
@@ -164,10 +185,11 @@ export class LobbyController extends Controller {
     };
   }
 
-  @Security("firebaseAuth")
   @Get("getAvailableLobbies")
+  @UseGuards(FirebaseAuthGuard)
+  @ApiOperation({ summary: "Get available lobbies" })
   async getAvailableLobbies() {
-    const lobbies = await lobbyService.getAvailableLobbies();
+    const lobbies = await this.lobbyService.getAvailableLobbies();
 
     return {
       success: true,
@@ -176,10 +198,11 @@ export class LobbyController extends Controller {
     };
   }
 
-  @Security("firebaseAuth")
   @Get("get")
+  @UseGuards(FirebaseAuthGuard)
+  @ApiOperation({ summary: "Get lobby by ID" })
   async get(@Query("lobbyId") lobbyId: string) {
-    const lobby = await lobbyService.getLobbyById(lobbyId);
+    const lobby = await this.lobbyService.getLobbyById(lobbyId);
 
     return {
       success: true,
@@ -188,12 +211,13 @@ export class LobbyController extends Controller {
     };
   }
 
-  @Security("firebaseAuth")
   @Post("find")
-  async find(@Query("uid") uid: string, @Body() body: findLobbyDTO) {
+  @UseGuards(FirebaseAuthGuard)
+  @ApiOperation({ summary: "Find matching lobby" })
+  async find(@Query("uid") uid: string, @Body() body: FindLobbyDto) {
     const { gameMap, gameMode, desiredPosition = null, ranks = [] } = body;
 
-    const lobby = await lobbyService.findLobby({
+    const lobby = await this.lobbyService.findLobby({
       gameMap,
       gameMode,
       desiredPosition,
@@ -208,12 +232,13 @@ export class LobbyController extends Controller {
     };
   }
 
-  @Security("firebaseAuth")
   @Patch("join")
-  async join(@Query("lobbyId") lobbyId: string, @Body() body: joinLobbyDTO) {
+  @UseGuards(FirebaseAuthGuard)
+  @ApiOperation({ summary: "Join lobby" })
+  async join(@Query("lobbyId") lobbyId: string, @Body() body: JoinLobbyDto) {
     const { uid, position = null, championId = null } = body;
 
-    const updatedLobby = await lobbyService.joinLobby(lobbyId, {
+    const updatedLobby = await this.lobbyService.joinLobby(lobbyId, {
       uid,
       position,
       championId,
@@ -226,16 +251,15 @@ export class LobbyController extends Controller {
     };
   }
 
-  @Security("firebaseAuth")
   @Delete("leave")
+  @UseGuards(FirebaseAuthGuard)
+  @ApiOperation({ summary: "Leave lobby" })
   async leave(@Query("uid") uid: string, @Query("lobbyId") lobbyId: string) {
-    await lobbyService.leaveById(lobbyId, uid);
+    await this.lobbyService.leaveById(lobbyId, uid);
 
     return {
       success: true,
-      message: `Left lobby successfully`,
+      message: "Left lobby successfully",
     };
   }
 }
-
-export const lobbyController = new LobbyController();

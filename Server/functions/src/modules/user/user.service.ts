@@ -1,25 +1,27 @@
+import { Injectable } from "@nestjs/common";
 import { IUser } from "@leaguematch/shared";
-import { User } from "../models/User";
-import { riotService } from "./riotService";
-import { IRiotRankEntry, IRiotAccount } from "../interfaces/riot";
-import * as Error from "../utils/AppError";
-import { IUserData } from "../interfaces/IUserData";
+import { User } from "../../models/User";
+import { RiotService } from "./riot.service";
+import { IRiotRankEntry, IRiotAccount } from "../../interfaces/riot";
+import * as Error from "../../utils/AppError";
+import { IUserData } from "../../interfaces/IUserData";
 
-import { db } from "../firebaseConfig";
-import { UserAction } from "../transactions/actions/userAction";
-import { UserPairAction } from "../transactions/actions/userPairAction";
+import { db } from "../../firebaseConfig";
+import { UserAction } from "../../transactions/actions/userAction";
+import { UserPairAction } from "../../transactions/actions/userPairAction";
 import {
-  AddUserRequestDTO,
-  updateUserRequestDTO,
-} from "../controllers/dtos/user.dto";
+  AddUserRequestDto,
+  UpdateUserRequestDto,
+} from "../../common/dtos/user.dto";
 
+@Injectable()
 export class UserService {
   private usersRef = db.collection("users");
 
-  constructor() {}
+  constructor(private riotService: RiotService) {}
 
   // Add a new user
-  async addUser(userData: AddUserRequestDTO) {
+  async addUser(userData: AddUserRequestDto) {
     const user = new User(userData);
 
     if (!user.id || !user.username || !user.email) {
@@ -41,7 +43,7 @@ export class UserService {
   }
 
   // Update user with Riot info
-  async updateUser(uid: string, updateData: updateUserRequestDTO) {
+  async updateUser(uid: string, updateData: UpdateUserRequestDto) {
     if (!uid) {
       throw new Error.UnauthorizedError("uid is required");
     }
@@ -57,11 +59,11 @@ export class UserService {
       throw new Error.BadRequestError("riotId must be in the format name#tag");
     }
 
-    const account = await riotService.getAccountByRiotId(gameName, tag);
-    const rankData = await riotService.getRankByPuuid(account.puuid);
+    const account = await this.riotService.getAccountByRiotId(gameName, tag);
+    const rankData = await this.riotService.getRankByPuuid(account.puuid);
 
     const soloQueue = rankData.find(
-      (entry) => entry.queueType === "RANKED_SOLO_5x5"
+      (entry) => entry.queueType === "RANKED_SOLO_5x5",
     );
 
     const rank = soloQueue ? `${soloQueue.tier} ${soloQueue.rank}` : "Unranked";
@@ -99,7 +101,7 @@ export class UserService {
   async respondFriendRequest(
     uid: string,
     incomingUid: string,
-    accepted: boolean
+    accepted: boolean,
   ) {
     if (!uid || !incomingUid)
       throw new Error.BadRequestError("Missing uid or incomingUid fields");
@@ -144,6 +146,3 @@ export class UserService {
     });
   }
 }
-
-// Singleton export
-export const userService = new UserService();

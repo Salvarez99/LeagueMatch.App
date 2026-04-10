@@ -5,6 +5,5 @@ export interface Add {
 }
 
 export interface Update {
-  id: string;
   riotId: string;
 }

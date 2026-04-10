@@ -1,9 +1,9 @@
 import { Friend, FriendRequest, IUser } from "@leaguematch/shared";
 import { IUserData } from "../interfaces/IUserData";
 import type { DocumentData, DocumentSnapshot } from "firebase-admin/firestore";
-import { AddUserRequestDTO } from "../controllers/dtos/user.dto";
+import { AddUserRequestDto } from "../common/dtos/user.dto";
 
-
+export type AddUserRequestDTO = AddUserRequestDto;
 
 export class User implements IUserData {
   id: string;
@@ -20,7 +20,7 @@ export class User implements IUserData {
   availability: "Online" | "Away" | "Offline";
   statusMessage: string;
 
-  constructor(data: AddUserRequestDTO) {
+  constructor(data: AddUserRequestDto) {
     this.id = data.id;
     this.username = data.username;
     this.email = data.email;
@@ -52,23 +52,23 @@ export class User implements IUserData {
 
   static sendFriendRequest(user: User, target: User) {
     const alreadyFriends = user.friendsList.some(
-      (friend) => target.id === friend.uid
+      (friend) => target.id === friend.uid,
     );
 
     const outgoingExists = user.outgoingRequests.some(
-      (request) => target.id === request.uid
+      (request) => target.id === request.uid,
     );
 
     const incomingExists = user.incomingRequests.some(
-      (request) => request.uid === target.id
+      (request) => request.uid === target.id,
     );
 
     const targetIncomingExists = target.incomingRequests.some(
-      (request) => request.uid === user.id
+      (request) => request.uid === user.id,
     );
 
     const targetOutgoingExists = target.outgoingRequests.some(
-      (request) => request.uid === user.id
+      (request) => request.uid === user.id,
     );
 
     if (
@@ -94,10 +94,10 @@ export class User implements IUserData {
   static respondFriendRequest(
     user: User,
     incomingUser: User,
-    accepted: boolean
+    accepted: boolean,
   ) {
     const hasIncoming = user.incomingRequests.some(
-      (req) => req.uid === incomingUser.id
+      (req) => req.uid === incomingUser.id,
     );
 
     if (!hasIncoming) {
@@ -105,11 +105,11 @@ export class User implements IUserData {
     }
 
     user.incomingRequests = user.incomingRequests.filter(
-      (req) => req.uid !== incomingUser.id
+      (req) => req.uid !== incomingUser.id,
     );
 
     incomingUser.outgoingRequests = incomingUser.outgoingRequests.filter(
-      (req) => req.uid !== user.id
+      (req) => req.uid !== user.id,
     );
 
     if (!accepted) {
@@ -117,7 +117,7 @@ export class User implements IUserData {
     }
 
     const alreadyFriends = user.friendsList.some(
-      (friend) => friend.uid === incomingUser.id
+      (friend) => friend.uid === incomingUser.id,
     );
 
     if (alreadyFriends) {

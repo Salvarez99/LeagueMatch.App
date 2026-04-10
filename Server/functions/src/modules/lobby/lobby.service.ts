@@ -1,14 +1,15 @@
-import { db } from "../firebaseConfig";
-import { userService } from "./userService";
-import { Lobby } from "../models/Lobby";
-import * as Error from "../utils/AppError";
+import { Injectable } from "@nestjs/common";
+import { db } from "../../firebaseConfig";
+import { UserService } from "../user/user.service";
+import { Lobby } from "../../models/Lobby";
+import * as Error from "../../utils/AppError";
 import {
   ILobbyCreateData,
   IFindLobbyData,
   IJoinLobbyData,
-} from "../interfaces/ILobby";
+} from "../../interfaces/ILobby";
 
-import type { IGhostData } from "../interfaces/IGhostData";
+import type { IGhostData } from "../../interfaces/IGhostData";
 import type {
   CollectionReference,
   DocumentData,
@@ -16,18 +17,19 @@ import type {
   QueryDocumentSnapshot,
 } from "firebase-admin/firestore";
 import { LobbyState } from "@leaguematch/shared";
-import { Player } from "../models/Player";
-import { IUpdateGhost } from "../interfaces/IUpdateGhost";
+import { Player } from "../../models/Player";
+import { IUpdateGhost } from "../../interfaces/IUpdateGhost";
 import {
   hostAction,
   JoinerAction,
   selfAction,
-} from "../transactions/actions/lobbyActions";
+} from "../../transactions/actions/lobbyActions";
 
+@Injectable()
 export class LobbyService {
   private lobbiesRef: CollectionReference<DocumentData>;
 
-  constructor() {
+  constructor(private userService: UserService) {
     this.lobbiesRef = db.collection("lobbies");
   }
 
@@ -46,7 +48,7 @@ export class LobbyService {
     }
 
     // Ensure host exists
-    const host = await userService.getUserById(hostId);
+    const host = await this.userService.getUserById(hostId);
     if (!host) throw new Error.NotFoundError("Host user not found");
 
     // if (!host.riotId) {
@@ -66,7 +68,7 @@ export class LobbyService {
         doc.data().state === LobbyState.FINISHED
       )
         throw new Error.BadRequestError(
-          `hostId ${hostId} active lobby already exists`
+          `hostId ${hostId} active lobby already exists`,
         );
     });
 
@@ -79,7 +81,7 @@ export class LobbyService {
       gameMode,
       hostPosition,
       championId,
-      rankFilter
+      rankFilter,
     );
 
     // Save lobby
@@ -107,7 +109,7 @@ export class LobbyService {
               p.position,
               p.championId,
               !Boolean(p.ready),
-              false
+              false,
             ).toObject();
           }
           return p instanceof Player ? p.toObject() : p;
@@ -134,7 +136,7 @@ export class LobbyService {
           ghostData.position,
           ghostData.championId,
           true,
-          ghostData.index
+          ghostData.index,
         );
       },
       states: [LobbyState.IDLE, LobbyState.FINISHED],
@@ -192,7 +194,7 @@ export class LobbyService {
       uid,
       action: (lobby) => {
         lobby.players = lobby.players.map((p) =>
-          p && p.uid === uid ? { ...p, championId } : p
+          p && p.uid === uid ? { ...p, championId } : p,
         );
       },
       states: [LobbyState.IDLE, LobbyState.FINISHED],
@@ -216,7 +218,7 @@ export class LobbyService {
 
   private filterKicked(
     uid: string,
-    docs: QueryDocumentSnapshot<DocumentData>[]
+    docs: QueryDocumentSnapshot<DocumentData>[],
   ) {
     return docs.filter((d) => !d.data().kickedPlayers?.includes(uid));
   }
@@ -235,7 +237,7 @@ export class LobbyService {
           gameMode,
           desiredPosition,
           ranks ?? [],
-          uid
+          uid,
         );
 
       case "Aram":
@@ -252,7 +254,7 @@ export class LobbyService {
   async joinLobby(lobbyId: string, playerData: IJoinLobbyData) {
     const { uid, position = null, championId = null } = playerData;
 
-    const user = await userService.getUserById(uid);
+    const user = await this.userService.getUserById(uid);
     if (!user) throw new Error.NotFoundError("User not found");
 
     let resultLobby: any = null;
@@ -292,7 +294,7 @@ export class LobbyService {
     gameMode: string,
     desiredPosition: string,
     ranks: string[],
-    uid: string
+    uid: string,
   ) {
     const base = this.findBase(gameMap, gameMode);
 
@@ -309,7 +311,7 @@ export class LobbyService {
 
     const merged = rankSnap
       ? rankSnap.docs.filter((d) =>
-          new Set(positionSnap.docs.map((p) => p.id)).has(d.id)
+          new Set(positionSnap.docs.map((p) => p.id)).has(d.id),
         )
       : positionSnap.docs;
 
@@ -332,7 +334,7 @@ export class LobbyService {
   private async searchForFeatured(
     gameMap: string,
     gameMode: string,
-    uid: string
+    uid: string,
   ) {
     const snap = await this.findBase(gameMap, gameMode).get();
     if (snap.empty) return null;
@@ -366,5 +368,3 @@ export class LobbyService {
     }
   }
 }
-
-export const lobbyService = new LobbyService();
