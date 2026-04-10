@@ -1,20 +1,6 @@
-import { IPlayerData } from "./IPlayerData";
-import { ILobbyFilter } from "./ILobbyFilter";
+import type { ILobby } from "@leaguematch/shared";
 
-export type ILobbyData ={
-  // id:string;
-  hostId: string;
-  riotId: string;
-  gameMap: string;
-  gameMode: string;
-  kickedPlayers: string[];
-  currentPlayers: number;
-  maxPlayers: number;
-  createdAt: string;
-  isActive: boolean;
-  filter: ILobbyFilter;
-  players: IPlayerData[];
-}
+export type ILobbyData = ILobby;
 
 /*
 {

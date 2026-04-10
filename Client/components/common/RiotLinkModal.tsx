@@ -38,7 +38,6 @@ export default function RiotLinkModal({
 
     try {
       await userApi.updateUser({
-        id: uid,
         riotId: fullRiotID,
       });
       onClose(false);

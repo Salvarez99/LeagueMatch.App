@@ -1,13 +1,18 @@
-import { IRiotAccount, IRiotRankEntry } from "../interfaces/riot";
+import { Injectable } from "@nestjs/common";
+import { IRiotAccount, IRiotRankEntry } from "../../interfaces/riot";
 
+@Injectable()
 export class RiotService {
   apiKey: string;
 
-  constructor(apiKey?: string) {
-    this.apiKey = apiKey ?? process.env.RIOT_API_KEY ?? "";
+  constructor() {
+    this.apiKey = process.env.RIOT_API_KEY ?? "";
   }
 
-  async getAccountByRiotId(gameName: string, tag: string): Promise<IRiotAccount> {
+  async getAccountByRiotId(
+    gameName: string,
+    tag: string,
+  ): Promise<IRiotAccount> {
     const baseUrl = "https://americas.api.riotgames.com";
     const url = `${baseUrl}/riot/account/v1/accounts/by-riot-id/${gameName}/${tag}`;
 
@@ -17,7 +22,7 @@ export class RiotService {
 
     if (!response.ok) {
       throw new Error(
-        `Failed to fetch Riot Account data (${response.status}, ${gameName}#${tag})`
+        `Failed to fetch Riot Account data (${response.status}, ${gameName}#${tag})`,
       );
     }
 
@@ -39,6 +44,3 @@ export class RiotService {
     return response.json() as Promise<IRiotRankEntry[]>;
   }
 }
-
-// Singleton export
-export const riotService = new RiotService();

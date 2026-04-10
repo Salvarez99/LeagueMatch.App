@@ -1,4 +1,3 @@
-export type ILobbyFilter = {
-  ranksFilter: string[];
-  [key: string]: string[]; // allows additional array-of-string keys
-}
+import type { ILobbyFilter } from "@leaguematch/shared";
+
+export type { ILobbyFilter };

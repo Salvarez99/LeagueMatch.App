@@ -97,13 +97,13 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
               setAppUserLoading(false);
             },
-            (err) => LOG.error("Firestore authUser error:", err)
+            (err) => LOG.error("Firestore authUser error:", err),
           );
         } else {
           setAppUser(null);
           setHasRiotLinked(false);
         }
-      }
+      },
     );
 
     return () => {
@@ -124,7 +124,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           await signInWithEmailAndPassword(
             auth,
             DEV_CONFIG.TEST_EMAIL,
-            DEV_CONFIG.TEST_PASSWORD
+            DEV_CONFIG.TEST_PASSWORD,
           );
           LOG.dev("Dev mode authUser signed in");
         } catch {
@@ -133,7 +133,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           const cred = await createUserWithEmailAndPassword(
             auth,
             DEV_CONFIG.TEST_EMAIL,
-            DEV_CONFIG.TEST_PASSWORD
+            DEV_CONFIG.TEST_PASSWORD,
           );
 
           await userApi.createUser({
@@ -160,14 +160,20 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
     if (shouldLink) {
       LOG.dev("Linking Riot ID…");
-      setHasRiotLinked(true);
 
-      userApi.updateUser({
-        id: authUser.uid,
-        riotId: DEV_CONFIG.TEST_RIOT_ID,
-      });
+      (async () => {
+        try {
+          await userApi.updateUser({
+            riotId: DEV_CONFIG.TEST_RIOT_ID,
+          });
+          LOG.dev("Riot ID linked successfully");
+          setHasRiotLinked(true);
+        } catch (err) {
+          LOG.error("Failed to link Riot ID:", err);
+        }
+      })();
     }
-  }, [authUser, appUser]);
+  }, [authUser, appUser, hasRiotLinked]);
 
   // DEV MODE REDIRECT
   useEffect(() => {

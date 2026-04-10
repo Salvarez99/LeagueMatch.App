@@ -3,17 +3,28 @@
     "rootDir": "./src",
     "outDir": "./lib",
     "strict": false,
-    "allowJs": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "declaration": true,
+    "sourceMap": true,
     "module": "commonjs",
     "target": "ES2021",
-    "lib":["ES2021"],
-    "resolveJsonModule": true,
+    "lib": ["ES2021"],
     "esModuleInterop": true,
-    "noImplicitAny": true,
+    "allowSyntheticDefaultImports": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    
+    "moduleResolution": "node"
   },
   "include": ["src"],
-  "exclude": ["node_modules", "lib"]
+  "exclude": [
+    "node_modules",
+    "lib",
+    "src/controllers",
+    "src/middleware",
+    "src/tsoa",
+    "src/app.ts",
+    "src/auth"
+  ]
 }
