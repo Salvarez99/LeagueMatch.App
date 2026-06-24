@@ -1,8 +1,9 @@
 import axios from "axios";
 import { getAuthToken } from "./getAuthToken";
+import { apiBaseUrl } from "../config";
 
 const axiosClient = axios.create({
-  baseURL: process.env.EXPO_PUBLIC_API_URL,
+  baseURL: apiBaseUrl,
   headers: {
     "Content-Type": "application/json",
   },
@@ -16,7 +17,7 @@ axiosClient.interceptors.request.use(
     }
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => Promise.reject(error),
 );
 
 axiosClient.interceptors.response.use(
@@ -28,7 +29,7 @@ axiosClient.interceptors.response.use(
       // auth.signOut(); // optional
     }
     return Promise.reject(error);
-  }
+  },
 );
 
 export default axiosClient;
