@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>LeagueMatch Control</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">LOCAL DEVELOPMENT</p>
+          <h1>LeagueMatch <span>Control</span></h1>
+          <p class="subtitle">One place to bring the app online.</p>
+        </div>
+        <div class="actions">
+          <button
+            class="button theme-toggle"
+            id="theme-toggle"
+            type="button"
+            aria-label="Switch to dark mode"
+            title="Switch theme"
+          >
+            <span id="theme-icon" aria-hidden="true">◐</span>
+            <span id="theme-label">Dark mode</span>
+          </button>
+          <button class="button primary" data-action="all/start">
+            Start all</button
+          ><button class="button quiet" data-action="all/stop">Stop all</button>
+        </div>
+      </header>
+      <section class="summary">
+        <div>
+          <span class="pulse"></span
+          ><strong id="overall-status">All systems idle</strong>
+        </div>
+        <span id="last-update">Waiting for the controller</span>
+      </section>
+      <section class="connection panel">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">MOBILE CONNECTION</p>
+            <h2>Expo Go</h2>
+          </div>
+          <span class="tag" id="expo-state">Waiting for Expo</span>
+        </div>
+        <div class="connection-content">
+          <div class="qr-wrap">
+            <div class="qr-empty" id="qr-empty">
+              Start Expo to<br />generate a QR code
+            </div>
+            <img id="qr" alt="Expo connection QR code" hidden />
+          </div>
+          <div class="connection-details">
+            <p class="muted">
+              Scan this code from Expo Go while your phone is on the same
+              network.
+            </p>
+            <a
+              id="expo-link"
+              class="link"
+              href="#"
+              target="_blank"
+              rel="noreferrer"
+              >No Expo link detected</a
+            >
+            <div class="inline-actions">
+              <button class="button quiet" id="copy-link" disabled>
+                Copy link</button
+              ><label class="select-label"
+                >Mode
+                <select id="expo-mode">
+                  <option value="lan">LAN</option>
+                  <option value="tunnel">Tunnel</option>
+                  <option value="localhost">Localhost</option>
+                </select></label
+              >
+            </div>
+            <p class="muted small">
+              For a physical phone, set <code>EXPO_PUBLIC_LOCAL_HOST</code> to
+              this computer's LAN IP so the API is reachable.
+            </p>
+          </div>
+        </div>
+      </section>
+      <section class="grid" id="runtime-grid"></section>
+      <section class="links">
+        <a href="http://127.0.0.1:4000" target="_blank" rel="noreferrer"
+          >Firebase Emulator UI <span>↗</span></a
+        ><a
+          href="http://127.0.0.1:5001/league-match-app/us-central1/api/docs"
+          target="_blank"
+          rel="noreferrer"
+          >API Swagger <span>↗</span></a
+        >
+      </section>
+    </main>
+    <script src="/app.js"></script>
+  </body>
+</html>
