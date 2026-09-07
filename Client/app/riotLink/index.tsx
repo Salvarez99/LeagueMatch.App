@@ -2,6 +2,7 @@ import { useAuth } from "@/context/authContext";
 import { styles } from "@/styles/riotLinkStyle";
 import { Update } from "@/types/IUserApiRequest";
 import { userApi } from "@/utils/api/userApi";
+import { getApiErrorMessage } from "@/utils/api/axiosClient";
 import { router } from "expo-router";
 import { useState } from "react";
 import { Alert, Text, TextInput, TouchableOpacity, View } from "react-native";
@@ -17,12 +18,19 @@ export default function Index() {
   };
 
   const handleLink = async () => {
-    const fullRiotID = `${riotID}#${tagLine}`;
-    const uid = authUser!.uid;
     if (!riotID || !tagLine) {
       Alert.alert("Please enter both Riot ID and Tagline.");
       return;
     }
+    if (!authUser) {
+      Alert.alert(
+        "Sign-in required",
+        "Please sign in before linking your Riot ID.",
+      );
+      return;
+    }
+
+    const fullRiotID = `${riotID.trim()}#${tagLine.replace(/^#+/, "").trim()}`;
 
     try {
       await userApi.updateUser({
@@ -30,8 +38,10 @@ export default function Index() {
       });
       router.push("/menu/menu");
     } catch (err) {
-      console.log(err);
-    } finally {
+      Alert.alert(
+        "Unable to link Riot ID",
+        getApiErrorMessage(err, "The Riot account could not be linked."),
+      );
     }
   };
 

@@ -29,6 +29,21 @@ cd ../Server/functions && npm install
 
 ## Run the application
 
+### Local control panel
+
+The repository includes a small browser-based runtime manager. It starts the shared package watcher, Firebase/Nest emulators, and Expo from one dashboard, while also providing individual start, stop, and restart controls, live logs, and the Expo Go QR code.
+
+From the repository root, install the control-panel dependency once and start it:
+
+```bash
+npm install
+npm run control
+```
+
+Open `http://127.0.0.1:4173` in a browser or the VS Code internal browser. On Windows, you can also double-click `start-control-panel.cmd`.
+
+The default Expo mode is LAN. Your phone and development computer must be on the same network. For the mobile app to reach the local API from a physical phone, set `EXPO_PUBLIC_LOCAL_HOST` to the development computer's LAN IP before starting Expo. The panel also links to the Firebase Emulator UI at `http://127.0.0.1:4000` and API Swagger at `http://127.0.0.1:5001/league-match-app/us-central1/api/docs`.
+
 ### 1. Start the backend
 
 From [Server/functions](Server/functions), run:

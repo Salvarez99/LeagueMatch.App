@@ -17,6 +17,7 @@ import React, {
 import { DEV_CONFIG } from "@/devConfig";
 import { auth, db } from "@/firebaseConfig";
 import { userApi } from "@/utils/api/userApi";
+import { getApiErrorMessage } from "@/utils/api/axiosClient";
 import { LOG, logObjectDeep } from "@/utils/logger";
 
 import type { AppUser, AuthUser } from "@/types/User";
@@ -169,7 +170,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           LOG.dev("Riot ID linked successfully");
           setHasRiotLinked(true);
         } catch (err) {
-          LOG.error("Failed to link Riot ID:", err);
+          LOG.error(
+            "Failed to link Riot ID:",
+            getApiErrorMessage(err, "The Riot account could not be linked."),
+          );
         }
       })();
     }

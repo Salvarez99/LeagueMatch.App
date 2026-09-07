@@ -17,12 +17,18 @@ export class AllExceptionsFilter implements ExceptionFilter {
     let status = HttpStatus.INTERNAL_SERVER_ERROR;
     let message = "Internal server error";
     let code: string | undefined;
+    let details: string | undefined;
 
     if (exception instanceof HttpException) {
       status = exception.getStatus();
       const responseObj = exception.getResponse() as any;
-      message = responseObj.message || exception.message;
-      code = responseObj.code;
+      if (typeof responseObj === "string") {
+        message = responseObj;
+      } else {
+        message = responseObj.message || exception.message;
+        code = responseObj.code;
+        details = responseObj.details;
+      }
     } else if (exception instanceof Error) {
       message = exception.message;
       // Check if it's a custom AppError
@@ -41,6 +47,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
           : "UnknownError",
       message,
       code,
+      details,
       timestamp: new Date().toISOString(),
       path: request.url,
     });

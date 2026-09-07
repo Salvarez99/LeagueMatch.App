@@ -53,11 +53,22 @@ export class UserService {
     }
 
     // 1️⃣ Resolve Riot data OUTSIDE the transaction
-    const [gameName, tag] = updateData.riotId.split("#");
+    const separatorIndex = updateData.riotId.lastIndexOf("#");
+    if (separatorIndex <= 0) {
+      throw new Error.BadRequestError("riotId must be in the format name#tag");
+    }
+
+    const gameName = updateData.riotId.slice(0, separatorIndex).trim();
+    const tag = updateData.riotId
+      .slice(separatorIndex + 1)
+      .trim()
+      .replace(/^#+/, "");
 
     if (!gameName || !tag) {
       throw new Error.BadRequestError("riotId must be in the format name#tag");
     }
+
+    const canonicalRiotId = `${gameName}#${tag}`;
 
     const account = await this.riotService.getAccountByRiotId(gameName, tag);
     const rankData = await this.riotService.getRankByPuuid(account.puuid);
@@ -72,7 +83,7 @@ export class UserService {
     const updatedUser = await UserAction({
       uid,
       action: (user) => {
-        user.setRiotId(updateData.riotId);
+        user.setRiotId(canonicalRiotId);
         user.setPuuid(account.puuid);
         user.setRank(rank);
         return user;
